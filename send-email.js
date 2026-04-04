@@ -3,7 +3,7 @@ exports.handler = async function(event) {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
-  const BREVO_API_KEY = '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';
+  const BREVO_API_KEY = process.env.BREVO_API_KEY;
   const ADMIN_EMAIL  = 'meirgm10@gmail.com';
   const ADMIN_NAME   = 'Meir — GM המספרה';
 
