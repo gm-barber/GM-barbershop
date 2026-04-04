@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GM מספרה">
+<title>GM המספרה</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Heebo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --dark: #111111;
+    --card: #1a1a1a;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --white: #f5f5f0;
+    --grey: #888;
+    --red: #e63946;
+    --success: #2ecc71;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Heebo', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* SCREENS */
+  .screen { display: none; min-height: 100vh; flex-direction: column; animation: fadeIn 0.35s ease; }
+  .screen.active { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ─── SPLASH ─── */
+  #screen-splash {
+    background: var(--black);
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .splash-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 40%, #2a1f00 0%, transparent 65%);
+  }
+  .splash-lines {
+    position: absolute; inset: 0;
+    background-image: repeating-linear-gradient(
+      0deg, transparent, transparent 40px, rgba(201,168,76,0.04) 40px, rgba(201,168,76,0.04) 41px
+    ),
+    repeating-linear-gradient(
+      90deg, transparent, transparent 40px, rgba(201,168,76,0.04) 40px, rgba(201,168,76,0.04) 41px
+    );
+  }
+  .splash-content { position: relative; text-align: center; z-index: 2; }
+  .splash-pole {
+    font-size: 64px; margin-bottom: 16px;
+    animation: spin 3s linear infinite;
+    display: inline-block;
+  }
+  @keyframes spin { 0%,100%{transform:rotate(-5deg)} 50%{transform:rotate(5deg)} }
+  .splash-gm {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(90px, 22vw, 140px);
+    line-height: 0.85;
+    letter-spacing: 8px;
+    background: linear-gradient(135deg, var(--gold) 30%, var(--gold-light) 60%, var(--gold) 90%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 30px rgba(201,168,76,0.4));
+  }
+  .splash-sub {
+    font-size: 14px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--grey);
+    margin-top: 8px;
+  }
+  .splash-tagline {
+    margin-top: 24px;
+    font-size: 13px;
+    color: rgba(201,168,76,0.7);
+    letter-spacing: 2px;
+  }
+  .splash-btn {
+    margin-top: 52px;
+    background: var(--gold);
+    color: var(--black);
+    border: none;
+    padding: 18px 52px;
+    font-family: 'Heebo', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    cursor: pointer;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .splash-btn::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+    transform: translateX(-100%);
+    transition: transform 0.5s;
+  }
+  .splash-btn:hover::after, .splash-btn:active::after { transform: translateX(100%); }
+  .splash-btn:active { transform: scale(0.97); }
+
+  /* ─── TOP BAR ─── */
+  .topbar {
+    padding: 20px 20px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+    position: sticky; top: 0;
+    background: var(--black);
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+  .topbar-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 4px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .topbar-back {
+    background: none; border: none;
+    color: var(--gold); font-size: 22px;
+    cursor: pointer; padding: 4px 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .topbar-back span { font-size: 14px; font-family: 'Heebo', sans-serif; color: var(--gold); }
+
+  /* ─── HOME ─── */
+  #screen-home { background: var(--black); }
+  .home-hero {
+    padding: 32px 20px 24px;
+    position: relative;
+  }
+  .home-hero-tag {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .home-hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(42px, 11vw, 64px);
+    line-height: 1;
+    letter-spacing: 2px;
+  }
+  .home-hero h1 span { color: var(--gold); }
+  .home-hero-bar {
+    width: 48px; height: 3px;
+    background: var(--gold);
+    margin-top: 16px;
+  }
+
+  .services-label {
+    padding: 0 20px 12px;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--grey);
+    text-transform: uppercase;
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 0 20px 32px;
+  }
+
+  .service-card {
+    background: var(--card);
+    border: 1px solid rgba(201,168,76,0.12);
+    padding: 24px 20px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.25s;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
+  }
+  .service-card::before {
+    content: '';
+    position: absolute; top: 0; right: 0;
+    width: 0; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(201,168,76,0.06));
+    transition: width 0.3s;
+  }
+  .service-card:hover::before, .service-card:active::before { width: 100%; }
+  .service-card:active { transform: scale(0.97); border-color: rgba(201,168,76,0.4); }
+  .service-card.selected {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.08);
+  }
+  .service-icon { font-size: 36px; margin-bottom: 12px; display: block; }
+  .service-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 1px;
+    color: var(--white);
+  }
+  .service-duration {
+    font-size: 11px;
+    color: var(--grey);
+    margin-top: 4px;
+    letter-spacing: 1px;
+  }
+  .service-price {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--gold);
+    margin-top: 12px;
+  }
+  .service-check {
+    position: absolute;
+    top: 12px; left: 12px;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--gold);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: var(--black);
+  }
+  .service-card.selected .service-check { display: flex; }
+
+  .cta-btn {
+    margin: 0 20px 32px;
+    background: var(--gold);
+    color: var(--black);
+    border: none;
+    padding: 18px;
+    width: calc(100% - 40px);
+    font-family: 'Heebo', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    cursor: pointer;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    transition: all 0.2s;
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  .cta-btn.enabled {
+    opacity: 1;
+    pointer-events: all;
+    box-shadow: 0 8px 32px rgba(201,168,76,0.3);
+  }
+  .cta-btn.enabled:active { transform: scale(0.98); }
+
+  /* ─── DATE PICKER ─── */
+  #screen-date { background: var(--black); }
+  .section-title {
+    padding: 28px 20px 20px;
+  }
+  .section-title h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 2px;
+  }
+  .section-title p { font-size: 13px; color: var(--grey); margin-top: 4px; }
+
+  .calendar-wrap { padding: 0 20px; }
+  .cal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .cal-month {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    letter-spacing: 2px;
+    color: var(--gold);
+  }
+  .cal-nav {
+    background: var(--card);
+    border: 1px solid rgba(201,168,76,0.2);
+    color: var(--gold);
+    width: 36px; height: 36px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
+    transition: all 0.2s;
+  }
+  .cal-nav:active { background: rgba(201,168,76,0.15); }
+  .cal-days-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  .cal-day-name {
+    font-size: 11px;
+    color: var(--grey);
+    letter-spacing: 1px;
+    padding: 4px 0;
+  }
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+  .cal-cell {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .cal-cell.empty { pointer-events: none; }
+  .cal-cell.past { color: #333; pointer-events: none; }
+  .cal-cell.closed { color: #333; pointer-events: none; }
+  .cal-cell.closed::after {
+    content: 'סגור';
+    position: absolute;
+    font-size: 7px;
+    bottom: 2px;
+    color: #444;
+    letter-spacing: 0.5px;
+  }
+  .cal-cell.available { color: var(--white); }
+  .cal-cell.available:hover, .cal-cell.available:active {
+    background: rgba(201,168,76,0.15);
+    color: var(--gold);
+  }
+  .cal-cell.today { border: 1px solid rgba(201,168,76,0.3); }
+  .cal-cell.selected {
+    background: var(--gold) !important;
+    color: var(--black) !important;
+    font-weight: 700;
+  }
+
+  /* ─── TIME SLOTS ─── */
+  .time-section { padding: 28px 20px 12px; }
+  .time-section h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+  .slots-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 0 20px 24px;
+  }
+  .slot-btn {
+    background: var(--card);
+    border: 1px solid rgba(201,168,76,0.15);
+    color: var(--white);
+    padding: 14px 8px;
+    text-align: center;
+    cursor: pointer;
+    font-family: 'Heebo', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
+    transition: all 0.2s;
+  }
+  .slot-btn.taken {
+    background: #111;
+    color: #333;
+    border-color: #222;
+    pointer-events: none;
+    text-decoration: line-through;
+  }
+  .slot-btn.selected {
+    background: rgba(201,168,76,0.15);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+  .slot-btn:not(.taken):active { transform: scale(0.95); }
+
+  /* ─── DETAILS FORM ─── */
+  #screen-details { background: var(--black); overflow-y: auto; }
+  .form-wrap { padding: 0 20px 32px; }
+  .form-group { margin-bottom: 20px; }
+  .form-label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .form-input {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid rgba(201,168,76,0.2);
+    color: var(--white);
+    padding: 16px 18px;
+    font-family: 'Heebo', sans-serif;
+    font-size: 16px;
+    outline: none;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+    transition: border-color 0.2s;
+  }
+  .form-input:focus { border-color: var(--gold); }
+  .form-input::placeholder { color: #444; }
+
+  .booking-summary {
+    background: var(--card);
+    border: 1px solid rgba(201,168,76,0.2);
+    padding: 20px;
+    margin-bottom: 24px;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  }
+  .booking-summary h3 {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--grey);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 14px;
+  }
+  .summary-row:last-child { border-bottom: none; }
+  .summary-row span:first-child { color: var(--grey); }
+  .summary-row span:last-child { font-weight: 600; color: var(--white); }
+  .summary-row.total span:last-child { color: var(--gold); font-size: 18px; }
+
+  /* ─── SUCCESS ─── */
+  #screen-success {
+    background: var(--black);
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 24px;
+  }
+  .success-icon {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: rgba(46,204,113,0.1);
+    border: 2px solid var(--success);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+    margin: 0 auto 24px;
+    animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .success-gm {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    letter-spacing: 4px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .success-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .success-sub {
+    font-size: 14px;
+    color: var(--grey);
+    line-height: 1.6;
+    margin-bottom: 32px;
+  }
+  .success-card {
+    background: var(--card);
+    border: 1px solid rgba(201,168,76,0.25);
+    padding: 24px;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto 32px;
+    clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+    text-align: right;
+  }
+  .success-confirm-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+  .success-detail {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .success-detail small { font-weight: 300; color: var(--grey); display: block; font-size: 12px; }
+
+  .new-booking-btn {
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.4);
+    color: var(--gold);
+    padding: 16px 40px;
+    font-family: 'Heebo', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 2px;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    transition: all 0.2s;
+  }
+  .new-booking-btn:active { background: rgba(201,168,76,0.08); }
+
+  /* ─── PROGRESS BAR ─── */
+  .progress-bar {
+    height: 2px;
+    background: rgba(201,168,76,0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--gold);
+    transition: width 0.4s ease;
+  }
+
+  /* ─── FLOATING ORNAMENT ─── */
+  .ornament {
+    text-align: center;
+    padding: 12px 0 4px;
+    color: rgba(201,168,76,0.25);
+    font-size: 20px;
+    letter-spacing: 8px;
+  }
+
+  /* Install banner */
+  .install-banner {
+    background: rgba(201,168,76,0.1);
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--gold);
+  }
+  .install-banner button {
+    background: var(--gold);
+    color: var(--black);
+    border: none;
+    padding: 6px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 1px;
+  }
+  .install-banner .close-x {
+    background: none;
+    border: none;
+    color: var(--grey);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: var(--black); }
+  ::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.3); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- INSTALL BANNER -->
+<div class="install-banner" id="installBanner" style="display:none">
+  <span>📲 הוסף לשולחן הבית</span>
+  <div style="display:flex;gap:8px;align-items:center">
+    <button onclick="triggerInstall()">התקן</button>
+    <button class="close-x" onclick="document.getElementById('installBanner').style.display='none'">✕</button>
+  </div>
+</div>
+
+<!-- ═══════════════ SPLASH ═══════════════ -->
+<div class="screen active" id="screen-splash">
+  <div class="splash-bg"></div>
+  <div class="splash-lines"></div>
+  <div class="splash-content">
+    <div class="splash-pole">💈</div>
+    <div class="splash-gm">GM</div>
+    <div class="splash-sub">המספרה</div>
+    <div class="splash-tagline">✦ LOOK SHARP. FEEL SHARP. ✦</div>
+    <button class="splash-btn" onclick="goTo('home')">קבע תור עכשיו</button>
+    <div style="margin-top:48px">
+      <span id="adminToggle" onclick="toggleAdminLogin()" style="font-size:11px;color:#555;cursor:pointer;letter-spacing:3px;user-select:none;border:1px solid #333;padding:6px 16px;border-radius:2px">כניסת מנהל</span>
+    </div>
+    <!-- Admin login — subtle, hidden by default -->
+    <div id="adminLoginBox" style="display:none;margin-top:16px;animation:fadeIn 0.3s ease">
+      <input id="adminPassInput" type="password" placeholder="סיסמה"
+        style="background:rgba(255,255,255,0.05);border:1px solid rgba(201,168,76,0.25);color:var(--white);padding:12px 18px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;width:200px;text-align:center;border-radius:2px;letter-spacing:3px"
+        onkeydown="if(event.key==='Enter') checkAdminPass()">
+      <br>
+      <button onclick="checkAdminPass()"
+        style="margin-top:10px;background:transparent;border:1px solid rgba(201,168,76,0.3);color:rgba(201,168,76,0.7);padding:8px 24px;font-family:'Heebo',sans-serif;font-size:12px;cursor:pointer;letter-spacing:2px">
+        כניסה
+      </button>
+      <div id="adminErrMsg" style="font-size:11px;color:#e63946;margin-top:8px;min-height:16px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ ADMIN PANEL ═══════════════ -->
+<div class="screen" id="screen-admin">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('splash')">← <span>יציאה</span></button>
+    <div class="topbar-logo">GM</div>
+    <div style="font-size:10px;color:var(--gold);letter-spacing:2px;background:rgba(201,168,76,0.1);padding:4px 10px;border:1px solid rgba(201,168,76,0.2)">מנהל</div>
+  </div>
+
+  <div style="padding:24px 20px 12px">
+    <div style="font-size:11px;letter-spacing:4px;color:var(--gold);margin-bottom:6px">✦ ADMIN</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px">לוח ניהול</div>
+  </div>
+
+  <!-- Stats -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 20px 24px">
+    <div style="background:var(--card);border:1px solid rgba(201,168,76,0.15);padding:20px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">
+      <div style="font-size:11px;color:var(--grey);letter-spacing:2px;margin-bottom:8px">תורים היום</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:42px;color:var(--gold)" id="adminTodayCount">4</div>
+    </div>
+    <div style="background:var(--card);border:1px solid rgba(201,168,76,0.15);padding:20px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">
+      <div style="font-size:11px;color:var(--grey);letter-spacing:2px;margin-bottom:8px">הכנסה יומית</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:42px;color:var(--gold)" id="adminTodayRevenue">₪340</div>
+    </div>
+  </div>
+
+  <!-- Date filter -->
+  <div style="padding:0 20px 16px">
+    <div style="font-size:11px;letter-spacing:3px;color:var(--grey);text-transform:uppercase;margin-bottom:10px">סינון לפי תאריך</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input type="date" id="adminDatePicker"
+        style="flex:1;background:var(--card);border:1px solid rgba(201,168,76,0.25);color:var(--white);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);color-scheme:dark"
+        onchange="filterAdminByDate()">
+      <button onclick="setAdminToday()" style="background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);color:var(--gold);padding:12px 16px;font-family:'Heebo',sans-serif;font-size:12px;cursor:pointer;letter-spacing:1px;white-space:nowrap;clip-path:polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)">היום</button>
+      <button onclick="setAdminTomorrow()" style="background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);color:var(--gold);padding:12px 16px;font-family:'Heebo',sans-serif;font-size:12px;cursor:pointer;letter-spacing:1px;white-space:nowrap;clip-path:polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)">מחר</button>
+    </div>
+  </div>
+
+  <!-- Bookings list -->
+  <div style="padding:0 20px 8px;display:flex;justify-content:space-between;align-items:center">
+    <div style="font-size:11px;letter-spacing:4px;color:var(--grey);text-transform:uppercase">תורים</div>
+    <div style="font-size:11px;color:var(--gold)" id="adminDateLabel"></div>
+  </div>
+  <div id="adminBookingsList" style="padding:0 20px 24px"></div>
+
+  <!-- Change password -->
+  <div style="margin:0 20px 32px;padding:20px;background:var(--card);border:1px solid rgba(201,168,76,0.1);clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)">
+    <div style="font-size:11px;letter-spacing:3px;color:var(--gold);margin-bottom:14px">שינוי סיסמה</div>
+    <input id="newPass1" type="password" placeholder="סיסמה חדשה" class="form-input" style="margin-bottom:10px">
+    <input id="newPass2" type="password" placeholder="אימות סיסמה" class="form-input" style="margin-bottom:14px">
+    <button onclick="changeAdminPass()" style="background:transparent;border:1px solid rgba(201,168,76,0.3);color:var(--gold);padding:12px 24px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;letter-spacing:2px;width:100%">עדכן סיסמה</button>
+    <div id="passChangeMsg" style="font-size:12px;margin-top:8px;min-height:16px;text-align:center"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ HOME ═══════════════ -->
+<div class="screen" id="screen-home">
+  <div class="topbar">
+    <div class="topbar-logo">GM</div>
+    <div style="font-size:11px;color:var(--grey);letter-spacing:2px">המספרה</div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" style="width:33%"></div></div>
+
+  <div class="home-hero">
+    <div class="home-hero-tag">✦ שלב 1 מתוך 3</div>
+    <h1>בחר<br><span>שירות</span></h1>
+    <div class="home-hero-bar"></div>
+  </div>
+
+  <div class="services-label">SERVICES</div>
+  <div class="services-grid">
+    <div class="service-card" onclick="selectService(this, 'תספורת', 60, '30 דק׳')" data-service="תספורת">
+      <div class="service-check">✓</div>
+      <span class="service-icon">✂️</span>
+      <div class="service-name">תספורת</div>
+      <div class="service-duration">⏱ 30 דקות</div>
+      <div class="service-price">₪60</div>
+    </div>
+    <div class="service-card" onclick="selectService(this, 'זקן', 50, '20 דק׳')" data-service="זקן">
+      <div class="service-check">✓</div>
+      <span class="service-icon">🪒</span>
+      <div class="service-name">זקן</div>
+      <div class="service-duration">⏱ 20 דקות</div>
+      <div class="service-price">₪50</div>
+    </div>
+    <div class="service-card" style="grid-column:1/-1" onclick="selectService(this, 'תספורת + זקן', 100, '50 דק׳')" data-service="combo">
+      <div class="service-check">✓</div>
+      <span class="service-icon">✂️🪒</span>
+      <div class="service-name">קומבו — תספורת + זקן</div>
+      <div class="service-duration">⏱ 50 דקות  •  חיסכון ₪10</div>
+      <div class="service-price">₪100 <small style="font-size:13px;color:var(--grey);font-weight:400;text-decoration:line-through">₪110</small></div>
+    </div>
+  </div>
+
+  <div class="ornament">✦ ✦ ✦</div>
+  <button class="cta-btn" id="nextBtn" onclick="goTo('date')">בחר תאריך ושעה ←</button>
+</div>
+
+<!-- ═══════════════ DATE ═══════════════ -->
+<div class="screen" id="screen-date">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('home')">← <span>חזור</span></button>
+    <div class="topbar-logo">GM</div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" style="width:66%"></div></div>
+
+  <div class="section-title">
+    <div style="font-size:11px;letter-spacing:4px;color:var(--gold);margin-bottom:6px">✦ שלב 2 מתוך 3</div>
+    <h2>בחר תאריך<br>ושעה</h2>
+  </div>
+
+  <div class="calendar-wrap">
+    <div class="cal-header">
+      <button class="cal-nav" onclick="changeMonth(-1)">›</button>
+      <div class="cal-month" id="calMonthLabel"></div>
+      <button class="cal-nav" onclick="changeMonth(1)">‹</button>
+    </div>
+    <div class="cal-days-header">
+      <div class="cal-day-name">א׳</div>
+      <div class="cal-day-name">ב׳</div>
+      <div class="cal-day-name">ג׳</div>
+      <div class="cal-day-name">ד׳</div>
+      <div class="cal-day-name">ה׳</div>
+      <div class="cal-day-name" style="color:#e63946">ו׳</div>
+      <div class="cal-day-name" style="color:#555">שב׳</div>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+  </div>
+
+  <div class="time-section">
+    <h3 id="timeSectionTitle" style="display:none">שעות פנויות</h3>
+  </div>
+  <div class="slots-grid" id="slotsGrid"></div>
+
+  <button class="cta-btn" id="nextBtn2" onclick="goTo('details')">המשך לפרטים ←</button>
+</div>
+
+<!-- ═══════════════ DETAILS ═══════════════ -->
+<div class="screen" id="screen-details">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('date')">← <span>חזור</span></button>
+    <div class="topbar-logo">GM</div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" style="width:90%"></div></div>
+
+  <div class="section-title">
+    <div style="font-size:11px;letter-spacing:4px;color:var(--gold);margin-bottom:6px">✦ שלב 3 מתוך 3</div>
+    <h2>פרטים<br>אישיים</h2>
+  </div>
+
+  <div class="form-wrap">
+    <div class="booking-summary" id="summaryBox">
+      <h3>סיכום הזמנה</h3>
+      <div class="summary-row"><span>שירות</span><span id="sum-service">—</span></div>
+      <div class="summary-row"><span>תאריך</span><span id="sum-date">—</span></div>
+      <div class="summary-row"><span>שעה</span><span id="sum-time">—</span></div>
+      <div class="summary-row total"><span>לתשלום</span><span id="sum-price">—</span></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">שם מלא</label>
+      <input class="form-input" id="inp-name" type="text" placeholder="ישראל ישראלי" autocomplete="name">
+    </div>
+    <div class="form-group">
+      <label class="form-label">מספר טלפון</label>
+      <input class="form-input" id="inp-phone" type="tel" placeholder="050-0000000" autocomplete="tel" dir="ltr">
+    </div>
+    <div class="form-group">
+      <label class="form-label">אימייל</label>
+      <input class="form-input" id="inp-email" type="email" placeholder="israel@gmail.com" autocomplete="email" dir="ltr">
+      <div style="font-size:11px;color:var(--grey);margin-top:6px;padding-right:4px">✉️ אישור התור ישלח לכתובת זו</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">הערות (אופציונלי)</label>
+      <input class="form-input" id="inp-notes" type="text" placeholder="משהו מיוחד שכדאי לדעת...">
+    </div>
+
+    <button class="cta-btn enabled" onclick="confirmBooking()">אשר הזמנה ✓</button>
+  </div>
+</div>
+
+<!-- ═══════════════ SUCCESS ═══════════════ -->
+<div class="screen" id="screen-success">
+  <div class="success-icon">✓</div>
+  <div class="success-gm">GM</div>
+  <div class="success-title">ההזמנה אושרה! 🎉</div>
+  <div class="success-sub" id="successMsg">נשלח SMS לאישור<br>מחכים לך!</div>
+  <div class="success-card">
+    <div class="success-confirm-num" id="confirmNum">אישור #GM-0000</div>
+    <div class="success-detail" id="suc-service"></div>
+    <div class="success-detail" id="suc-datetime"></div>
+    <div class="success-detail" id="suc-name"></div>
+    <div style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);">
+      <div style="font-size:11px;color:var(--grey);letter-spacing:2px;margin-bottom:4px">לתשלום במקום</div>
+      <div style="font-size:28px;font-family:'Bebas Neue',sans-serif;color:var(--gold);letter-spacing:2px" id="suc-price"></div>
+    </div>
+  </div>
+  <button onclick="addToCalendar()" style="margin-bottom:12px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.4);color:var(--gold);padding:16px 40px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:1px;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);width:100%;max-width:280px;transition:all 0.2s">
+    📅 הוסף ליומן הטלפון
+  </button>
+  <div style="font-size:11px;color:#444;margin-bottom:16px;letter-spacing:1px">⏰ תישלח תזכורת שעה לפני התור</div>
+  <div id="emailSentMsg" style="font-size:12px;color:#2ecc71;margin-bottom:16px;min-height:18px"></div>
+  <button onclick="openWhatsAppAdmin()" style="margin-bottom:20px;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.4);color:#25d366;padding:14px 32px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:1px;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);width:100%;max-width:280px">
+    💬 שלח פרטים למספרה בוואטסאפ
+  </button>
+  <button class="new-booking-btn" onclick="newBooking()" style="margin-bottom:32px">הזמנה חדשה +</button>
+</div>
+
+<script>
+// ─── STATE ───
+const state = {
+  service: null,
+  servicePrice: 0,
+  serviceDuration: '',
+  selectedDate: null,
+  selectedTime: null,
+  currentMonth: new Date().getMonth(),
+  currentYear: new Date().getFullYear()
+};
+
+const HEBREW_MONTHS = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+const HEBREW_DAYS_SHORT = ['א','ב','ג','ד','ה','ו','ש'];
+
+// Simulate taken slots per date (in real app = from server)
+function getTakenSlots(dateStr) {
+  const map = {
+    '0': ['09:00','11:00','14:00'],
+    '1': ['10:00','12:00','16:00'],
+    '2': ['09:30','13:00'],
+    '3': ['10:00','11:30','15:30'],
+    '4': ['09:00','10:00','16:00','17:00'],
+  };
+  const d = new Date(dateStr).getDay();
+  return map[d % 5] || [];
+}
+
+// ─── SCREENS ───
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+  window.scrollTo(0, 0);
+  if (id === 'date') renderCalendar();
+  if (id === 'details') fillSummary();
+}
+
+// ─── SERVICE SELECT ───
+function selectService(el, name, price, duration) {
+  document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  state.service = name;
+  state.servicePrice = price;
+  state.serviceDuration = duration;
+  document.getElementById('nextBtn').classList.add('enabled');
+}
+
+// ─── CALENDAR ───
+function renderCalendar() {
+  const { currentMonth: m, currentYear: y } = state;
+  document.getElementById('calMonthLabel').textContent = HEBREW_MONTHS[m] + ' ' + y;
+
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  const firstDay = new Date(y, m, 1).getDay(); // 0=sun
+  const daysInMonth = new Date(y, m + 1, 0).getDate();
+
+  for (let i = 0; i < firstDay; i++) {
+    const empty = document.createElement('div');
+    empty.className = 'cal-cell empty';
+    grid.appendChild(empty);
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const cell = document.createElement('div');
+    const date = new Date(y, m, d);
+    const dayOfWeek = date.getDay();
+    const isSat = dayOfWeek === 6;
+    const isPast = date < today;
+
+    cell.className = 'cal-cell';
+    cell.textContent = d;
+
+    if (isPast) { cell.classList.add('past'); }
+    else if (isSat) { cell.classList.add('closed'); }
+    else {
+      cell.classList.add('available');
+      const dateStr = date.toISOString().split('T')[0];
+      if (state.selectedDate === dateStr) cell.classList.add('selected');
+      if (date.toDateString() === today.toDateString()) cell.classList.add('today');
+      cell.onclick = () => selectDate(dateStr, cell);
+    }
+    grid.appendChild(cell);
+  }
+}
+
+function changeMonth(dir) {
+  state.currentMonth += dir;
+  if (state.currentMonth < 0) { state.currentMonth = 11; state.currentYear--; }
+  if (state.currentMonth > 11) { state.currentMonth = 0; state.currentYear++; }
+  state.selectedDate = null;
+  state.selectedTime = null;
+  document.getElementById('slotsGrid').innerHTML = '';
+  document.getElementById('timeSectionTitle').style.display = 'none';
+  document.getElementById('nextBtn2').classList.remove('enabled');
+  renderCalendar();
+}
+
+function selectDate(dateStr, cell) {
+  document.querySelectorAll('.cal-cell').forEach(c => c.classList.remove('selected'));
+  cell.classList.add('selected');
+  state.selectedDate = dateStr;
+  state.selectedTime = null;
+  document.getElementById('nextBtn2').classList.remove('enabled');
+  renderSlots(dateStr);
+}
+
+function renderSlots(dateStr) {
+  const taken = getTakenSlots(dateStr);
+  const allSlots = ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30'];
+  const grid = document.getElementById('slotsGrid');
+  const title = document.getElementById('timeSectionTitle');
+
+  // Show day label
+  const d = new Date(dateStr);
+  const dayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+  title.textContent = `שעות פנויות — יום ${dayNames[d.getDay()]}`;
+  title.style.display = 'block';
+
+  grid.innerHTML = '';
+  allSlots.forEach(slot => {
+    const btn = document.createElement('button');
+    btn.className = 'slot-btn' + (taken.includes(slot) ? ' taken' : '');
+    btn.textContent = slot;
+    if (!taken.includes(slot)) {
+      btn.onclick = () => {
+        document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        state.selectedTime = slot;
+        document.getElementById('nextBtn2').classList.add('enabled');
+      };
+      if (state.selectedTime === slot) btn.classList.add('selected');
+    }
+    grid.appendChild(btn);
+  });
+}
+
+// ─── SUMMARY ───
+function fillSummary() {
+  const d = new Date(state.selectedDate);
+  const dayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+  const months = HEBREW_MONTHS;
+  const dateLabel = `יום ${dayNames[d.getDay()]}, ${d.getDate()} ב${months[d.getMonth()]}`;
+
+  document.getElementById('sum-service').textContent = state.service;
+  document.getElementById('sum-date').textContent = dateLabel;
+  document.getElementById('sum-time').textContent = state.selectedTime;
+  document.getElementById('sum-price').textContent = `₪${state.servicePrice}`;
+}
+
+// ─── CONFIRM ───
+function confirmBooking() {
+  const name = document.getElementById('inp-name').value.trim();
+  const phone = document.getElementById('inp-phone').value.trim();
+  const email = document.getElementById('inp-email').value.trim();
+  const notes = document.getElementById('inp-notes').value.trim();
+  if (!name) { document.getElementById('inp-name').focus(); shake('inp-name'); return; }
+  if (!phone) { document.getElementById('inp-phone').focus(); shake('inp-phone'); return; }
+  if (!email || !email.includes('@')) { document.getElementById('inp-email').focus(); shake('inp-email'); return; }
+
+  const d = new Date(state.selectedDate);
+  const dayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+  const months = HEBREW_MONTHS;
+  const dateLabel = `יום ${dayNames[d.getDay()]}, ${d.getDate()} ב${months[d.getMonth()]}`;
+  const confirmNum = 'GM-' + Math.floor(1000 + Math.random() * 9000);
+
+  // Store booking details for notifications
+  state.lastBooking = { name, phone, email, notes, dateLabel, confirmNum };
+
+  document.getElementById('confirmNum').textContent = `אישור #${confirmNum}`;
+  document.getElementById('suc-service').innerHTML = `${state.service} <small>${state.serviceDuration}</small>`;
+  document.getElementById('suc-datetime').innerHTML = `${dateLabel} <small>שעה ${state.selectedTime}</small>`;
+  document.getElementById('suc-name').innerHTML = `${name} <small>${phone}</small>`;
+  document.getElementById('suc-price').textContent = `₪${state.servicePrice}`;
+  document.getElementById('successMsg').innerHTML = `תודה ${name}! 🎉<br>מחכים לך ב-GM המספרה`;
+
+  // Send confirmation email
+  sendConfirmationEmail({ name, email, phone, notes, dateLabel, confirmNum,
+    service: state.service, time: state.selectedTime, price: state.servicePrice });
+
+  goTo('success');
+}
+
+function shake(id) {
+  const el = document.getElementById(id);
+  el.style.animation = 'none';
+  el.style.borderColor = '#e63946';
+  setTimeout(() => { el.style.borderColor = ''; }, 1500);
+}
+
+// ─── NEW BOOKING ───
+function newBooking() {
+  state.service = null; state.servicePrice = 0;
+  state.selectedDate = null; state.selectedTime = null;
+  document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('nextBtn').classList.remove('enabled');
+  document.getElementById('inp-name').value = '';
+  document.getElementById('inp-phone').value = '';
+  document.getElementById('inp-email').value = '';
+  document.getElementById('inp-notes').value = '';
+  goTo('home');
+}
+
+// ─── ADD TO CALENDAR (ICS) ───
+function addToCalendar() {
+  const name = document.getElementById('inp-name').value.trim() || 'לקוח';
+  const dateStr = state.selectedDate; // e.g. "2026-04-10"
+  const time = state.selectedTime;    // e.g. "10:30"
+  const [h, m] = time.split(':').map(Number);
+  const durationMins = state.serviceDuration.includes('50') ? 50 : state.serviceDuration.includes('30') ? 30 : 20;
+
+  // Build start/end in ICS format
+  const pad = n => String(n).padStart(2,'0');
+  const d = new Date(dateStr);
+  const y = d.getFullYear();
+  const mo = pad(d.getMonth()+1);
+  const day = pad(d.getDate());
+  const startStr = `${y}${mo}${day}T${pad(h)}${pad(m)}00`;
+  const endDate = new Date(d);
+  endDate.setHours(h, m + durationMins);
+  const endStr = `${y}${mo}${day}T${pad(endDate.getHours())}${pad(endDate.getMinutes())}00`;
+
+  const ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'BEGIN:VEVENT',
+    `SUMMARY:✂️ תור ב-GM המספרה`,
+    `DESCRIPTION:שירות: ${state.service}\nמחיר: ₪${state.servicePrice}\nכתובת: GM המספרה`,
+    `DTSTART:${startStr}`,
+    `DTEND:${endStr}`,
+    'LOCATION:GM המספרה',
+    'BEGIN:VALARM',
+    'TRIGGER:-PT60M',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:תזכורת: תור ב-GM המספרה בעוד שעה! ✂️',
+    'END:VALARM',
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].join('\r\n');
+
+  const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'tور-GM.ics';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ─── ADMIN ───
+const ADMIN_PASS_KEY = 'gm_admin_pass';
+function getAdminPass() {
+  return localStorage.getItem(ADMIN_PASS_KEY) || 'gm2024';
+}
+function toggleAdminLogin() {
+  const box = document.getElementById('adminLoginBox');
+  box.style.display = box.style.display === 'none' ? 'block' : 'none';
+  if (box.style.display === 'block') document.getElementById('adminPassInput').focus();
+}
+function checkAdminPass() {
+  const val = document.getElementById('adminPassInput').value;
+  const err = document.getElementById('adminErrMsg');
+  if (val === getAdminPass()) {
+    document.getElementById('adminPassInput').value = '';
+    document.getElementById('adminLoginBox').style.display = 'none';
+    err.textContent = '';
+    initAdminPanel();
+    goTo('admin');
+  } else {
+    err.textContent = 'סיסמה שגויה';
+    document.getElementById('adminPassInput').value = '';
+    setTimeout(() => { err.textContent = ''; }, 2000);
+  }
+}
+function changeAdminPass() {
+  const p1 = document.getElementById('newPass1').value.trim();
+  const p2 = document.getElementById('newPass2').value.trim();
+  const msg = document.getElementById('passChangeMsg');
+  if (!p1) { msg.style.color='#e63946'; msg.textContent='הכנס סיסמה חדשה'; return; }
+  if (p1 !== p2) { msg.style.color='#e63946'; msg.textContent='הסיסמאות לא תואמות'; return; }
+  localStorage.setItem(ADMIN_PASS_KEY, p1);
+  document.getElementById('newPass1').value = '';
+  document.getElementById('newPass2').value = '';
+  msg.style.color = '#2ecc71';
+  msg.textContent = '✓ הסיסמה עודכנה בהצלחה';
+  setTimeout(() => { msg.textContent = ''; }, 3000);
+}
+
+// Demo bookings with real dates
+function getDemoBookings(dateStr) {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const tomorrow = new Date(today); tomorrow.setDate(today.getDate()+1);
+  const selected = new Date(dateStr); selected.setHours(0,0,0,0);
+
+  const all = [
+    { name:'דוד כהן', service:'קומבו', time:'09:00', dateObj: today, phone:'052-1234567', price:100 },
+    { name:'יוסי לוי', service:'תספורת', time:'10:30', dateObj: today, phone:'054-9876543', price:60 },
+    { name:'אמיר בן דוד', service:'זקן', time:'12:00', dateObj: today, phone:'050-5554433', price:50 },
+    { name:'רון שפירא', service:'תספורת', time:'14:00', dateObj: tomorrow, phone:'053-7778899', price:60 },
+    { name:'גל מזרחי', service:'קומבו', time:'11:00', dateObj: tomorrow, phone:'058-3334455', price:100 },
+  ];
+  return all.filter(b => b.dateObj.toDateString() === selected.toDateString());
+}
+
+function initAdminPanel() {
+  const today = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  const todayStr = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`;
+  document.getElementById('adminDatePicker').value = todayStr;
+
+  // Today stats
+  const todayBookings = getDemoBookings(todayStr);
+  document.getElementById('adminTodayCount').textContent = todayBookings.length;
+  document.getElementById('adminTodayRevenue').textContent = '₪' + todayBookings.reduce((s,b) => s+b.price, 0);
+
+  filterAdminByDate();
+}
+
+function setAdminToday() {
+  const today = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('adminDatePicker').value = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`;
+  filterAdminByDate();
+}
+function setAdminTomorrow() {
+  const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate()+1);
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('adminDatePicker').value = `${tomorrow.getFullYear()}-${pad(tomorrow.getMonth()+1)}-${pad(tomorrow.getDate())}`;
+  filterAdminByDate();
+}
+
+function filterAdminByDate() {
+  const dateStr = document.getElementById('adminDatePicker').value;
+  if (!dateStr) return;
+
+  const d = new Date(dateStr);
+  const dayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+  const label = `יום ${dayNames[d.getDay()]}, ${d.getDate()} ב${HEBREW_MONTHS[d.getMonth()]}`;
+  document.getElementById('adminDateLabel').textContent = label;
+
+  const bookings = getDemoBookings(dateStr);
+  const list = document.getElementById('adminBookingsList');
+
+  if (bookings.length === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:32px;color:var(--grey);font-size:14px">אין תורים ביום זה</div>`;
+    return;
+  }
+
+  list.innerHTML = bookings
+    .sort((a,b) => a.time.localeCompare(b.time))
+    .map(b => `
+    <div style="background:var(--card);border:1px solid rgba(201,168,76,0.12);padding:16px;margin-bottom:10px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-weight:700;font-size:15px;margin-bottom:4px">${b.name}</div>
+        <div style="font-size:12px;color:var(--grey)">${b.service} · ${b.time}</div>
+        <div style="font-size:11px;color:#555;margin-top:2px">${b.phone}</div>
+      </div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold)">₪${b.price}</div>
+    </div>
+  `).join('');
+}
+
+// ─── EMAIL (Brevo via Netlify Function) ───
+async function sendConfirmationEmail({ name, email, phone, notes, dateLabel, confirmNum, service, time, price }) {
+  const msgEl = document.getElementById('emailSentMsg');
+  try {
+    const res = await fetch('/.netlify/functions/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, phone, notes, dateLabel, confirmNum, service, time, price })
+    });
+    if (res.ok) {
+      if (msgEl) msgEl.textContent = `✉️ אישור נשלח למייל: ${email}`;
+    } else {
+      console.warn('Email send failed:', await res.text());
+    }
+  } catch(e) {
+    console.warn('Email error:', e);
+  }
+}
+
+// ─── WHATSAPP NOTIFICATION (for admin) ───
+function openWhatsAppAdmin() {
+  const b = state.lastBooking;
+  if (!b) return;
+  const ADMIN_PHONE = '972507990665';
+  const msg = encodeURIComponent(
+    `💈 *תור חדש ב-GM המספרה*
+
+` +
+    `👤 ${b.name}
+` +
+    `📱 ${b.phone}
+` +
+    `✉️ ${b.email}
+` +
+    `✂️ ${state.service}
+` +
+    `📅 ${b.dateLabel} | ${state.selectedTime}
+` +
+    `💰 ₪${state.servicePrice}
+` +
+    `🔖 אישור #${b.confirmNum}` +
+    (b.notes ? `
+📝 ${b.notes}` : '')
+  );
+  window.open(`https://wa.me/${ADMIN_PHONE}?text=${msg}`, '_blank');
+}
+
+// ─── PWA INSTALL ───
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installBanner').style.display = 'flex';
+});
+function triggerInstall() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => {
+      document.getElementById('installBanner').style.display = 'none';
+      deferredPrompt = null;
+    });
+  }
+}
+
+// Init
+renderCalendar();
+</script>
+</body>
+</html>
