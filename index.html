@@ -888,18 +888,18 @@
 <script>
 // ─── DEFAULT DATA ───
 const DEFAULT_SERVICES = [
-  { id:1, name:'תספורת', icon:'✂️', price:60, duration:30 },
-  { id:2, name:'זקן', icon:'🪒', price:50, duration:20 },
-  { id:3, name:'קומבו — תספורת + זקן', icon:'✂️🪒', price:100, duration:50 },
+  { id:1, name:'תספורת', icon:'✂️', price:60, duration:30, location:'both' },
+  { id:2, name:'זקן', icon:'🪒', price:50, duration:20, location:'shop' },
+  { id:3, name:'קומבו — תספורת + זקן', icon:'✂️🪒', price:100, duration:50, location:'shop' },
 ];
 const DEFAULT_HOURS = [
-  { day:0, name:'ראשון', open:true, from:'09:00', to:'18:00', breaks:[] },
-  { day:1, name:'שני', open:true, from:'09:00', to:'18:00', breaks:[] },
-  { day:2, name:'שלישי', open:true, from:'09:00', to:'18:00', breaks:[] },
-  { day:3, name:'רביעי', open:true, from:'09:00', to:'18:00', breaks:[] },
-  { day:4, name:'חמישי', open:true, from:'09:00', to:'18:00', breaks:[] },
-  { day:5, name:'שישי', open:true, from:'09:00', to:'14:00', breaks:[] },
-  { day:6, name:'שבת', open:false, from:'09:00', to:'18:00', breaks:[] },
+  { day:0, name:'ראשון', open:true, from:'09:00', to:'18:00', breaks:[], homeFrom:'', homeTo:'' },
+  { day:1, name:'שני', open:true, from:'09:00', to:'18:00', breaks:[], homeFrom:'', homeTo:'' },
+  { day:2, name:'שלישי', open:true, from:'09:00', to:'18:00', breaks:[], homeFrom:'', homeTo:'' },
+  { day:3, name:'רביעי', open:true, from:'09:00', to:'18:00', breaks:[], homeFrom:'', homeTo:'' },
+  { day:4, name:'חמישי', open:true, from:'09:00', to:'18:00', breaks:[], homeFrom:'', homeTo:'' },
+  { day:5, name:'שישי', open:true, from:'09:00', to:'14:00', breaks:[], homeFrom:'', homeTo:'' },
+  { day:6, name:'שבת', open:false, from:'09:00', to:'18:00', breaks:[], homeFrom:'', homeTo:'' },
 ];
 
 function getServices() {
@@ -942,6 +942,7 @@ const state = {
   isHomeVisit: false,
   selectedDate: null,
   selectedTime: null,
+  selectedSlotIsHome: false,
   currentMonth: new Date().getMonth(),
   currentYear: new Date().getFullYear()
 };
@@ -958,17 +959,25 @@ function parseDateLocal(dateStr) {
 }
 
 // ─── RENDER SERVICES ───
-function renderServicesGrid() {
+function renderServicesGrid(filterHome=false) {
   const services = getServices();
   const homeVisits = getHomeVisits();
-  const today = new Date().toISOString().split('T')[0];
-  const hasHomeVisits = homeVisits.some(v => v.date >= today);
+  const hours = getWorkingHours();
+  const today = new Date();
+  const todayStr = localDateStr(today.getFullYear(), today.getMonth(), today.getDate());
+  const hasHomeVisits = homeVisits.some(v => v.date >= todayStr) ||
+    hours.some(h => h.open && h.homeFrom && h.homeTo);
   const grid = document.getElementById('servicesGrid');
 
-  let html = services.map((s, i) => `
-    <div class="service-card ${i === services.length-1 && services.length % 2 !== 0 ? '' : ''}"
-      onclick="selectService(this, '${s.name}', ${s.price}, '${s.duration} דק׳', false)"
-      style="${services.length % 2 !== 0 && i === services.length-1 ? 'grid-column:1/-1' : ''}">
+  // Filter services based on mode
+  const filteredServices = filterHome
+    ? services.filter(s => s.location === 'both' || s.location === 'home')
+    : services;
+
+  let html = filteredServices.map((s, i) => `
+    <div class="service-card"
+      onclick="selectService(this, '${s.name}', ${s.price}, '${s.duration} דק׳', ${filterHome})"
+      style="${filteredServices.length % 2 !== 0 && i === filteredServices.length-1 ? 'grid-column:1/-1' : ''}">
       <div class="service-check">✓</div>
       <span class="service-icon">${s.icon}</span>
       <div class="service-name">${s.name}</div>
@@ -977,31 +986,41 @@ function renderServicesGrid() {
     </div>
   `).join('');
 
-  if (hasHomeVisits) {
+  if (!filterHome && hasHomeVisits) {
     html += `
       <div class="service-card" style="grid-column:1/-1;border-color:rgba(100,180,255,0.3);background:rgba(100,180,255,0.05)"
-        onclick="selectHomeVisit(this)">
+        onclick="selectHomeVisitService(this)">
         <div class="service-check">✓</div>
         <span class="service-icon">🏠</span>
-        <div class="service-name" style="color:#7ec8ff">תספורת בבית</div>
+        <div class="service-name" style="color:#7ec8ff">עד בית הלקוח</div>
         <div class="service-duration">⏱ הגעה אליך</div>
-        <div class="service-price" style="color:#7ec8ff">₪${services.find(s=>s.name==='תספורת')?.price || 60}+</div>
+        <div class="service-price" style="color:#7ec8ff">₪${services.find(s=>s.location==='both')?.price || services[0]?.price || 60}+</div>
       </div>
     `;
   }
   grid.innerHTML = html;
+
+  // Show note if home visit filtered
+  if (filterHome) {
+    const note = document.createElement('div');
+    note.style.cssText = 'grid-column:1/-1;font-size:11px;color:#7ec8ff;text-align:center;padding:8px 0;letter-spacing:1px';
+    note.textContent = '🏠 שירותים זמינים בהגעה עד בית הלקוח';
+    grid.prepend(note);
+  }
 }
 
-function selectHomeVisit(el) {
-  document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
-  el.classList.add('selected');
-  const services = getServices();
-  const haircut = services.find(s => s.name === 'תספורת') || services[0];
-  state.service = 'תספורת בבית 🏠';
-  state.servicePrice = haircut.price;
-  state.serviceDuration = haircut.duration + ' דק׳';
+function selectHomeVisitService(el) {
+  // Switch to home visit mode — show only home-compatible services
   state.isHomeVisit = true;
-  document.getElementById('nextBtn').classList.add('enabled');
+  const services = getServices();
+  const homeServices = services.filter(s => s.location === 'both' || s.location === 'home');
+  if (homeServices.length === 1) {
+    // Auto-select if only one
+    selectService(el, homeServices[0].name, homeServices[0].price, homeServices[0].duration + ' דק׳', true);
+  } else {
+    // Re-render with only home services
+    renderServicesGrid(true);
+  }
 }
 
 // ─── TAKEN SLOTS from bookings ───
@@ -1060,7 +1079,10 @@ function renderCalendar() {
     const isPast = date < today;
     const dateStr = localDateStr(y, m, d);
     const workDay = hours[dayOfWeek];
-    const isHomeVisitDay = state.isHomeVisit && homeVisits.some(v => v.date === dateStr);
+    const isHomeVisitDay = state.isHomeVisit && (
+      homeVisits.some(v => v.date === dateStr) ||
+      (workDay && workDay.open && workDay.homeFrom && workDay.homeTo)
+    );
     const isWorkDay = !state.isHomeVisit && workDay && workDay.open && !isDateBlocked(dateStr);
     const isAvailable = isHomeVisitDay || isWorkDay;
 
@@ -1112,36 +1134,52 @@ function renderSlots(dateStr) {
   title.textContent = `שעות פנויות — יום ${dayNames[dayOfWeek]}`;
   title.style.display = 'block';
 
-  // Get time range
-  let fromTime = '09:00', toTime = '18:00';
-  if (state.isHomeVisit) {
-    const visit = homeVisits.find(v => v.date === dateStr);
-    if (visit) { fromTime = visit.from; toTime = visit.to; }
-  } else {
-    const workDay = hours[dayOfWeek];
-    if (workDay) { fromTime = workDay.from; toTime = workDay.to; }
+  const workDay = hours[dayOfWeek];
+  const specificVisit = homeVisits.find(v => v.date === dateStr);
+
+  // Build slot list with type: 'shop' or 'home'
+  const allSlots = [];
+
+  function addSlots(fromTime, toTime, type, breaksList) {
+    if (!fromTime || !toTime) return;
+    const [fh, fm] = fromTime.split(':').map(Number);
+    const [th, tm] = toTime.split(':').map(Number);
+    let cur = fh * 60 + fm;
+    const end = th * 60 + tm;
+    while (cur < end) {
+      const hh = String(Math.floor(cur/60)).padStart(2,'0');
+      const mm = String(cur%60).padStart(2,'0');
+      const slotStr = `${hh}:${mm}`;
+      const inBreak = (breaksList||[]).some(br => {
+        const [bfh, bfm] = br.from.split(':').map(Number);
+        const [bth, btm] = br.to.split(':').map(Number);
+        return cur >= bfh*60+bfm && cur < bth*60+btm;
+      });
+      if (!inBreak && !allSlots.find(s => s.time === slotStr)) {
+        allSlots.push({ time: slotStr, type });
+      }
+      cur += 30;
+    }
   }
 
-  // Generate slots every 30 min, skip breaks
-  const allSlots = [];
-  const breaks = (!state.isHomeVisit && hours[dayOfWeek]) ? (hours[dayOfWeek].breaks || []) : [];
-  const [fh, fm] = fromTime.split(':').map(Number);
-  const [th, tm] = toTime.split(':').map(Number);
-  let cur = fh * 60 + fm;
-  const end = th * 60 + tm;
-  while (cur < end) {
-    const hh = String(Math.floor(cur/60)).padStart(2,'0');
-    const mm = String(cur%60).padStart(2,'0');
-    const slotStr = `${hh}:${mm}`;
-    // Check if slot is in a break
-    const inBreak = breaks.some(br => {
-      const [bfh, bfm] = br.from.split(':').map(Number);
-      const [bth, btm] = br.to.split(':').map(Number);
-      return cur >= bfh*60+bfm && cur < bth*60+btm;
-    });
-    if (!inBreak) allSlots.push(slotStr);
-    cur += 30;
+  if (state.isHomeVisit) {
+    // Home visit: specific date override OR weekly home hours
+    if (specificVisit) {
+      addSlots(specificVisit.from, specificVisit.to, 'home', []);
+    } else if (workDay && workDay.homeFrom && workDay.homeTo) {
+      addSlots(workDay.homeFrom, workDay.homeTo, 'home', []);
+    }
+  } else {
+    // Regular: shop hours + weekly home hours (both shown)
+    if (workDay && workDay.open) {
+      addSlots(workDay.from, workDay.to, 'shop', workDay.breaks || []);
+      if (workDay.homeFrom && workDay.homeTo) {
+        addSlots(workDay.homeFrom, workDay.homeTo, 'home', []);
+      }
+    }
   }
+
+  allSlots.sort((a,b) => a.time.localeCompare(b.time));
 
   grid.innerHTML = '';
   if (allSlots.length === 0) {
@@ -1149,18 +1187,41 @@ function renderSlots(dateStr) {
     return;
   }
 
+  // Legend if mixed
+  const hasHome = allSlots.some(s => s.type === 'home');
+  const hasShop = allSlots.some(s => s.type === 'shop');
+  if (hasHome && hasShop && !state.isHomeVisit) {
+    const legend = document.createElement('div');
+    legend.style.cssText = 'display:flex;gap:16px;padding:0 0 12px;font-size:11px;color:var(--grey)';
+    legend.innerHTML = '<span>🏪 מספרה</span><span style="color:#7ec8ff">🏠 עד בית הלקוח</span>';
+    grid.appendChild(legend);
+  }
+
   allSlots.forEach(slot => {
     const btn = document.createElement('button');
-    btn.className = 'slot-btn' + (taken.includes(slot) ? ' taken' : '');
-    btn.textContent = slot;
-    if (!taken.includes(slot)) {
+    const isHome = slot.type === 'home';
+    btn.className = 'slot-btn' + (taken.includes(slot.time) ? ' taken' : '');
+    btn.textContent = slot.time;
+    btn.dataset.slotType = slot.type;
+    if (isHome && !taken.includes(slot.time)) {
+      btn.style.borderColor = 'rgba(100,180,255,0.3)';
+      btn.style.color = '#7ec8ff';
+    }
+    if (!taken.includes(slot.time)) {
       btn.onclick = () => {
         document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
-        state.selectedTime = slot;
+        state.selectedTime = slot.time;
+        state.selectedSlotIsHome = isHome;
+        // If not in home visit mode but chose home slot — update isHomeVisit
+        if (isHome && !state.isHomeVisit) {
+          state.isHomeVisit = true;
+        } else if (!isHome && state.isHomeVisit && !specificVisit) {
+          state.isHomeVisit = false;
+        }
         document.getElementById('nextBtn2').classList.add('enabled');
       };
-      if (state.selectedTime === slot) btn.classList.add('selected');
+      if (state.selectedTime === slot.time) btn.classList.add('selected');
     }
     grid.appendChild(btn);
   });
@@ -1262,7 +1323,7 @@ function autoFillCustomer() {
 function newBooking() {
   state.service = null; state.servicePrice = 0;
   state.selectedDate = null; state.selectedTime = null;
-  state.isHomeVisit = false;
+  state.isHomeVisit = false; state.selectedSlotIsHome = false;
   document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
   document.getElementById('nextBtn').classList.remove('enabled');
   document.getElementById('inp-name').value = '';
@@ -1347,7 +1408,7 @@ function renderAdminServices() {
       </div>
       <input value="${s.name}" onchange="updateService(${i},'name',this.value)"
         style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;margin-bottom:8px">
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
         <div>
           <div style="font-size:10px;color:var(--grey);margin-bottom:4px">מחיר ₪</div>
           <input type="number" value="${s.price}" onchange="updateService(${i},'price',+this.value)"
@@ -1364,6 +1425,14 @@ function renderAdminServices() {
             style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;text-align:center">
         </div>
       </div>
+      <div>
+        <div style="font-size:10px;color:var(--grey);margin-bottom:6px">מיקום שירות</div>
+        <div style="display:flex;gap:6px">
+          <button onclick="updateService(${i},'location','shop')" style="flex:1;padding:8px 4px;font-size:11px;cursor:pointer;font-family:'Heebo',sans-serif;border:1px solid ${(s.location||'shop')==='shop'?'var(--gold)':'rgba(201,168,76,0.2)'};background:${(s.location||'shop')==='shop'?'rgba(201,168,76,0.15)':'#111'};color:${(s.location||'shop')==='shop'?'var(--gold)':'var(--grey)'}">🏪 מספרה בלבד</button>
+          <button onclick="updateService(${i},'location','both')" style="flex:1;padding:8px 4px;font-size:11px;cursor:pointer;font-family:'Heebo',sans-serif;border:1px solid ${s.location==='both'?'#7ec8ff':'rgba(100,180,255,0.2)'};background:${s.location==='both'?'rgba(100,180,255,0.1)':'#111'};color:${s.location==='both'?'#7ec8ff':'var(--grey)'}">🏠 עד בית הלקוח</button>
+          <button onclick="updateService(${i},'location','home')" style="flex:1;padding:8px 4px;font-size:11px;cursor:pointer;font-family:'Heebo',sans-serif;border:1px solid ${s.location==='home'?'#7ec8ff':'rgba(100,180,255,0.2)'};background:${s.location==='home'?'rgba(100,180,255,0.1)':'#111'};color:${s.location==='home'?'#7ec8ff':'var(--grey)'}">🏠 עד בית בלבד</button>
+        </div>
+      </div>
     </div>
   `).join('');
 }
@@ -1372,6 +1441,7 @@ function updateService(i, field, val) {
   const services = getServices();
   services[i][field] = val;
   saveServices(services);
+  if (field === 'location') renderAdminServices();
 }
 
 function deleteService(i) {
@@ -1413,6 +1483,7 @@ function renderAdminHours() {
           style="width:18px;height:18px;accent-color:var(--gold);cursor:pointer">
         <div style="width:52px;font-size:13px;font-weight:600">${h.name}</div>
         ${h.open ? `
+        <span style="font-size:10px;color:var(--grey)">🏪</span>
         <input type="time" value="${h.from}" onchange="updateHour(${i},'from',this.value)"
           style="flex:1;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:8px;font-family:'Heebo',sans-serif;font-size:13px;outline:none;color-scheme:dark">
         <span style="color:var(--grey);font-size:12px">עד</span>
@@ -1421,7 +1492,19 @@ function renderAdminHours() {
         <button onclick="addBreak(${i})" title="הוסף הפסקה" style="background:rgba(255,165,0,0.1);border:1px solid rgba(255,165,0,0.3);color:orange;padding:6px 10px;font-size:13px;cursor:pointer;border-radius:2px">☕</button>
         ` : `<span style="color:#444;font-size:12px">סגור</span>`}
       </div>
-      ${h.open ? breaksHtml : ''}
+      ${h.open ? `
+      <div style="display:flex;align-items:center;gap:8px;margin-top:6px;padding:8px;background:rgba(100,180,255,0.04);border:1px solid rgba(100,180,255,0.12)">
+        <span style="font-size:11px;color:#7ec8ff;min-width:52px">🏠 בבית:</span>
+        <input type="time" value="${h.homeFrom||''}" onchange="updateHour(${i},'homeFrom',this.value)"
+          placeholder="--:--"
+          style="flex:1;background:#111;border:1px solid rgba(100,180,255,0.2);color:#7ec8ff;padding:6px;font-family:'Heebo',sans-serif;font-size:12px;outline:none;color-scheme:dark">
+        <span style="font-size:11px;color:var(--grey)">עד</span>
+        <input type="time" value="${h.homeTo||''}" onchange="updateHour(${i},'homeTo',this.value)"
+          placeholder="--:--"
+          style="flex:1;background:#111;border:1px solid rgba(100,180,255,0.2);color:#7ec8ff;padding:6px;font-family:'Heebo',sans-serif;font-size:12px;outline:none;color-scheme:dark">
+      </div>
+      ${breaksHtml}
+      ` : ''}
     </div>`;
   }).join('');
 }
