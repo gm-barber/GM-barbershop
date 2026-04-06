@@ -644,7 +644,7 @@
     <button onclick="switchAdminTab('bookings')" id="tab-bookings" style="background:none;border:none;color:var(--gold);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid var(--gold);white-space:nowrap">📋 תורים</button>
     <button onclick="switchAdminTab('services')" id="tab-services" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">✂️ שירותים</button>
     <button onclick="switchAdminTab('hours')" id="tab-hours" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🕐 שעות</button>
-    <button onclick="switchAdminTab('home')" id="tab-home" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🏠 הגעה לבית</button>
+    <button onclick="switchAdminTab('blocked')" id="tab-blocked" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🚫 חסימות</button>
     <button onclick="switchAdminTab('settings')" id="tab-settings" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">⚙️ הגדרות</button>
   </div>
 
@@ -685,31 +685,47 @@
   <!-- TAB: HOURS -->
   <div id="admintab-hours" style="display:none;flex:1;overflow-y:auto;padding:16px 20px">
     <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:4px">שעות עבודה</div>
-    <div style="font-size:12px;color:var(--grey);margin-bottom:20px">הגדר ימים ושעות פתיחה</div>
+    <div style="font-size:12px;color:var(--grey);margin-bottom:16px">הגדרות חוזרות כל שבוע אוטומטית</div>
     <div id="hoursAdminList"></div>
-    <button onclick="saveWorkingHours()" style="width:100%;background:var(--gold);color:var(--black);border:none;padding:16px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:16px;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)">שמור שעות עבודה</button>
+    <button onclick="saveWorkingHours()" style="width:100%;background:var(--gold);color:var(--black);border:none;padding:16px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:16px;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)">שמור שעות עבודה ✓</button>
     <div id="hoursSaveMsg" style="text-align:center;font-size:12px;color:#2ecc71;margin-top:8px;min-height:16px"></div>
+
+    <!-- Home visits in hours tab -->
+    <div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(201,168,76,0.15)">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#7ec8ff;margin-bottom:4px">🏠 הגעה לבית</div>
+      <div style="font-size:12px;color:var(--grey);margin-bottom:16px">תאריכים ספציפיים שבהם אתה מגיע ללקוחות</div>
+      <div id="homeVisitsList"></div>
+      <div style="background:var(--card);border:1px solid rgba(100,180,255,0.2);padding:16px;margin-top:8px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">
+        <div style="font-size:11px;color:#7ec8ff;letter-spacing:2px;margin-bottom:12px">הוסף תאריך הגעה לבית</div>
+        <input type="date" id="homeVisitDate" style="width:100%;background:#111;border:1px solid rgba(100,180,255,0.2);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;margin-bottom:10px;color-scheme:dark">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+          <div>
+            <div style="font-size:11px;color:var(--grey);margin-bottom:4px">משעה</div>
+            <input type="time" id="homeVisitFrom" style="width:100%;background:#111;border:1px solid rgba(100,180,255,0.2);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;color-scheme:dark">
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--grey);margin-bottom:4px">עד שעה</div>
+            <input type="time" id="homeVisitTo" style="width:100%;background:#111;border:1px solid rgba(100,180,255,0.2);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;color-scheme:dark">
+          </div>
+        </div>
+        <button onclick="addHomeVisitDate()" style="width:100%;background:rgba(100,180,255,0.15);border:1px solid rgba(100,180,255,0.4);color:#7ec8ff;padding:14px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">+ הוסף תאריך</button>
+      </div>
+    </div>
   </div>
 
-  <!-- TAB: HOME VISITS -->
-  <div id="admintab-home" style="display:none;flex:1;overflow-y:auto;padding:16px 20px">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:4px">הגעה לבית</div>
-    <div style="font-size:12px;color:var(--grey);margin-bottom:20px">הגדר תאריכים ושעות שבהם אתה מגיע ללקוחות בבית</div>
-    <div id="homeVisitsList"></div>
-    <div style="background:var(--card);border:1px solid rgba(201,168,76,0.2);padding:16px;margin-top:8px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">
-      <div style="font-size:11px;color:var(--gold);letter-spacing:2px;margin-bottom:12px">הוסף תאריך חדש</div>
-      <input type="date" id="homeVisitDate" style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;margin-bottom:10px;color-scheme:dark">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-        <div>
-          <div style="font-size:11px;color:var(--grey);margin-bottom:4px">משעה</div>
-          <input type="time" id="homeVisitFrom" style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;color-scheme:dark">
-        </div>
-        <div>
-          <div style="font-size:11px;color:var(--grey);margin-bottom:4px">עד שעה</div>
-          <input type="time" id="homeVisitTo" style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;color-scheme:dark">
-        </div>
-      </div>
-      <button onclick="addHomeVisitDate()" style="width:100%;background:var(--gold);color:var(--black);border:none;padding:14px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">הוסף תאריך</button>
+  <!-- TAB: BLOCKED DAYS -->
+  <div id="admintab-blocked" style="display:none;flex:1;overflow-y:auto;padding:16px 20px">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:4px">ימים חסומים</div>
+    <div style="font-size:12px;color:var(--grey);margin-bottom:16px">חופשות, מחלה, ואירועים — ניתן להגדיר מראש לכל עתיד</div>
+    <div id="blockedDaysList"></div>
+    <div style="background:var(--card);border:1px solid rgba(230,57,70,0.2);padding:16px;margin-top:8px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">
+      <div style="font-size:11px;color:#e63946;letter-spacing:2px;margin-bottom:12px">חסום יום / תקופה</div>
+      <input type="date" id="blockDateFrom" style="width:100%;background:#111;border:1px solid rgba(230,57,70,0.2);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;margin-bottom:8px;color-scheme:dark">
+      <div style="font-size:11px;color:var(--grey);margin-bottom:6px">עד תאריך (אופציונלי — ליום אחד השאר ריק)</div>
+      <input type="date" id="blockDateTo" style="width:100%;background:#111;border:1px solid rgba(230,57,70,0.2);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;margin-bottom:10px;color-scheme:dark">
+      <input type="text" id="blockReason" placeholder="סיבה (אופציונלי — חופשה, מחלה...)"
+        style="width:100%;background:#111;border:1px solid rgba(230,57,70,0.15);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:13px;outline:none;margin-bottom:12px">
+      <button onclick="addBlockedDay()" style="width:100%;background:rgba(230,57,70,0.12);border:1px solid rgba(230,57,70,0.4);color:#e63946;padding:14px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">חסום תאריך</button>
     </div>
   </div>
 
@@ -877,13 +893,13 @@ const DEFAULT_SERVICES = [
   { id:3, name:'קומבו — תספורת + זקן', icon:'✂️🪒', price:100, duration:50 },
 ];
 const DEFAULT_HOURS = [
-  { day:0, name:'ראשון', open:true, from:'09:00', to:'18:00' },
-  { day:1, name:'שני', open:true, from:'09:00', to:'18:00' },
-  { day:2, name:'שלישי', open:true, from:'09:00', to:'18:00' },
-  { day:3, name:'רביעי', open:true, from:'09:00', to:'18:00' },
-  { day:4, name:'חמישי', open:true, from:'09:00', to:'18:00' },
-  { day:5, name:'שישי', open:true, from:'09:00', to:'14:00' },
-  { day:6, name:'שבת', open:false, from:'09:00', to:'18:00' },
+  { day:0, name:'ראשון', open:true, from:'09:00', to:'18:00', breaks:[] },
+  { day:1, name:'שני', open:true, from:'09:00', to:'18:00', breaks:[] },
+  { day:2, name:'שלישי', open:true, from:'09:00', to:'18:00', breaks:[] },
+  { day:3, name:'רביעי', open:true, from:'09:00', to:'18:00', breaks:[] },
+  { day:4, name:'חמישי', open:true, from:'09:00', to:'18:00', breaks:[] },
+  { day:5, name:'שישי', open:true, from:'09:00', to:'14:00', breaks:[] },
+  { day:6, name:'שבת', open:false, from:'09:00', to:'18:00', breaks:[] },
 ];
 
 function getServices() {
@@ -903,6 +919,20 @@ function getHomeVisits() {
   catch(e) { return []; }
 }
 function saveHomeVisits(v) { localStorage.setItem('gm_home_visits', JSON.stringify(v)); }
+
+function getBlockedDays() {
+  try { return JSON.parse(localStorage.getItem('gm_blocked_days') || '[]'); }
+  catch(e) { return []; }
+}
+function saveBlockedDays(b) { localStorage.setItem('gm_blocked_days', JSON.stringify(b)); }
+
+function isDateBlocked(dateStr) {
+  const blocked = getBlockedDays();
+  return blocked.some(b => {
+    if (b.to) return dateStr >= b.from && dateStr <= b.to;
+    return dateStr === b.from;
+  });
+}
 
 // ─── STATE ───
 const state = {
@@ -1031,7 +1061,7 @@ function renderCalendar() {
     const dateStr = localDateStr(y, m, d);
     const workDay = hours[dayOfWeek];
     const isHomeVisitDay = state.isHomeVisit && homeVisits.some(v => v.date === dateStr);
-    const isWorkDay = !state.isHomeVisit && workDay && workDay.open;
+    const isWorkDay = !state.isHomeVisit && workDay && workDay.open && !isDateBlocked(dateStr);
     const isAvailable = isHomeVisitDay || isWorkDay;
 
     cell.className = 'cal-cell';
@@ -1092,8 +1122,9 @@ function renderSlots(dateStr) {
     if (workDay) { fromTime = workDay.from; toTime = workDay.to; }
   }
 
-  // Generate slots every 30 min
+  // Generate slots every 30 min, skip breaks
   const allSlots = [];
+  const breaks = (!state.isHomeVisit && hours[dayOfWeek]) ? (hours[dayOfWeek].breaks || []) : [];
   const [fh, fm] = fromTime.split(':').map(Number);
   const [th, tm] = toTime.split(':').map(Number);
   let cur = fh * 60 + fm;
@@ -1101,7 +1132,14 @@ function renderSlots(dateStr) {
   while (cur < end) {
     const hh = String(Math.floor(cur/60)).padStart(2,'0');
     const mm = String(cur%60).padStart(2,'0');
-    allSlots.push(`${hh}:${mm}`);
+    const slotStr = `${hh}:${mm}`;
+    // Check if slot is in a break
+    const inBreak = breaks.some(br => {
+      const [bfh, bfm] = br.from.split(':').map(Number);
+      const [bth, btm] = br.to.split(':').map(Number);
+      return cur >= bfh*60+bfm && cur < bth*60+btm;
+    });
+    if (!inBreak) allSlots.push(slotStr);
     cur += 30;
   }
 
@@ -1283,15 +1321,18 @@ function addToCalendar() {
 
 // ─── ADMIN TABS ───
 function switchAdminTab(tab) {
-  ['bookings','services','hours','home','settings'].forEach(t => {
-    document.getElementById('admintab-' + t).style.display = t === tab ? 'block' : 'none';
+  ['bookings','services','hours','blocked','settings'].forEach(t => {
+    const el = document.getElementById('admintab-' + t);
+    if (el) el.style.display = t === tab ? 'block' : 'none';
     const btn = document.getElementById('tab-' + t);
-    btn.style.color = t === tab ? 'var(--gold)' : 'var(--grey)';
-    btn.style.borderBottom = t === tab ? '2px solid var(--gold)' : '2px solid transparent';
+    if (btn) {
+      btn.style.color = t === tab ? 'var(--gold)' : 'var(--grey)';
+      btn.style.borderBottom = t === tab ? '2px solid var(--gold)' : '2px solid transparent';
+    }
   });
   if (tab === 'services') renderAdminServices();
-  if (tab === 'hours') renderAdminHours();
-  if (tab === 'home') renderAdminHomeVisits();
+  if (tab === 'hours') { renderAdminHours(); renderAdminHomeVisits(); }
+  if (tab === 'blocked') renderBlockedDays();
 }
 
 // ─── ADMIN SERVICES ───
@@ -1351,21 +1392,118 @@ function addNewService() {
 function renderAdminHours() {
   const hours = getWorkingHours();
   const list = document.getElementById('hoursAdminList');
-  list.innerHTML = hours.map((h, i) => `
-    <div style="background:var(--card);border:1px solid rgba(201,168,76,0.12);padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;clip-path:polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)">
-      <input type="checkbox" id="day-${i}" ${h.open ? 'checked' : ''} onchange="toggleDay(${i},this.checked)"
-        style="width:18px;height:18px;accent-color:var(--gold);cursor:pointer">
-      <div style="width:52px;font-size:13px;font-weight:600">${h.name}</div>
-      <input type="time" value="${h.from}" onchange="updateHour(${i},'from',this.value)"
-        style="flex:1;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:8px;font-family:'Heebo',sans-serif;font-size:13px;outline:none;color-scheme:dark;${!h.open ? 'opacity:0.3;pointer-events:none' : ''}">
-      <span style="color:var(--grey);font-size:12px">עד</span>
-      <input type="time" value="${h.to}" onchange="updateHour(${i},'to',this.value)"
-        style="flex:1;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:8px;font-family:'Heebo',sans-serif;font-size:13px;outline:none;color-scheme:dark;${!h.open ? 'opacity:0.3;pointer-events:none' : ''}">
-    </div>
-  `).join('');
+  list.innerHTML = hours.map((h, i) => {
+    const breaks = h.breaks || [];
+    const breaksHtml = breaks.map((br, bi) => `
+      <div style="display:flex;align-items:center;gap:6px;margin-top:6px;background:rgba(255,165,0,0.05);padding:6px 8px;border:1px solid rgba(255,165,0,0.15)">
+        <span style="font-size:11px;color:orange;min-width:36px">הפסקה</span>
+        <input type="time" value="${br.from}" onchange="updateBreak(${i},${bi},'from',this.value)"
+          style="flex:1;background:#111;border:1px solid rgba(255,165,0,0.2);color:var(--white);padding:6px;font-family:'Heebo',sans-serif;font-size:12px;outline:none;color-scheme:dark">
+        <span style="font-size:11px;color:var(--grey)">עד</span>
+        <input type="time" value="${br.to}" onchange="updateBreak(${i},${bi},'to',this.value)"
+          style="flex:1;background:#111;border:1px solid rgba(255,165,0,0.2);color:var(--white);padding:6px;font-family:'Heebo',sans-serif;font-size:12px;outline:none;color-scheme:dark">
+        <button onclick="removeBreak(${i},${bi})" style="background:none;border:none;color:#e63946;cursor:pointer;font-size:16px;padding:0 4px">✕</button>
+      </div>
+    `).join('');
+
+    return `
+    <div style="background:var(--card);border:1px solid rgba(201,168,76,0.12);padding:14px 16px;margin-bottom:10px;clip-path:polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:${h.open ? '10px' : '0'}">
+        <input type="checkbox" id="day-${i}" ${h.open ? 'checked' : ''} onchange="toggleDay(${i},this.checked)"
+          style="width:18px;height:18px;accent-color:var(--gold);cursor:pointer">
+        <div style="width:52px;font-size:13px;font-weight:600">${h.name}</div>
+        ${h.open ? `
+        <input type="time" value="${h.from}" onchange="updateHour(${i},'from',this.value)"
+          style="flex:1;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:8px;font-family:'Heebo',sans-serif;font-size:13px;outline:none;color-scheme:dark">
+        <span style="color:var(--grey);font-size:12px">עד</span>
+        <input type="time" value="${h.to}" onchange="updateHour(${i},'to',this.value)"
+          style="flex:1;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:8px;font-family:'Heebo',sans-serif;font-size:13px;outline:none;color-scheme:dark">
+        <button onclick="addBreak(${i})" title="הוסף הפסקה" style="background:rgba(255,165,0,0.1);border:1px solid rgba(255,165,0,0.3);color:orange;padding:6px 10px;font-size:13px;cursor:pointer;border-radius:2px">☕</button>
+        ` : `<span style="color:#444;font-size:12px">סגור</span>`}
+      </div>
+      ${h.open ? breaksHtml : ''}
+    </div>`;
+  }).join('');
 }
 
-function toggleDay(i, val) {
+function addBreak(dayIdx) {
+  const hours = getWorkingHours();
+  if (!hours[dayIdx].breaks) hours[dayIdx].breaks = [];
+  hours[dayIdx].breaks.push({ from: '13:00', to: '14:00' });
+  saveWorkingHoursData(hours);
+  renderAdminHours();
+}
+
+function removeBreak(dayIdx, breakIdx) {
+  const hours = getWorkingHours();
+  hours[dayIdx].breaks.splice(breakIdx, 1);
+  saveWorkingHoursData(hours);
+  renderAdminHours();
+}
+
+function updateBreak(dayIdx, breakIdx, field, val) {
+  const hours = getWorkingHours();
+  hours[dayIdx].breaks[breakIdx][field] = val;
+  saveWorkingHoursData(hours);
+}
+
+// ─── BLOCKED DAYS ───
+function renderBlockedDays() {
+  const blocked = getBlockedDays();
+  const list = document.getElementById('blockedDaysList');
+  const today = new Date(); today.setHours(0,0,0,0);
+  const future = blocked.filter(b => {
+    const d = parseDateLocal(b.to || b.from);
+    return d >= today;
+  }).sort((a,b) => a.from.localeCompare(b.from));
+
+  if (future.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--grey);font-size:13px">אין ימים חסומים מוגדרים</div>';
+    return;
+  }
+
+  list.innerHTML = future.map((b, i) => {
+    const df = parseDateLocal(b.from);
+    const dayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+    const fromLabel = `יום ${dayNames[df.getDay()]}, ${df.getDate()} ב${HEBREW_MONTHS[df.getMonth()]}`;
+    let rangeLabel = fromLabel;
+    if (b.to && b.to !== b.from) {
+      const dt = parseDateLocal(b.to);
+      rangeLabel += ` עד ${dt.getDate()} ב${HEBREW_MONTHS[dt.getMonth()]}`;
+    }
+    return `
+    <div style="background:rgba(230,57,70,0.06);border:1px solid rgba(230,57,70,0.2);padding:14px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">
+      <div>
+        <div style="font-weight:700;font-size:14px;color:#e63946">🚫 ${rangeLabel}</div>
+        ${b.reason ? `<div style="font-size:12px;color:var(--grey);margin-top:3px">${b.reason}</div>` : ''}
+      </div>
+      <button onclick="deleteBlockedDay(${blocked.indexOf(b)})" style="background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.3);color:#e63946;padding:6px 12px;font-size:11px;cursor:pointer;font-family:'Heebo',sans-serif">מחק</button>
+    </div>`;
+  }).join('');
+}
+
+function addBlockedDay() {
+  const from = document.getElementById('blockDateFrom').value;
+  const to = document.getElementById('blockDateTo').value;
+  const reason = document.getElementById('blockReason').value.trim();
+  if (!from) return;
+  const blocked = getBlockedDays();
+  blocked.push({ from, to: to || from, reason });
+  saveBlockedDays(blocked);
+  document.getElementById('blockDateFrom').value = '';
+  document.getElementById('blockDateTo').value = '';
+  document.getElementById('blockReason').value = '';
+  renderBlockedDays();
+}
+
+function deleteBlockedDay(i) {
+  const blocked = getBlockedDays();
+  blocked.splice(i, 1);
+  saveBlockedDays(blocked);
+  renderBlockedDays();
+}
+
+// ─── ADMIN HOURS (toggle/update) ───
   const hours = getWorkingHours();
   hours[i].open = val;
   saveWorkingHoursData(hours);
