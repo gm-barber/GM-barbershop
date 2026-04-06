@@ -1504,6 +1504,7 @@ function deleteBlockedDay(i) {
 }
 
 // ─── ADMIN HOURS (toggle/update) ───
+function toggleDay(i, val) {
   const hours = getWorkingHours();
   hours[i].open = val;
   saveWorkingHoursData(hours);
