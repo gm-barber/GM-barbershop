@@ -1123,22 +1123,21 @@ function changeAdminPass() {
   setTimeout(() => { msg.textContent = ''; }, 3000);
 }
 
-// Demo bookings with real dates
-function getDemoBookings(dateStr) {
-  const today = new Date(); today.setHours(0,0,0,0);
-  const tomorrow = new Date(today); tomorrow.setDate(today.getDate()+1);
-  const selected = new Date(dateStr); selected.setHours(0,0,0,0);
-
-  const all = [
-    { name:'דוד כהן', service:'קומבו', time:'09:00', dateObj: today, phone:'052-1234567', price:100 },
-    { name:'יוסי לוי', service:'תספורת', time:'10:30', dateObj: today, phone:'054-9876543', price:60 },
-    { name:'אמיר בן דוד', service:'זקן', time:'12:00', dateObj: today, phone:'050-5554433', price:50 },
-    { name:'רון שפירא', service:'תספורת', time:'14:00', dateObj: tomorrow, phone:'053-7778899', price:60 },
-    { name:'גל מזרחי', service:'קומבו', time:'11:00', dateObj: tomorrow, phone:'058-3334455', price:100 },
-  ];
-  return all.filter(b => b.dateObj.toDateString() === selected.toDateString());
+// Real bookings stored in localStorage
+function getBookings(dateStr) {
+  try {
+    const all = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
+    return all.filter(b => b.date === dateStr);
+  } catch(e) { return []; }
 }
 
+function saveBooking(booking) {
+  try {
+    const all = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
+    all.push(booking);
+    localStorage.setItem('gm_bookings', JSON.stringify(all));
+  } catch(e) {}
+}
 function initAdminPanel() {
   const today = new Date();
   const pad = n => String(n).padStart(2,'0');
