@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
@@ -827,8 +828,8 @@
   </button>
   <div style="font-size:11px;color:#444;margin-bottom:16px;letter-spacing:1px">⏰ תישלח תזכורת שעה לפני התור</div>
   <div id="emailSentMsg" style="font-size:12px;color:#2ecc71;margin-bottom:16px;min-height:18px"></div>
-  <button onclick="openWhatsAppAdmin()" style="margin-bottom:20px;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.4);color:#25d366;padding:14px 32px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:1px;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);width:100%;max-width:280px">
-    💬 שלח פרטים למספרה בוואטסאפ
+  <button onclick="openWhatsAppCustomer()" style="margin-bottom:20px;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.4);color:#25d366;padding:14px 32px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:1px;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);width:100%;max-width:280px">
+    💬 שלח לי את פרטי התור בוואטסאפ
   </button>
   <button class="new-booking-btn" onclick="newBooking()" style="margin-bottom:32px">הזמנה חדשה +</button>
 </div>
@@ -1004,6 +1005,17 @@ function confirmBooking() {
   // Store booking details for notifications
   state.lastBooking = { name, phone, email, notes, dateLabel, confirmNum };
 
+  // Save booking to localStorage
+  saveBooking({
+    name, phone, email, notes,
+    service: state.service,
+    time: state.selectedTime,
+    date: state.selectedDate,
+    price: state.servicePrice,
+    confirmNum,
+    dateLabel
+  });
+
   document.getElementById('confirmNum').textContent = `אישור #${confirmNum}`;
   document.getElementById('suc-service').innerHTML = `${state.service} <small>${state.serviceDuration}</small>`;
   document.getElementById('suc-datetime').innerHTML = `${dateLabel} <small>שעה ${state.selectedTime}</small>`;
@@ -1138,6 +1150,7 @@ function saveBooking(booking) {
     localStorage.setItem('gm_bookings', JSON.stringify(all));
   } catch(e) {}
 }
+
 function initAdminPanel() {
   const today = new Date();
   const pad = n => String(n).padStart(2,'0');
@@ -1145,7 +1158,7 @@ function initAdminPanel() {
   document.getElementById('adminDatePicker').value = todayStr;
 
   // Today stats
-  const todayBookings = getDemoBookings(todayStr);
+  const todayBookings = getBookings(todayStr);
   document.getElementById('adminTodayCount').textContent = todayBookings.length;
   document.getElementById('adminTodayRevenue').textContent = '₪' + todayBookings.reduce((s,b) => s+b.price, 0);
 
@@ -1174,7 +1187,7 @@ function filterAdminByDate() {
   const label = `יום ${dayNames[d.getDay()]}, ${d.getDate()} ב${HEBREW_MONTHS[d.getMonth()]}`;
   document.getElementById('adminDateLabel').textContent = label;
 
-  const bookings = getDemoBookings(dateStr);
+  const bookings = getBookings(dateStr);
   const list = document.getElementById('adminBookingsList');
 
   if (bookings.length === 0) {
@@ -1215,32 +1228,25 @@ async function sendConfirmationEmail({ name, email, phone, notes, dateLabel, con
   }
 }
 
-// ─── WHATSAPP NOTIFICATION (for admin) ───
-function openWhatsAppAdmin() {
+// ─── WHATSAPP TO CUSTOMER ───
+function openWhatsAppCustomer() {
   const b = state.lastBooking;
   if (!b) return;
-  const ADMIN_PHONE = '972507990665';
+  const phone = b.phone.replace(/[-\s]/g, '').replace(/^0/, '972');
   const msg = encodeURIComponent(
-    `💈 *תור חדש ב-GM המספרה*
+`💈 *אישור תור — GM המספרה*
 
-` +
-    `👤 ${b.name}
-` +
-    `📱 ${b.phone}
-` +
-    `✉️ ${b.email}
-` +
-    `✂️ ${state.service}
-` +
-    `📅 ${b.dateLabel} | ${state.selectedTime}
-` +
-    `💰 ₪${state.servicePrice}
-` +
-    `🔖 אישור #${b.confirmNum}` +
-    (b.notes ? `
-📝 ${b.notes}` : '')
+שלום ${b.name}! התור שלך אושר ✅
+
+✂️ שירות: ${state.service}
+📅 תאריך: ${b.dateLabel}
+⏰ שעה: ${state.selectedTime}
+💰 לתשלום במקום: ₪${state.servicePrice}
+🔖 אישור: #${b.confirmNum}
+
+מחכים לך! LOOK SHARP. FEEL SHARP. 💈`
   );
-  window.open(`https://wa.me/${ADMIN_PHONE}?text=${msg}`, '_blank');
+  window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
 }
 
 // ─── PWA INSTALL ───
