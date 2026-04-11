@@ -1,0 +1,150 @@
+name: Daily Barbershop Summary
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # כל יום ב-08:00 שעון ישראל (UTC+2)
+  workflow_dispatch:  # אפשרות להפעיל ידנית לבדיקה
+
+jobs:
+  send-daily-summary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Daily Summary Email
+        run: |
+          node -e "
+          const https = require('https');
+
+          const serviceAccount = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT);
+          const spreadsheetId = process.env.SPREADSHEET_ID;
+          const brevoKey = process.env.BREVO_API_KEY;
+          const adminEmail = 'meirgm10@gmail.com';
+
+          // Get tomorrow's date (Israel time)
+          const now = new Date();
+          now.setHours(now.getHours() + 2);
+          now.setDate(now.getDate() + 1);
+          const tomorrow = now.toISOString().split('T')[0];
+
+          async function getAccessToken() {
+            const { GoogleAuth } = require('google-auth-library');
+            const auth = new GoogleAuth({
+              credentials: serviceAccount,
+              scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly']
+            });
+            const client = await auth.getClient();
+            const token = await client.getAccessToken();
+            return token.token;
+          }
+
+          async function getBookings(token) {
+            return new Promise((resolve, reject) => {
+              const options = {
+                hostname: 'sheets.googleapis.com',
+                path: '/v4/spreadsheets/' + spreadsheetId + '/values/bookings!A:K',
+                headers: { 'Authorization': 'Bearer ' + token }
+              };
+              https.get(options, (res) => {
+                let data = '';
+                res.on('data', chunk => data += chunk);
+                res.on('end', () => {
+                  const result = JSON.parse(data);
+                  const rows = result.values || [];
+                  const headers = rows[0] || [];
+                  const bookings = rows.slice(1).filter(row => row[0] === tomorrow);
+                  resolve(bookings.map(row => ({
+                    date: row[0], time: row[1], name: row[2],
+                    phone: row[3], email: row[4], service: row[5],
+                    price: row[6], isHome: row[7], address: row[8]
+                  })));
+                });
+              }).on('error', reject);
+            });
+          }
+
+          async function sendEmail(bookings) {
+            if (bookings.length === 0) {
+              console.log('No bookings tomorrow, skipping email');
+              return;
+            }
+
+            const sorted = bookings.sort((a,b) => a.time.localeCompare(b.time));
+            const total = sorted.reduce((sum, b) => sum + parseInt(b.price || 0), 0);
+
+            const rows = sorted.map(b => 
+              '<tr style=\"border-bottom:1px solid #1a1a1a\">' +
+              '<td style=\"padding:10px;color:#c9a84c;font-weight:700\">' + b.time + '</td>' +
+              '<td style=\"padding:10px;color:#f5f5f0\">' + b.name + '</td>' +
+              '<td style=\"padding:10px;color:#888\">' + b.service + '</td>' +
+              '<td style=\"padding:10px;color:#888\">' + b.phone + '</td>' +
+              '<td style=\"padding:10px;color:' + (b.isHome === 'true' ? '#7ec8ff' : '#888') + '\">' + (b.isHome === 'true' ? '🏠 ' + (b.address || '') : '🏪 מספרה') + '</td>' +
+              '<td style=\"padding:10px;color:#c9a84c;font-weight:700\">₪' + b.price + '</td>' +
+              '</tr>'
+            ).join('');
+
+            const html = '<div dir=\"rtl\" style=\"font-family:Arial,sans-serif;background:#0a0a0a;padding:20px;color:#f5f5f0\">' +
+              '<div style=\"max-width:600px;margin:0 auto;background:#111;border:1px solid #c9a84c\">' +
+              '<div style=\"background:#0a0a0a;padding:24px;text-align:center;border-bottom:2px solid #c9a84c\">' +
+              '<div style=\"font-size:48px;font-weight:900;letter-spacing:6px;color:#c9a84c\">GM</div>' +
+              '<div style=\"font-size:11px;letter-spacing:4px;color:#888\">המספרה</div></div>' +
+              '<div style=\"padding:24px\">' +
+              '<h2 style=\"color:#c9a84c;margin-bottom:4px\">📋 תכנית יומית — מחר</h2>' +
+              '<p style=\"color:#888;font-size:13px\">' + tomorrow + ' | ' + sorted.length + ' תורים | סה״כ ₪' + total + '</p>' +
+              '<table style=\"width:100%;border-collapse:collapse;margin-top:16px\">' +
+              '<thead><tr style=\"background:#1a1a1a\">' +
+              '<th style=\"padding:10px;color:#c9a84c;text-align:right\">שעה</th>' +
+              '<th style=\"padding:10px;color:#c9a84c;text-align:right\">שם</th>' +
+              '<th style=\"padding:10px;color:#c9a84c;text-align:right\">שירות</th>' +
+              '<th style=\"padding:10px;color:#c9a84c;text-align:right\">טלפון</th>' +
+              '<th style=\"padding:10px;color:#c9a84c;text-align:right\">מיקום</th>' +
+              '<th style=\"padding:10px;color:#c9a84c;text-align:right\">מחיר</th>' +
+              '</tr></thead><tbody>' + rows + '</tbody></table>' +
+              '<div style=\"margin-top:20px;padding:16px;background:#1a1a1a;border:1px solid rgba(201,168,76,0.3);text-align:center\">' +
+              '<div style=\"font-size:11px;color:#888;margin-bottom:4px\">הכנסה צפויה מחר</div>' +
+              '<div style=\"font-size:32px;font-weight:900;color:#c9a84c\">₪' + total + '</div></div>' +
+              '</div></div></div>';
+
+            return new Promise((resolve, reject) => {
+              const body = JSON.stringify({
+                sender: { name: 'GM המספרה', email: adminEmail },
+                to: [{ email: adminEmail, name: 'Meir' }],
+                subject: '💈 תכנית מחר — ' + sorted.length + ' תורים | ₪' + total,
+                htmlContent: html
+              });
+
+              const options = {
+                hostname: 'api.brevo.com',
+                path: '/v3/smtp/email',
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'api-key': brevoKey
+                }
+              };
+
+              const req = https.request(options, (res) => {
+                let data = '';
+                res.on('data', chunk => data += chunk);
+                res.on('end', () => {
+                  console.log('Email sent! Status:', res.statusCode);
+                  resolve();
+                });
+              });
+              req.on('error', reject);
+              req.write(body);
+              req.end();
+            });
+          }
+
+          const { GoogleAuth } = require('google-auth-library');
+          getAccessToken()
+            .then(token => getBookings(token))
+            .then(bookings => sendEmail(bookings))
+            .catch(err => { console.error(err); process.exit(1); });
+          "
+        env:
+          GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
+          SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+
+      - name: Install google-auth-library
+        run: npm install google-auth-library
