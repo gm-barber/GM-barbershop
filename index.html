@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
@@ -1041,7 +1042,11 @@ function selectHomeVisitService(el) {
 function getTakenSlots(dateStr) {
   try {
     const all = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
-    return all.filter(b => b.date === dateStr).map(b => b.time);
+    const localTaken = all.filter(b => b.date === dateStr).map(b => b.time);
+    // Also check Sheets cache
+    const sheetsCache = JSON.parse(localStorage.getItem('gm_sheets_cache_' + dateStr) || '[]');
+    const sheetsTaken = sheetsCache.map(b => b.time || b.Time || '').filter(Boolean);
+    return [...new Set([...localTaken, ...sheetsTaken])];
   } catch(e) { return []; }
 }
 
@@ -1741,16 +1746,13 @@ function saveBooking(booking) {
   } catch(e) {}
 }
 
-function initAdminPanel() {
+async function initAdminPanel() {
   const today = new Date();
   const pad = n => String(n).padStart(2,'0');
   const todayStr = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`;
   document.getElementById('adminDatePicker').value = todayStr;
-  const todayBookings = getBookings(todayStr);
-  document.getElementById('adminTodayCount').textContent = todayBookings.length;
-  document.getElementById('adminTodayRevenue').textContent = '₪' + todayBookings.reduce((s,b) => s+b.price, 0);
   switchAdminTab('bookings');
-  filterAdminByDate();
+  await filterAdminByDate();
 }
 
 function setAdminToday() {
@@ -1766,7 +1768,7 @@ function setAdminTomorrow() {
   filterAdminByDate();
 }
 
-function filterAdminByDate() {
+async function filterAdminByDate() {
   const dateStr = document.getElementById('adminDatePicker').value;
   if (!dateStr) return;
 
@@ -1775,24 +1777,61 @@ function filterAdminByDate() {
   const label = `יום ${dayNames[d.getDay()]}, ${d.getDate()} ב${HEBREW_MONTHS[d.getMonth()]}`;
   document.getElementById('adminDateLabel').textContent = label;
 
-  const bookings = getBookings(dateStr);
   const list = document.getElementById('adminBookingsList');
+  list.innerHTML = `<div style="text-align:center;padding:32px;color:var(--grey);font-size:14px">⏳ טוען תורים...</div>`;
+
+  // Try to load from Google Sheets first
+  let bookings = [];
+  try {
+    const sheetsBookings = await loadBookingsFromSheets(dateStr);
+    if (sheetsBookings && sheetsBookings.length > 0) {
+      // Cache for getTakenSlots
+      localStorage.setItem('gm_sheets_cache_' + dateStr, JSON.stringify(sheetsBookings));
+      bookings = sheetsBookings.map(b => ({
+        name: b.ClientName || b.clientName || '',
+        phone: b.ClientPhone || b.clientPhone || '',
+        service: b.Service || b.service || '',
+        time: b.Time || b.time || '',
+        price: b.Price || b.price || 0,
+        homeVisit: b.HomeVisit || b.homeVisit || '',
+        notes: b.Notes || b.notes || ''
+      }));
+    } else {
+      // Fallback to localStorage
+      bookings = getBookings(dateStr);
+    }
+  } catch(e) {
+    // Fallback to localStorage
+    bookings = getBookings(dateStr);
+  }
 
   if (bookings.length === 0) {
     list.innerHTML = `<div style="text-align:center;padding:32px;color:var(--grey);font-size:14px">אין תורים ביום זה</div>`;
     return;
   }
 
+  // Update today stats
+  const todayStr = new Date().toISOString().split('T')[0];
+  if (dateStr === todayStr) {
+    document.getElementById('adminTodayCount').textContent = bookings.length;
+    const rev = bookings.reduce((s,b) => s + (Number(b.price)||0), 0);
+    document.getElementById('adminTodayRevenue').textContent = '₪' + rev;
+  }
+
   list.innerHTML = bookings
-    .sort((a,b) => a.time.localeCompare(b.time))
+    .sort((a,b) => (a.time||'').localeCompare(b.time||''))
     .map(b => `
-    <div style="background:var(--card);border:1px solid rgba(201,168,76,0.12);padding:16px;margin-bottom:10px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);display:flex;justify-content:space-between;align-items:center">
-      <div>
-        <div style="font-weight:700;font-size:15px;margin-bottom:4px">${b.name}</div>
-        <div style="font-size:12px;color:var(--grey)">${b.service} · ${b.time}</div>
-        <div style="font-size:11px;color:#555;margin-top:2px">${b.phone}</div>
+    <div style="background:var(--card);border:1px solid rgba(201,168,76,0.12);padding:16px;margin-bottom:10px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-weight:700;font-size:15px;margin-bottom:4px">${b.name}</div>
+          <div style="font-size:12px;color:var(--grey)">${b.service} · ${b.time}</div>
+          <div style="font-size:11px;color:#555;margin-top:2px">${b.phone}</div>
+          ${b.homeVisit === 'כן' ? '<div style="font-size:11px;color:#7ec8ff;margin-top:2px">🏠 הגעה לבית</div>' : ''}
+          ${b.notes ? `<div style="font-size:11px;color:#666;margin-top:2px">💬 ${b.notes}</div>` : ''}
+        </div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold)">₪${b.price||''}</div>
       </div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold)">₪${b.price}</div>
     </div>
   `).join('');
 }
@@ -1833,35 +1872,50 @@ function renderMyBookings() {
   }).join('');
 }
 
-// ─── GOOGLE SHEETS CONFIG ───
-const SHEETS_API_KEY = 'AIzaSyAOr-_zHq-Mditt8sljUoi9TVy92Ndf26M';
-const SPREADSHEET_ID = '1mqLXdBvQE8lEPxAv5Y3nhScN0AYmU0UnGH_BxfKbi0Y';
-const SERVICE_ACCOUNT_EMAIL = 'gm-barbershop@gm---barbershop.iam.gserviceaccount.com';
+// ─── GOOGLE APPS SCRIPT CONFIG ───
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwN-bvQ32kYGPgptz0m0DbXFZ7Pn0Vd1j5bTzylSuPnbhm6f4NxJwJK0m-1ddq0ei7Fbw/exec';
 
-// ─── SAVE TO GOOGLE SHEETS (direct) ───
+// ─── SAVE TO GOOGLE SHEETS (via Apps Script) ───
 async function saveBookingToSheets(booking) {
   try {
-    const row = [
-      booking.date, booking.time, booking.name, booking.phone,
-      booking.email, booking.service, booking.price,
-      booking.isHomeVisit ? 'true' : 'false',
-      booking.address || '', booking.notes || '', booking.confirmNum
-    ];
+    const payload = {
+      date: booking.date,
+      time: booking.time,
+      service: booking.service,
+      duration: booking.serviceDuration || '',
+      clientName: booking.name,
+      clientPhone: booking.phone,
+      notes: (booking.notes || '') + (booking.address ? ' | כתובת: ' + booking.address : ''),
+      homeVisit: booking.isHomeVisit || false,
+      price: booking.price || 0,
+      confirmNum: booking.confirmNum || ''
+    };
 
-    const response = await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/bookings!A:K:append?valueInputOption=RAW&key=${SHEETS_API_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ values: [row] })
-      }
-    );
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
 
-    if (!response.ok) {
-      console.warn('Sheets save failed:', await response.text());
-    }
+    console.log('✅ Booking saved to Google Sheets');
   } catch(e) {
     console.warn('Sheets save error:', e);
+  }
+}
+
+// ─── LOAD BOOKINGS FROM GOOGLE SHEETS (for admin) ───
+async function loadBookingsFromSheets(dateStr) {
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?date=' + dateStr);
+    const data = await res.json();
+    if (data.success && data.appointments) {
+      return data.appointments.filter(a => a.Date === dateStr);
+    }
+    return [];
+  } catch(e) {
+    console.warn('Sheets load error:', e);
+    return [];
   }
 }
 
