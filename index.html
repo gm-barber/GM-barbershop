@@ -620,6 +620,7 @@
     <button onclick="switchAdminTab('hours')" id="tab-hours" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🕐 שעות</button>
     <button onclick="switchAdminTab('blocked')" id="tab-blocked" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🚫 חסימות</button>
     <button onclick="switchAdminTab('settings')" id="tab-settings" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">⚙️ הגדרות</button>
+    <button onclick="switchAdminTab('images')" id="tab-images" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🖼️ תמונות</button>
     <button onclick="switchAdminTab('email')" id="tab-email" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">✉️ מייל</button>
   </div>
 
@@ -729,6 +730,44 @@
         style="width:100%;background:#111;border:1px solid rgba(230,57,70,0.15);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:13px;outline:none;margin-bottom:12px">
       <button onclick="addBlockedDay()" style="width:100%;background:rgba(230,57,70,0.12);border:1px solid rgba(230,57,70,0.4);color:#e63946;padding:14px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">חסום תאריך</button>
     </div>
+  </div>
+
+  <!-- TAB: IMAGES -->
+  <div id="admintab-images" style="display:none;flex:1;overflow-y:auto;padding:16px 20px">
+    <div style="font-family:'Heebo',sans-serif;font-size:22px;font-weight:900;margin-bottom:4px">תמונות</div>
+    <div style="font-size:12px;color:var(--text-soft);margin-bottom:20px">נהל את תמונות המספרה</div>
+
+    <!-- Logo -->
+    <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:14px">
+      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:14px;font-weight:700;text-transform:uppercase">לוגו / תמונת פרופיל</div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div id="logoPreview" style="width:72px;height:72px;border-radius:12px;background:var(--bg);border:1px solid var(--border);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:28px">💈</div>
+        <div style="flex:1">
+          <button onclick="triggerImageUpload('logo')" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-radius:10px;margin-bottom:8px">📷 העלה תמונה</button>
+          <button onclick="removeImage('logo')" style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text-soft);padding:10px;font-family:'Heebo',sans-serif;font-size:12px;cursor:pointer;border-radius:10px">הסר תמונה</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cover/Banner -->
+    <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:14px">
+      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:14px;font-weight:700;text-transform:uppercase">תמונת רקע (Splash)</div>
+      <div id="coverPreview" style="width:100%;height:120px;border-radius:10px;background:var(--bg);border:1px solid var(--border);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--text-soft);margin-bottom:10px">אין תמונה</div>
+      <div style="display:flex;gap:8px">
+        <button onclick="triggerImageUpload('cover')" style="flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-radius:10px">📷 העלה</button>
+        <button onclick="removeImage('cover')" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text-soft);padding:12px;font-family:'Heebo',sans-serif;font-size:12px;cursor:pointer;border-radius:10px">הסר</button>
+      </div>
+    </div>
+
+    <!-- Gallery -->
+    <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:14px">
+      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:14px;font-weight:700;text-transform:uppercase">גלריית עבודות</div>
+      <div id="galleryGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px"></div>
+      <button onclick="triggerImageUpload('gallery')" style="width:100%;background:var(--bg);border:1px dashed var(--border);color:var(--text-soft);padding:14px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-radius:10px">+ הוסף תמונה לגלריה</button>
+    </div>
+
+    <div id="uploadStatus" style="text-align:center;font-size:13px;color:var(--text-soft);min-height:20px"></div>
+    <input type="file" id="imageFileInput" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
   </div>
 
   <!-- TAB: EMAIL SETTINGS -->
@@ -1569,7 +1608,7 @@ function addToCalendar() {
 
 // ─── ADMIN TABS ───
 function switchAdminTab(tab) {
-  ['bookings','services','hours','blocked','settings','email'].forEach(t => {
+  ['bookings','services','hours','blocked','settings','email','images'].forEach(t => {
     const el = document.getElementById('admintab-' + t);
     if (el) el.style.display = t === tab ? 'block' : 'none';
     const btn = document.getElementById('tab-' + t);
@@ -1582,6 +1621,7 @@ function switchAdminTab(tab) {
   if (tab === 'hours') { renderAdminHours(); renderAdminHomeVisits(); }
   if (tab === 'blocked') renderBlockedDays();
   if (tab === 'email') loadEmailSettings();
+  if (tab === 'images') loadImagesTab();
 }
 
 // ─── ADMIN SERVICES ───
@@ -2031,6 +2071,149 @@ function renderMyBookings() {
 }
 
 // ─── GOOGLE APPS SCRIPT CONFIG ───
+// ─── IMAGES ───
+let currentUploadTarget = null;
+
+function triggerImageUpload(target) {
+  currentUploadTarget = target;
+  document.getElementById('imageFileInput').click();
+}
+
+async function handleImageUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const status = document.getElementById('uploadStatus');
+  status.textContent = '⏳ מעלה תמונה...';
+  status.style.color = 'var(--text-soft)';
+  try {
+    const url = await uploadToCloudinary(file);
+    const imgs = getImageSettings();
+    if (currentUploadTarget === 'gallery') {
+      if (!imgs.gallery) imgs.gallery = [];
+      imgs.gallery.push(url);
+    } else {
+      imgs[currentUploadTarget] = url;
+    }
+    saveImageSettings(imgs);
+    loadImagesTab();
+    applyImagesToApp();
+    status.textContent = '✅ התמונה הועלתה בהצלחה!';
+    status.style.color = 'var(--success)';
+    setTimeout(() => { status.textContent = ''; }, 3000);
+  } catch(e) {
+    status.textContent = '❌ שגיאה בהעלאה';
+    status.style.color = 'var(--red)';
+  }
+  event.target.value = '';
+}
+
+function removeImage(target) {
+  const imgs = getImageSettings();
+  delete imgs[target];
+  saveImageSettings(imgs);
+  loadImagesTab();
+  applyImagesToApp();
+}
+
+function removeGalleryImage(index) {
+  const imgs = getImageSettings();
+  if (imgs.gallery) imgs.gallery.splice(index, 1);
+  saveImageSettings(imgs);
+  loadImagesTab();
+}
+
+function loadImagesTab() {
+  const imgs = getImageSettings();
+
+  // Logo
+  const logoEl = document.getElementById('logoPreview');
+  if (logoEl) {
+    if (imgs.logo) {
+      logoEl.innerHTML = `<img src="${imgs.logo}" style="width:100%;height:100%;object-fit:cover">`;
+    } else {
+      logoEl.innerHTML = '💈';
+    }
+  }
+
+  // Cover
+  const coverEl = document.getElementById('coverPreview');
+  if (coverEl) {
+    if (imgs.cover) {
+      coverEl.innerHTML = `<img src="${imgs.cover}" style="width:100%;height:100%;object-fit:cover">`;
+    } else {
+      coverEl.innerHTML = '<span style="font-size:13px;color:var(--text-soft)">אין תמונה</span>';
+    }
+  }
+
+  // Gallery
+  const galleryEl = document.getElementById('galleryGrid');
+  if (galleryEl) {
+    const gallery = imgs.gallery || [];
+    galleryEl.innerHTML = gallery.map((url, i) => `
+      <div style="position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:var(--bg)">
+        <img src="${url}" style="width:100%;height:100%;object-fit:cover">
+        <button onclick="removeGalleryImage(${i})" style="position:absolute;top:4px;left:4px;background:rgba(0,0,0,0.6);border:none;color:white;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center">✕</button>
+      </div>
+    `).join('');
+  }
+}
+
+function applyImagesToApp() {
+  const imgs = getImageSettings();
+
+  // Apply logo to splash
+  const splashPole = document.querySelector('.splash-pole');
+  if (splashPole) {
+    if (imgs.logo) {
+      splashPole.style.display = 'none';
+      const existing = document.getElementById('splashLogo');
+      if (!existing) {
+        const logoEl = document.createElement('div');
+        logoEl.id = 'splashLogo';
+        logoEl.style.cssText = 'width:90px;height:90px;border-radius:50%;overflow:hidden;margin:0 auto 16px;border:2px solid rgba(232,213,176,0.3)';
+        logoEl.innerHTML = `<img src="${imgs.logo}" style="width:100%;height:100%;object-fit:cover">`;
+        splashPole.parentNode.insertBefore(logoEl, splashPole);
+      } else {
+        existing.innerHTML = `<img src="${imgs.logo}" style="width:100%;height:100%;object-fit:cover">`;
+      }
+    }
+  }
+
+  // Apply cover to splash background
+  const splashBg = document.querySelector('.splash-bg');
+  if (splashBg && imgs.cover) {
+    splashBg.style.backgroundImage = `url(${imgs.cover})`;
+    splashBg.style.backgroundSize = 'cover';
+    splashBg.style.backgroundPosition = 'center';
+    splashBg.style.opacity = '0.3';
+  }
+}
+
+// ─── CLOUDINARY CONFIG ───
+const CLOUDINARY_CLOUD = 'dyvx2rz4s';
+const CLOUDINARY_PRESET = 'GM_barbershop';
+const CLOUDINARY_BASE = `https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/upload`;
+
+async function uploadToCloudinary(file) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', CLOUDINARY_PRESET);
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, {
+    method: 'POST',
+    body: formData
+  });
+  const data = await res.json();
+  return data.secure_url;
+}
+
+function getImageSettings() {
+  try { return JSON.parse(localStorage.getItem('gm_images') || '{}'); }
+  catch(e) { return {}; }
+}
+function saveImageSettings(imgs) {
+  localStorage.setItem('gm_images', JSON.stringify(imgs));
+}
+
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwpz5iM_YP2j3vOQLQDCfEV-w2UIZ_pHq9ZmtG4-2wGa0MDDlU3hczjp-kV8ZcHrltiGA/exec';
 
 // ─── SAVE TO GOOGLE SHEETS (via Apps Script) ───
@@ -2367,6 +2550,7 @@ async function testEmailNow() {
 // Init
 renderCalendar();
 renderServicesGrid();
+applyImagesToApp();
 </script>
 </body>
 </html>
