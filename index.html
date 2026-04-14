@@ -646,7 +646,34 @@
       <div style="font-size:10px;letter-spacing:3px;color:var(--grey);text-transform:uppercase">תורים</div>
       <div style="font-size:11px;color:var(--gold)" id="adminDateLabel"></div>
     </div>
-    <div id="adminBookingsList" style="padding:0 20px 24px"></div>
+    <div id="adminBookingsList" style="padding:0 20px 16px"></div>
+
+    <div style="padding:0 20px 24px">
+      <button onclick="showDailySummary()" style="width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:14px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border-radius:12px;margin-bottom:10px">
+        📊 סיכום יומי וחודשי
+      </button>
+      <div id="dailySummaryBox" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px">
+        <div style="font-size:10px;letter-spacing:3px;color:var(--text-soft);text-transform:uppercase;margin-bottom:14px;font-weight:700">סיכום</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center">
+            <div style="font-size:26px;font-weight:900;color:var(--text)" id="summaryBooked">0</div>
+            <div style="font-size:10px;color:var(--text-soft);margin-top:3px;letter-spacing:1px">תורים שנקבעו</div>
+          </div>
+          <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center">
+            <div style="font-size:26px;font-weight:900;color:var(--success)" id="summaryDone">0</div>
+            <div style="font-size:10px;color:var(--text-soft);margin-top:3px;letter-spacing:1px">תורים שהתקיימו</div>
+          </div>
+          <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center">
+            <div style="font-size:22px;font-weight:900;color:var(--primary)" id="summaryDailyRevenue">₪0</div>
+            <div style="font-size:10px;color:var(--text-soft);margin-top:3px;letter-spacing:1px">רווח יומי</div>
+          </div>
+          <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center">
+            <div style="font-size:22px;font-weight:900;color:var(--primary)" id="summaryMonthRevenue">₪0</div>
+            <div style="font-size:10px;color:var(--text-soft);margin-top:3px;letter-spacing:1px">רווח חודשי</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- TAB: SERVICES -->
@@ -710,7 +737,7 @@
     <div style="font-size:12px;color:var(--text-soft);margin-bottom:24px">קבל סיכום תורים יומי למייל</div>
 
     <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:16px">
-      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:16px;font-weight:700;text-transform:uppercase">כתובת מייל לשליחה</div>
+      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:16px;font-weight:700;text-transform:uppercase">כתובת מייל לקבלת תכנית עבודה</div>
       <div style="background:rgba(232,213,176,0.06);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:8px">
         <span style="font-size:16px">✉️</span>
         <span id="currentEmailDisplay" style="font-size:13px;color:var(--primary);font-weight:600">meirgm10@gmail.com</span>
@@ -720,13 +747,23 @@
     </div>
 
     <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:16px">
-      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:12px;font-weight:700;text-transform:uppercase">כתובת מייל לקבלת סיכום</div>
+      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:12px;font-weight:700;text-transform:uppercase">כתובת מייל לקבלת תכנית עבודה</div>
       <input type="email" id="adminEmailAddress" value="meirgm10@gmail.com" 
         style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px 16px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:10px;direction:ltr;text-align:left"
         placeholder="your@email.com">
       <div id="currentEmailDisplay" style="font-size:11px;color:var(--text-soft);margin-top:8px;text-align:center">
         ✉️ כרגע נשלח ל: <span style="color:var(--primary);font-weight:600">meirgm10@gmail.com</span>
       </div>
+    </div>
+
+    <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:16px">
+      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:12px;font-weight:700;text-transform:uppercase">כתובת מייל לקבלת תכנית עבודה</div>
+      <div style="background:rgba(232,213,176,0.06);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:10px;display:flex;align-items:center;gap:8px">
+        <span style="font-size:14px">✉️</span>
+        <span id="currentEmailDisplay" style="font-size:13px;color:var(--primary);font-weight:600">meirgm10@gmail.com</span>
+      </div>
+      <input id="adminEmailInput" type="email" placeholder="שנה כתובת מייל"
+        style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:13px 16px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;border-radius:10px;direction:ltr;text-align:left">
     </div>
 
     <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:16px">
@@ -762,6 +799,40 @@
         </button>
         <button id="dayModeTomorrow" onclick="setDayMode('tomorrow')" style="padding:14px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--text-soft);font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer">
           📅 מחר
+        </button>
+      </div>
+    </div>
+
+    <!-- Summary Email Settings -->
+    <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:16px">
+      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:16px;font-weight:700;text-transform:uppercase">מייל סיכום יומי</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+        <div>
+          <div style="font-size:11px;color:var(--text-soft);margin-bottom:6px">שעה</div>
+          <select id="summaryHour" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:10px">
+            <option value="17">17:00</option>
+            <option value="18">18:00</option>
+            <option value="19">19:00</option>
+            <option value="20" selected>20:00</option>
+            <option value="21">21:00</option>
+            <option value="22">22:00</option>
+          </select>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--text-soft);margin-bottom:6px">דקות</div>
+          <select id="summaryMinute" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:10px">
+            <option value="00" selected>:00</option>
+            <option value="30">:30</option>
+          </select>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--text-soft);margin-bottom:8px;font-weight:600">סיכום של</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <button id="summaryModeToday" onclick="setSummaryMode('today')" style="padding:12px;border-radius:10px;border:1.5px solid var(--primary);background:rgba(232,213,176,0.1);color:var(--primary);font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer">
+          📅 היום
+        </button>
+        <button id="summaryModeYesterday" onclick="setSummaryMode('yesterday')" style="padding:12px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--text-soft);font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer">
+          📅 יום קודם
         </button>
       </div>
     </div>
@@ -1866,20 +1937,28 @@ async function filterAdminByDate() {
 
   list.innerHTML = bookings
     .sort((a,b) => (a.time||'').localeCompare(b.time||''))
-    .map(b => `
-    <div style="background:var(--card);border:1px solid rgba(201,168,76,0.12);padding:16px;margin-bottom:10px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <div style="font-weight:700;font-size:15px;margin-bottom:4px">${b.name}</div>
-          <div style="font-size:12px;color:var(--grey)">${b.service} · ${b.time}</div>
-          <div style="font-size:11px;color:#555;margin-top:2px">${b.phone}</div>
-          ${b.homeVisit === 'כן' ? '<div style="font-size:11px;color:#7ec8ff;margin-top:2px">🏠 הגעה לבית</div>' : ''}
-          ${b.notes ? `<div style="font-size:11px;color:#666;margin-top:2px">💬 ${b.notes}</div>` : ''}
+    .map(b => {
+      const isDone = isAppointmentDone(b.date || dateStr, b.time || b.Time || '');
+      return `
+      <div id="booking-${b.time||b.Time}" style="background:var(--card);border:1px solid ${isDone ? 'var(--success)' : 'var(--border)'};padding:16px;margin-bottom:10px;border-radius:12px;opacity:${isDone ? '0.7' : '1'}">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:15px;margin-bottom:4px;${isDone ? 'text-decoration:line-through;color:var(--text-soft)' : ''}">${b.name}</div>
+            <div style="font-size:12px;color:var(--text-soft)">${b.service} · ${b.time}</div>
+            <div style="font-size:11px;color:var(--text-soft);margin-top:2px">${b.phone}</div>
+            ${b.homeVisit === 'כן' ? '<div style="font-size:11px;color:#7ec8ff;margin-top:2px">🏠 הגעה לבית</div>' : ''}
+            ${b.notes ? `<div style="font-size:11px;color:var(--text-soft);margin-top:2px">💬 ${b.notes}</div>` : ''}
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+            <div style="font-size:20px;font-weight:900;color:var(--primary)">₪${b.price||''}</div>
+            <button onclick="toggleAppointmentDone('${b.date||dateStr}','${b.time||b.Time||''}',${b.price||0},this)"
+              style="padding:6px 12px;border-radius:8px;border:1px solid ${isDone ? 'var(--success)' : 'var(--border)'};background:${isDone ? 'rgba(76,175,125,0.15)' : 'var(--bg)'};color:${isDone ? 'var(--success)' : 'var(--text-soft)'};font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer">
+              ${isDone ? '✓ בוצע' : 'סמן בוצע'}
+            </button>
+          </div>
         </div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold)">₪${b.price||''}</div>
-      </div>
-    </div>
-  `).join('');
+      </div>`;
+    }).join('');
 }
 
 // ─── BOOKING HISTORY ───
@@ -2022,10 +2101,138 @@ function triggerInstall() {
   }
 }
 
+// ─── APPOINTMENT DONE / SUMMARY ───
+function getDoneAppointments() {
+  try { return JSON.parse(localStorage.getItem('gm_done_appointments') || '{}'); }
+  catch(e) { return {}; }
+}
+
+function isAppointmentDone(date, time) {
+  const done = getDoneAppointments();
+  return !!(done[date] && done[date][time]);
+}
+
+function toggleAppointmentDone(date, time, price, btn) {
+  const done = getDoneAppointments();
+  if (!done[date]) done[date] = {};
+  
+  if (done[date][time]) {
+    delete done[date][time];
+    btn.textContent = 'סמן בוצע';
+    btn.style.borderColor = 'var(--border)';
+    btn.style.background = 'var(--bg)';
+    btn.style.color = 'var(--text-soft)';
+    const card = btn.closest('div[id^="booking-"]');
+    if (card) {
+      card.style.border = '1px solid var(--border)';
+      card.style.opacity = '1';
+      const nameEl = card.querySelector('div[style*="font-weight:700;font-size:15px"]');
+      if (nameEl) { nameEl.style.textDecoration = ''; nameEl.style.color = ''; }
+    }
+    // Sync to Sheets
+    fetch(APPS_SCRIPT_URL + '?action=markDone&date=' + date + '&time=' + encodeURIComponent(time) + '&price=' + price + '&undo=true');
+  } else {
+    done[date][time] = { price: price, markedAt: new Date().toISOString() };
+    btn.textContent = '✓ בוצע';
+    btn.style.borderColor = 'var(--success)';
+    btn.style.background = 'rgba(76,175,125,0.15)';
+    btn.style.color = 'var(--success)';
+    const card = btn.closest('div[id^="booking-"]');
+    if (card) {
+      card.style.border = '1px solid var(--success)';
+      card.style.opacity = '0.7';
+      const nameEl = card.querySelector('div[style*="font-weight:700;font-size:15px"]');
+      if (nameEl) { nameEl.style.textDecoration = 'line-through'; nameEl.style.color = 'var(--text-soft)'; }
+    }
+    // Sync to Sheets
+    fetch(APPS_SCRIPT_URL + '?action=markDone&date=' + date + '&time=' + encodeURIComponent(time) + '&price=' + price + '&undo=false');
+  }
+  
+  localStorage.setItem('gm_done_appointments', JSON.stringify(done));
+}
+
+async function showDailySummary() {
+  const box = document.getElementById('dailySummaryBox');
+  box.style.display = box.style.display === 'none' ? 'block' : 'none';
+  if (box.style.display === 'none') return;
+
+  const dateStr = document.getElementById('adminDatePicker').value;
+  const done = getDoneAppointments();
+  
+  try {
+    // Load from Sheets
+    const res = await fetch(APPS_SCRIPT_URL + '?action=getAll');
+    const data = await res.json();
+    const all = (data.success && data.appointments) ? data.appointments : [];
+
+    // Today's bookings
+    const todayBookings = all.filter(a => (a.Date||a.date||'') === dateStr);
+    const booked = todayBookings.length;
+    
+    // Done today
+    const doneToday = done[dateStr] ? Object.keys(done[dateStr]).length : 0;
+    const dailyRevenue = done[dateStr] ? Object.values(done[dateStr]).reduce((s,v) => s+(Number(v.price)||0), 0) : 0;
+
+    // Monthly revenue
+    const monthPrefix = dateStr.substring(0, 7); // YYYY-MM
+    let monthRevenue = 0;
+    Object.keys(done).forEach(d => {
+      if (d.startsWith(monthPrefix)) {
+        Object.values(done[d]).forEach(v => { monthRevenue += Number(v.price)||0; });
+      }
+    });
+
+    document.getElementById('summaryBooked').textContent = booked;
+    document.getElementById('summaryDone').textContent = doneToday;
+    document.getElementById('summaryDailyRevenue').textContent = '₪' + dailyRevenue;
+    document.getElementById('summaryMonthRevenue').textContent = '₪' + monthRevenue;
+
+  } catch(e) {
+    // Fallback to localStorage
+    const localBookings = getBookings(dateStr);
+    const booked = localBookings.length;
+    const doneToday = done[dateStr] ? Object.keys(done[dateStr]).length : 0;
+    const dailyRevenue = done[dateStr] ? Object.values(done[dateStr]).reduce((s,v) => s+(Number(v.price)||0), 0) : 0;
+    const monthPrefix = dateStr.substring(0, 7);
+    let monthRevenue = 0;
+    Object.keys(done).forEach(d => {
+      if (d.startsWith(monthPrefix)) {
+        Object.values(done[d]).forEach(v => { monthRevenue += Number(v.price)||0; });
+      }
+    });
+    document.getElementById('summaryBooked').textContent = booked;
+    document.getElementById('summaryDone').textContent = doneToday;
+    document.getElementById('summaryDailyRevenue').textContent = '₪' + dailyRevenue;
+    document.getElementById('summaryMonthRevenue').textContent = '₪' + monthRevenue;
+  }
+}
+
 // ─── EMAIL SETTINGS ───
 const APPS_SCRIPT_URL_EMAIL = 'https://script.google.com/macros/s/AKfycbwpz5iM_YP2j3vOQLQDCfEV-w2UIZ_pHq9ZmtG4-2wGa0MDDlU3hczjp-kV8ZcHrltiGA/exec';
 
 let currentDayMode = 'today';
+let currentSummaryMode = 'today';
+
+function setSummaryMode(mode) {
+  currentSummaryMode = mode;
+  const todayBtn = document.getElementById('summaryModeToday');
+  const yestBtn = document.getElementById('summaryModeYesterday');
+  if (mode === 'today') {
+    todayBtn.style.borderColor = 'var(--primary)';
+    todayBtn.style.background = 'rgba(232,213,176,0.1)';
+    todayBtn.style.color = 'var(--primary)';
+    yestBtn.style.borderColor = 'var(--border)';
+    yestBtn.style.background = 'transparent';
+    yestBtn.style.color = 'var(--text-soft)';
+  } else {
+    yestBtn.style.borderColor = 'var(--primary)';
+    yestBtn.style.background = 'rgba(232,213,176,0.1)';
+    yestBtn.style.color = 'var(--primary)';
+    todayBtn.style.borderColor = 'var(--border)';
+    todayBtn.style.background = 'transparent';
+    todayBtn.style.color = 'var(--text-soft)';
+  }
+}
 
 function setDayMode(mode) {
   currentDayMode = mode;
@@ -2062,6 +2269,10 @@ async function loadEmailSettings() {
       document.getElementById('currentEmailDisplay').textContent = email;
       document.getElementById('adminEmailInput').value = '';
       document.getElementById('adminEmailInput').placeholder = email;
+      document.getElementById('summaryHour').value = data.settings.summaryHour || '20';
+      document.getElementById('summaryMinute').value = data.settings.summaryMinute || '00';
+      currentSummaryMode = data.settings.summaryDayMode || 'today';
+      setSummaryMode(currentSummaryMode);
     }
   } catch(e) {
     console.warn('Could not load email settings:', e);
@@ -2086,7 +2297,9 @@ async function saveEmailSettings() {
   msg.textContent = '⏳ שומר...';
   msg.style.color = 'var(--text-soft)';
   try {
-    const url = APPS_SCRIPT_URL_EMAIL + '?action=saveSettings&hour=' + hour + '&minute=' + minute + '&dayMode=' + currentDayMode + '&adminEmail=' + encodeURIComponent(adminEmail);
+    const summaryHour = document.getElementById('summaryHour').value;
+    const summaryMinute = document.getElementById('summaryMinute').value;
+    const url = APPS_SCRIPT_URL_EMAIL + '?action=saveSettings&hour=' + hour + '&minute=' + minute + '&dayMode=' + currentDayMode + '&adminEmail=' + encodeURIComponent(adminEmail) + '&summaryHour=' + summaryHour + '&summaryMinute=' + summaryMinute + '&summaryDayMode=' + currentSummaryMode;
     await fetch(url);
     document.getElementById('currentEmailDisplay').textContent = adminEmail;
     document.getElementById('adminEmailInput').value = '';
