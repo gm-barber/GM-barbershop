@@ -1129,12 +1129,34 @@ function selectHomeVisitService(el) {
 function getTakenSlots(dateStr) {
   try {
     const all = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
-    const localTaken = all.filter(b => b.date === dateStr).map(b => b.time);
-    // Also check Sheets cache
+    const localBookings = all.filter(b => b.date === dateStr).map(b => ({
+      time: b.time,
+      duration: b.serviceDuration ? parseInt(b.serviceDuration) : 30
+    }));
     const sheetsCache = JSON.parse(localStorage.getItem('gm_sheets_cache_' + dateStr) || '[]');
-    const sheetsTaken = sheetsCache.map(b => b.time || b.Time || '').filter(Boolean);
-    return [...new Set([...localTaken, ...sheetsTaken])];
+    const sheetsBookings = sheetsCache.map(b => ({
+      time: b.time || b.Time || '',
+      duration: parseInt(b.Duration || b.duration || 30) || 30
+    })).filter(b => b.time);
+    return [...localBookings, ...sheetsBookings];
   } catch(e) { return []; }
+}
+
+function isSlotAvailable(slotTime, serviceDuration, takenBookings) {
+  // Convert slot time to minutes
+  const [sh, sm] = slotTime.split(':').map(Number);
+  const slotStart = sh * 60 + sm;
+  const slotEnd = slotStart + serviceDuration;
+
+  for (const booking of takenBookings) {
+    if (!booking.time) continue;
+    const [bh, bm] = booking.time.split(':').map(Number);
+    const bookStart = bh * 60 + bm;
+    const bookEnd = bookStart + (booking.duration || 30);
+    // Check if there is overlap
+    if (slotStart < bookEnd && slotEnd > bookStart) return false;
+  }
+  return true;
 }
 
 // ─── SCREENS ───
@@ -1230,7 +1252,8 @@ function selectDate(dateStr, cell) {
 }
 
 function renderSlots(dateStr) {
-  const taken = getTakenSlots(dateStr);
+  const takenBookings = getTakenSlots(dateStr);
+  const serviceDuration = state.serviceDuration ? parseInt(state.serviceDuration) : 30;
   const d = parseDateLocal(dateStr);
   const dayOfWeek = d.getDay();
   const hours = getWorkingHours();
@@ -1307,20 +1330,20 @@ function renderSlots(dateStr) {
   allSlots.forEach(slot => {
     const btn = document.createElement('button');
     const isHome = slot.type === 'home';
-    btn.className = 'slot-btn' + (taken.includes(slot.time) ? ' taken' : '');
+    const available = isSlotAvailable(slot.time, serviceDuration, takenBookings);
+    btn.className = 'slot-btn' + (!available ? ' taken' : '');
     btn.textContent = slot.time;
     btn.dataset.slotType = slot.type;
-    if (isHome && !taken.includes(slot.time)) {
+    if (isHome && available) {
       btn.style.borderColor = 'rgba(100,180,255,0.3)';
       btn.style.color = '#7ec8ff';
     }
-    if (!taken.includes(slot.time)) {
+    if (available) {
       btn.onclick = () => {
         document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
         state.selectedTime = slot.time;
         state.selectedSlotIsHome = isHome;
-        // If not in home visit mode but chose home slot — update isHomeVisit
         if (isHome && !state.isHomeVisit) {
           state.isHomeVisit = true;
         } else if (!isHome && state.isHomeVisit && !specificVisit) {
@@ -1375,6 +1398,7 @@ function confirmBooking() {
     date: state.selectedDate,
     price: state.servicePrice,
     isHomeVisit: state.isHomeVisit,
+    serviceDuration: parseInt(state.serviceDuration) || 30,
     confirmNum, dateLabel
   });
 
