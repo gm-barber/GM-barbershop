@@ -734,30 +734,11 @@
   <!-- TAB: EMAIL SETTINGS -->
   <div id="admintab-email" style="display:none;flex:1;overflow-y:auto;padding:16px 20px">
     <div style="font-family:'Heebo',sans-serif;font-size:22px;font-weight:900;margin-bottom:4px">הגדרות מייל יומי</div>
-    <div style="font-size:12px;color:var(--text-soft);margin-bottom:24px">קבל סיכום תורים יומי למייל</div>
+    <div style="font-size:12px;color:var(--text-soft);margin-bottom:20px">קבל תכנית עבודה וסיכום יומי למייל</div>
 
+    <!-- Single email field -->
     <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:16px">
-      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:16px;font-weight:700;text-transform:uppercase">כתובת מייל לקבלת תכנית עבודה</div>
-      <div style="background:rgba(232,213,176,0.06);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:8px">
-        <span style="font-size:16px">✉️</span>
-        <span id="currentEmailDisplay" style="font-size:13px;color:var(--primary);font-weight:600">meirgm10@gmail.com</span>
-      </div>
-      <input id="adminEmailInput" type="email" placeholder="הכנס כתובת מייל חדשה" 
-        style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:13px 16px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;border-radius:10px;margin-bottom:16px;direction:ltr;text-align:left">
-    </div>
-
-    <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:16px">
-      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:12px;font-weight:700;text-transform:uppercase">כתובת מייל לקבלת תכנית עבודה</div>
-      <input type="email" id="adminEmailAddress" value="meirgm10@gmail.com" 
-        style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px 16px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:10px;direction:ltr;text-align:left"
-        placeholder="your@email.com">
-      <div id="currentEmailDisplay" style="font-size:11px;color:var(--text-soft);margin-top:8px;text-align:center">
-        ✉️ כרגע נשלח ל: <span style="color:var(--primary);font-weight:600">meirgm10@gmail.com</span>
-      </div>
-    </div>
-
-    <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:16px">
-      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:12px;font-weight:700;text-transform:uppercase">כתובת מייל לקבלת תכנית עבודה</div>
+      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:12px;font-weight:700;text-transform:uppercase">כתובת לקבלת מיילים</div>
       <div style="background:rgba(232,213,176,0.06);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:10px;display:flex;align-items:center;gap:8px">
         <span style="font-size:14px">✉️</span>
         <span id="currentEmailDisplay" style="font-size:13px;color:var(--primary);font-weight:600">meirgm10@gmail.com</span>
@@ -766,9 +747,10 @@
         style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:13px 16px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;border-radius:10px;direction:ltr;text-align:left">
     </div>
 
+    <!-- Work plan email settings -->
     <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:16px">
-      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:16px;font-weight:700;text-transform:uppercase">שעת שליחה</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:16px;font-weight:700;text-transform:uppercase">מייל תכנית עבודה</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
         <div>
           <div style="font-size:11px;color:var(--text-soft);margin-bottom:6px">שעה</div>
           <select id="emailHour" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:10px">
@@ -789,21 +771,14 @@
           </select>
         </div>
       </div>
-    </div>
-
-    <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:16px">
-      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:16px;font-weight:700;text-transform:uppercase">תכנית עבודה של</div>
+      <div style="font-size:11px;color:var(--text-soft);margin-bottom:8px;font-weight:600">תכנית של</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <button id="dayModeToday" onclick="setDayMode('today')" style="padding:14px;border-radius:10px;border:1.5px solid var(--primary);background:rgba(232,213,176,0.1);color:var(--primary);font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer">
-          📅 היום
-        </button>
-        <button id="dayModeTomorrow" onclick="setDayMode('tomorrow')" style="padding:14px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--text-soft);font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer">
-          📅 מחר
-        </button>
+        <button id="dayModeToday" onclick="setDayMode('today')" style="padding:12px;border-radius:10px;border:1.5px solid var(--primary);background:rgba(232,213,176,0.1);color:var(--primary);font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer">📅 היום</button>
+        <button id="dayModeTomorrow" onclick="setDayMode('tomorrow')" style="padding:12px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--text-soft);font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer">📅 מחר</button>
       </div>
     </div>
 
-    <!-- Summary Email Settings -->
+    <!-- Summary email settings -->
     <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:16px">
       <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:16px;font-weight:700;text-transform:uppercase">מייל סיכום יומי</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
@@ -828,12 +803,8 @@
       </div>
       <div style="font-size:11px;color:var(--text-soft);margin-bottom:8px;font-weight:600">סיכום של</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <button id="summaryModeToday" onclick="setSummaryMode('today')" style="padding:12px;border-radius:10px;border:1.5px solid var(--primary);background:rgba(232,213,176,0.1);color:var(--primary);font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer">
-          📅 היום
-        </button>
-        <button id="summaryModeYesterday" onclick="setSummaryMode('yesterday')" style="padding:12px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--text-soft);font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer">
-          📅 יום קודם
-        </button>
+        <button id="summaryModeToday" onclick="setSummaryMode('today')" style="padding:12px;border-radius:10px;border:1.5px solid var(--primary);background:rgba(232,213,176,0.1);color:var(--primary);font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer">📅 היום</button>
+        <button id="summaryModeYesterday" onclick="setSummaryMode('yesterday')" style="padding:12px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--text-soft);font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer">📅 יום קודם</button>
       </div>
     </div>
 
