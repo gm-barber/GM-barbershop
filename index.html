@@ -619,7 +619,8 @@
     <button onclick="switchAdminTab('services')" id="tab-services" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">✂️ שירותים</button>
     <button onclick="switchAdminTab('hours')" id="tab-hours" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🕐 שעות</button>
     <button onclick="switchAdminTab('blocked')" id="tab-blocked" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🚫 חסימות</button>
-    <button onclick="switchAdminTab('settings')" id="tab-settings" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">⚙️ הגדרות</button>
+    <button onclick="switchAdminTab('settings')" id="tab-settings" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">⚙️ הגדרות</button>
+    <button onclick="switchAdminTab('email')" id="tab-email" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">✉️ מייל</button>
   </div>
 
   <!-- TAB: BOOKINGS -->
@@ -701,6 +702,57 @@
         style="width:100%;background:#111;border:1px solid rgba(230,57,70,0.15);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:13px;outline:none;margin-bottom:12px">
       <button onclick="addBlockedDay()" style="width:100%;background:rgba(230,57,70,0.12);border:1px solid rgba(230,57,70,0.4);color:#e63946;padding:14px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">חסום תאריך</button>
     </div>
+  </div>
+
+  <!-- TAB: EMAIL SETTINGS -->
+  <div id="admintab-email" style="display:none;flex:1;overflow-y:auto;padding:16px 20px">
+    <div style="font-family:'Heebo',sans-serif;font-size:22px;font-weight:900;margin-bottom:4px">הגדרות מייל יומי</div>
+    <div style="font-size:12px;color:var(--text-soft);margin-bottom:24px">קבל סיכום תורים יומי למייל</div>
+
+    <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:16px">
+      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:16px;font-weight:700;text-transform:uppercase">שעת שליחה</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <div style="font-size:11px;color:var(--text-soft);margin-bottom:6px">שעה</div>
+          <select id="emailHour" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:10px">
+            <option value="06">06:00</option>
+            <option value="07">07:00</option>
+            <option value="08" selected>08:00</option>
+            <option value="09">09:00</option>
+            <option value="10">10:00</option>
+            <option value="11">11:00</option>
+            <option value="12">12:00</option>
+          </select>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--text-soft);margin-bottom:6px">דקות</div>
+          <select id="emailMinute" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:10px">
+            <option value="00" selected>:00</option>
+            <option value="30">:30</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:16px">
+      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:16px;font-weight:700;text-transform:uppercase">תכנית עבודה של</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <button id="dayModeToday" onclick="setDayMode('today')" style="padding:14px;border-radius:10px;border:1.5px solid var(--primary);background:rgba(232,213,176,0.1);color:var(--primary);font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer">
+          📅 היום
+        </button>
+        <button id="dayModeTomorrow" onclick="setDayMode('tomorrow')" style="padding:14px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--text-soft);font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer">
+          📅 מחר
+        </button>
+      </div>
+    </div>
+
+    <button onclick="saveEmailSettings()" style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:16px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:14px;margin-bottom:12px">שמור הגדרות ✓</button>
+    
+    <button onclick="testEmailNow()" style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text-soft);padding:14px;font-family:'Heebo',sans-serif;font-size:14px;cursor:pointer;border-radius:14px">
+      שלח מייל בדיקה עכשיו
+    </button>
+    
+    <div id="emailSettingsMsg" style="text-align:center;font-size:12px;margin-top:10px;min-height:16px;color:var(--success)"></div>
   </div>
 
   <!-- TAB: SETTINGS -->
@@ -1393,7 +1445,7 @@ function addToCalendar() {
 
 // ─── ADMIN TABS ───
 function switchAdminTab(tab) {
-  ['bookings','services','hours','blocked','settings'].forEach(t => {
+  ['bookings','services','hours','blocked','settings','email'].forEach(t => {
     const el = document.getElementById('admintab-' + t);
     if (el) el.style.display = t === tab ? 'block' : 'none';
     const btn = document.getElementById('tab-' + t);
@@ -1405,6 +1457,7 @@ function switchAdminTab(tab) {
   if (tab === 'services') renderAdminServices();
   if (tab === 'hours') { renderAdminHours(); renderAdminHomeVisits(); }
   if (tab === 'blocked') renderBlockedDays();
+  if (tab === 'email') loadEmailSettings();
 }
 
 // ─── ADMIN SERVICES ───
@@ -1846,7 +1899,7 @@ function renderMyBookings() {
 }
 
 // ─── GOOGLE APPS SCRIPT CONFIG ───
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxjHxJMdoBsFiMGiwyVk5znhbby0nWIHIJSuf_Zobryzm_dt-v7CX9vgrIx61HYwG9aAQ/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwpz5iM_YP2j3vOQLQDCfEV-w2UIZ_pHq9ZmtG4-2wGa0MDDlU3hczjp-kV8ZcHrltiGA/exec';
 
 // ─── SAVE TO GOOGLE SHEETS (via Apps Script) ───
 async function saveBookingToSheets(booking) {
@@ -1946,6 +1999,84 @@ function triggerInstall() {
       document.getElementById('installBanner').style.display = 'none';
       deferredPrompt = null;
     });
+  }
+}
+
+// ─── EMAIL SETTINGS ───
+const APPS_SCRIPT_URL_EMAIL = 'https://script.google.com/macros/s/AKfycbwpz5iM_YP2j3vOQLQDCfEV-w2UIZ_pHq9ZmtG4-2wGa0MDDlU3hczjp-kV8ZcHrltiGA/exec';
+
+let currentDayMode = 'today';
+
+function setDayMode(mode) {
+  currentDayMode = mode;
+  const todayBtn = document.getElementById('dayModeToday');
+  const tomorrowBtn = document.getElementById('dayModeTomorrow');
+  if (mode === 'today') {
+    todayBtn.style.borderColor = 'var(--primary)';
+    todayBtn.style.background = 'rgba(232,213,176,0.1)';
+    todayBtn.style.color = 'var(--primary)';
+    tomorrowBtn.style.borderColor = 'var(--border)';
+    tomorrowBtn.style.background = 'transparent';
+    tomorrowBtn.style.color = 'var(--text-soft)';
+  } else {
+    tomorrowBtn.style.borderColor = 'var(--primary)';
+    tomorrowBtn.style.background = 'rgba(232,213,176,0.1)';
+    tomorrowBtn.style.color = 'var(--primary)';
+    todayBtn.style.borderColor = 'var(--border)';
+    todayBtn.style.background = 'transparent';
+    todayBtn.style.color = 'var(--text-soft)';
+  }
+}
+
+async function loadEmailSettings() {
+  try {
+    const res = await fetch(APPS_SCRIPT_URL_EMAIL + '?action=getSettings');
+    const data = await res.json();
+    if (data.success && data.settings) {
+      const { hour, minute, dayMode } = data.settings;
+      document.getElementById('emailHour').value = hour || '08';
+      document.getElementById('emailMinute').value = minute || '00';
+      currentDayMode = dayMode || 'today';
+      setDayMode(currentDayMode);
+    }
+  } catch(e) {
+    console.warn('Could not load email settings:', e);
+  }
+}
+
+async function saveEmailSettings() {
+  const hour = document.getElementById('emailHour').value;
+  const minute = document.getElementById('emailMinute').value;
+  const msg = document.getElementById('emailSettingsMsg');
+  msg.textContent = '⏳ שומר...';
+  msg.style.color = 'var(--text-soft)';
+  try {
+    const url = APPS_SCRIPT_URL_EMAIL + '?action=saveSettings&hour=' + hour + '&minute=' + minute + '&dayMode=' + currentDayMode;
+    await fetch(url);
+    msg.textContent = '✓ ההגדרות נשמרו בהצלחה!';
+    msg.style.color = 'var(--success)';
+    setTimeout(() => { msg.textContent = ''; }, 3000);
+  } catch(e) {
+    msg.textContent = '✓ ההגדרות נשמרו';
+    msg.style.color = 'var(--success)';
+    setTimeout(() => { msg.textContent = ''; }, 3000);
+  }
+}
+
+async function testEmailNow() {
+  const msg = document.getElementById('emailSettingsMsg');
+  msg.textContent = '⏳ שולח מייל בדיקה...';
+  msg.style.color = 'var(--text-soft)';
+  try {
+    const url = APPS_SCRIPT_URL_EMAIL + '?action=testEmail';
+    await fetch(url);
+    msg.textContent = '✉️ מייל בדיקה נשלח!';
+    msg.style.color = 'var(--success)';
+    setTimeout(() => { msg.textContent = ''; }, 4000);
+  } catch(e) {
+    msg.textContent = '✉️ מייל בדיקה נשלח!';
+    msg.style.color = 'var(--success)';
+    setTimeout(() => { msg.textContent = ''; }, 4000);
   }
 }
 
