@@ -1266,32 +1266,8 @@ function renderSlots(dateStr) {
 
   const workDay = hours[dayOfWeek];
   const specificVisit = homeVisits.find(v => v.date === dateStr);
-
-  // Build working hours range
-  let workFrom = null, workTo = null;
-  let homeFrom = null, homeTo = null;
   const breaks = workDay ? (workDay.breaks || []) : [];
 
-  if (state.isHomeVisit) {
-    if (specificVisit) {
-      homeFrom = specificVisit.from;
-      homeTo = specificVisit.to;
-    } else if (workDay && workDay.homeFrom && workDay.homeTo) {
-      homeFrom = workDay.homeFrom;
-      homeTo = workDay.homeTo;
-    }
-  } else {
-    if (workDay && workDay.open) {
-      workFrom = workDay.from;
-      workTo = workDay.to;
-      if (workDay.homeFrom && workDay.homeTo) {
-        homeFrom = workDay.homeFrom;
-        homeTo = workDay.homeTo;
-      }
-    }
-  }
-
-  // Convert time string to minutes
   function toMins(t) {
     if (!t) return 0;
     const [h, m] = t.split(':').map(Number);
@@ -1300,78 +1276,84 @@ function renderSlots(dateStr) {
   function toTime(mins) {
     return String(Math.floor(mins/60)).padStart(2,'0') + ':' + String(mins%60).padStart(2,'0');
   }
-
-  // Check if time is in break
   function inBreak(mins) {
-    return breaks.some(br => {
-      const bf = toMins(br.from);
-      const bt = toMins(br.to);
-      return mins >= bf && mins < bt;
-    });
+    return breaks.some(br => mins >= toMins(br.from) && mins < toMins(br.to));
   }
 
-  // Build list of taken intervals
-  const takenIntervals = takenBookings.map(b => {
-    const start = toMins(b.time);
-    return { start, end: start + (b.duration || 30) };
-  });
+  // Sort taken intervals by start time
+  const takenIntervals = takenBookings
+    .filter(b => b.time)
+    .map(b => ({ start: toMins(b.time), end: toMins(b.time) + (b.duration || 30) }))
+    .sort((a, b) => a.start - b.start);
 
-  // Generate dynamic slots
-  function generateSlots(fromTime, toTime, type) {
-    if (!fromTime || !toTime) return [];
+  const isEmpty = takenIntervals.length === 0;
+
+  function generateSlots(fromStr, toStr, type) {
+    if (!fromStr || !toStr) return [];
     const slots = [];
-    const endMins = toMins(toTime);
-    let cur = toMins(fromTime);
+    const rangeStart = toMins(fromStr);
+    const rangeEnd = toMins(toStr);
 
-    while (cur + serviceDuration <= endMins) {
-      const slotEnd = cur + serviceDuration;
-
-      // Check if this slot is in a break
-      if (inBreak(cur)) {
-        cur += 1;
-        continue;
+    if (isEmpty) {
+      // Empty day: slots every 30 min
+      let cur = rangeStart;
+      while (cur + serviceDuration <= rangeEnd) {
+        if (!inBreak(cur)) slots.push({ time: toTime(cur), type });
+        cur += 30;
       }
-
-      // Check if slot overlaps with any taken booking
-      const overlaps = takenIntervals.some(t => cur < t.end && slotEnd > t.start);
-
-      if (!overlaps) {
-        slots.push({ time: toTime(cur), type, available: true });
-        cur = slotEnd; // Next slot starts right after this one
-      } else {
-        // Find the earliest end time of overlapping bookings
-        const blocking = takenIntervals
-          .filter(t => cur < t.end && slotEnd > t.start)
-          .sort((a, b) => a.end - b.end);
-        if (blocking.length > 0) {
-          cur = blocking[blocking.length - 1].end;
-        } else {
-          cur += 1;
-        }
-      }
+      return slots;
     }
-    return slots;
+
+    // Build a list of "anchor points" — start of day + end of each taken booking
+    // These are the candidate starting points for slots
+    const anchors = [rangeStart];
+    takenIntervals.forEach(t => {
+      if (t.end > rangeStart && t.end < rangeEnd) anchors.push(t.end);
+    });
+
+    anchors.forEach(anchor => {
+      let cur = anchor;
+      // Skip if we're inside a taken interval
+      const insideTaken = takenIntervals.find(t => t.start <= cur && t.end > cur);
+      if (insideTaken) return;
+
+      // Find how much free time we have from this anchor
+      const nextTaken = takenIntervals.find(t => t.start > cur);
+      const freeUntil = nextTaken ? Math.min(nextTaken.start, rangeEnd) : rangeEnd;
+
+      // Generate slots from this anchor until the next taken or end of range
+      let slotCur = cur;
+      while (slotCur + serviceDuration <= freeUntil) {
+        if (!inBreak(slotCur)) slots.push({ time: toTime(slotCur), type });
+        slotCur += serviceDuration;
+      }
+    });
+
+    // Remove duplicates and sort
+    const seen = new Set();
+    return slots.filter(s => {
+      if (seen.has(s.time)) return false;
+      seen.add(s.time);
+      return true;
+    }).sort((a, b) => a.time.localeCompare(b.time));
   }
 
   let allSlots = [];
 
   if (state.isHomeVisit) {
-    allSlots = generateSlots(homeFrom, homeTo, 'home');
+    const hFrom = specificVisit ? specificVisit.from : (workDay && workDay.homeFrom);
+    const hTo = specificVisit ? specificVisit.to : (workDay && workDay.homeTo);
+    allSlots = generateSlots(hFrom, hTo, 'home');
   } else {
-    if (workFrom && workTo) {
-      allSlots = [...allSlots, ...generateSlots(workFrom, workTo, 'shop')];
+    if (workDay && workDay.open) {
+      allSlots = generateSlots(workDay.from, workDay.to, 'shop');
+      if (workDay.homeFrom && workDay.homeTo) {
+        const homeSlots = generateSlots(workDay.homeFrom, workDay.homeTo, 'home');
+        const existing = new Set(allSlots.map(s => s.time));
+        homeSlots.forEach(s => { if (!existing.has(s.time)) allSlots.push(s); });
+        allSlots.sort((a, b) => a.time.localeCompare(b.time));
+      }
     }
-    if (homeFrom && homeTo) {
-      allSlots = [...allSlots, ...generateSlots(homeFrom, homeTo, 'home')];
-    }
-    // Remove duplicates
-    const seen = new Set();
-    allSlots = allSlots.filter(s => {
-      if (seen.has(s.time)) return false;
-      seen.add(s.time);
-      return true;
-    });
-    allSlots.sort((a,b) => a.time.localeCompare(b.time));
   }
 
   grid.innerHTML = '';
@@ -1380,7 +1362,6 @@ function renderSlots(dateStr) {
     return;
   }
 
-  // Legend if mixed
   const hasHome = allSlots.some(s => s.type === 'home');
   const hasShop = allSlots.some(s => s.type === 'shop');
   if (hasHome && hasShop && !state.isHomeVisit) {
