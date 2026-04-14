@@ -1267,53 +1267,116 @@ function renderSlots(dateStr) {
   const workDay = hours[dayOfWeek];
   const specificVisit = homeVisits.find(v => v.date === dateStr);
 
-  // Build slot list with type: 'shop' or 'home'
-  const allSlots = [];
-
-  function addSlots(fromTime, toTime, type, breaksList) {
-    if (!fromTime || !toTime) return;
-    const [fh, fm] = fromTime.split(':').map(Number);
-    const [th, tm] = toTime.split(':').map(Number);
-    let cur = fh * 60 + fm;
-    const end = th * 60 + tm;
-    while (cur < end) {
-      const hh = String(Math.floor(cur/60)).padStart(2,'0');
-      const mm = String(cur%60).padStart(2,'0');
-      const slotStr = `${hh}:${mm}`;
-      const inBreak = (breaksList||[]).some(br => {
-        const [bfh, bfm] = br.from.split(':').map(Number);
-        const [bth, btm] = br.to.split(':').map(Number);
-        return cur >= bfh*60+bfm && cur < bth*60+btm;
-      });
-      if (!inBreak && !allSlots.find(s => s.time === slotStr)) {
-        allSlots.push({ time: slotStr, type });
-      }
-      cur += 30;
-    }
-  }
+  // Build working hours range
+  let workFrom = null, workTo = null;
+  let homeFrom = null, homeTo = null;
+  const breaks = workDay ? (workDay.breaks || []) : [];
 
   if (state.isHomeVisit) {
-    // Home visit: specific date override OR weekly home hours
     if (specificVisit) {
-      addSlots(specificVisit.from, specificVisit.to, 'home', []);
+      homeFrom = specificVisit.from;
+      homeTo = specificVisit.to;
     } else if (workDay && workDay.homeFrom && workDay.homeTo) {
-      addSlots(workDay.homeFrom, workDay.homeTo, 'home', []);
+      homeFrom = workDay.homeFrom;
+      homeTo = workDay.homeTo;
     }
   } else {
-    // Regular: shop hours + weekly home hours (both shown)
     if (workDay && workDay.open) {
-      addSlots(workDay.from, workDay.to, 'shop', workDay.breaks || []);
+      workFrom = workDay.from;
+      workTo = workDay.to;
       if (workDay.homeFrom && workDay.homeTo) {
-        addSlots(workDay.homeFrom, workDay.homeTo, 'home', []);
+        homeFrom = workDay.homeFrom;
+        homeTo = workDay.homeTo;
       }
     }
   }
 
-  allSlots.sort((a,b) => a.time.localeCompare(b.time));
+  // Convert time string to minutes
+  function toMins(t) {
+    if (!t) return 0;
+    const [h, m] = t.split(':').map(Number);
+    return h * 60 + m;
+  }
+  function toTime(mins) {
+    return String(Math.floor(mins/60)).padStart(2,'0') + ':' + String(mins%60).padStart(2,'0');
+  }
+
+  // Check if time is in break
+  function inBreak(mins) {
+    return breaks.some(br => {
+      const bf = toMins(br.from);
+      const bt = toMins(br.to);
+      return mins >= bf && mins < bt;
+    });
+  }
+
+  // Build list of taken intervals
+  const takenIntervals = takenBookings.map(b => {
+    const start = toMins(b.time);
+    return { start, end: start + (b.duration || 30) };
+  });
+
+  // Generate dynamic slots
+  function generateSlots(fromTime, toTime, type) {
+    if (!fromTime || !toTime) return [];
+    const slots = [];
+    const endMins = toMins(toTime);
+    let cur = toMins(fromTime);
+
+    while (cur + serviceDuration <= endMins) {
+      const slotEnd = cur + serviceDuration;
+
+      // Check if this slot is in a break
+      if (inBreak(cur)) {
+        cur += 1;
+        continue;
+      }
+
+      // Check if slot overlaps with any taken booking
+      const overlaps = takenIntervals.some(t => cur < t.end && slotEnd > t.start);
+
+      if (!overlaps) {
+        slots.push({ time: toTime(cur), type, available: true });
+        cur = slotEnd; // Next slot starts right after this one
+      } else {
+        // Find the earliest end time of overlapping bookings
+        const blocking = takenIntervals
+          .filter(t => cur < t.end && slotEnd > t.start)
+          .sort((a, b) => a.end - b.end);
+        if (blocking.length > 0) {
+          cur = blocking[blocking.length - 1].end;
+        } else {
+          cur += 1;
+        }
+      }
+    }
+    return slots;
+  }
+
+  let allSlots = [];
+
+  if (state.isHomeVisit) {
+    allSlots = generateSlots(homeFrom, homeTo, 'home');
+  } else {
+    if (workFrom && workTo) {
+      allSlots = [...allSlots, ...generateSlots(workFrom, workTo, 'shop')];
+    }
+    if (homeFrom && homeTo) {
+      allSlots = [...allSlots, ...generateSlots(homeFrom, homeTo, 'home')];
+    }
+    // Remove duplicates
+    const seen = new Set();
+    allSlots = allSlots.filter(s => {
+      if (seen.has(s.time)) return false;
+      seen.add(s.time);
+      return true;
+    });
+    allSlots.sort((a,b) => a.time.localeCompare(b.time));
+  }
 
   grid.innerHTML = '';
   if (allSlots.length === 0) {
-    grid.innerHTML = '<div style="color:var(--grey);font-size:13px;padding:16px">אין שעות זמינות ביום זה</div>';
+    grid.innerHTML = '<div style="color:var(--text-soft);font-size:13px;padding:16px">אין שעות זמינות ביום זה</div>';
     return;
   }
 
@@ -1322,7 +1385,7 @@ function renderSlots(dateStr) {
   const hasShop = allSlots.some(s => s.type === 'shop');
   if (hasHome && hasShop && !state.isHomeVisit) {
     const legend = document.createElement('div');
-    legend.style.cssText = 'display:flex;gap:16px;padding:0 0 12px;font-size:11px;color:var(--grey)';
+    legend.style.cssText = 'display:flex;gap:16px;padding:0 0 12px;font-size:11px;color:var(--text-soft)';
     legend.innerHTML = '<span>🏪 מספרה</span><span style="color:#7ec8ff">🏠 עד בית הלקוח</span>';
     grid.appendChild(legend);
   }
@@ -1330,29 +1393,23 @@ function renderSlots(dateStr) {
   allSlots.forEach(slot => {
     const btn = document.createElement('button');
     const isHome = slot.type === 'home';
-    const available = isSlotAvailable(slot.time, serviceDuration, takenBookings);
-    btn.className = 'slot-btn' + (!available ? ' taken' : '');
+    btn.className = 'slot-btn';
     btn.textContent = slot.time;
     btn.dataset.slotType = slot.type;
-    if (isHome && available) {
+    if (isHome) {
       btn.style.borderColor = 'rgba(100,180,255,0.3)';
       btn.style.color = '#7ec8ff';
     }
-    if (available) {
-      btn.onclick = () => {
-        document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        state.selectedTime = slot.time;
-        state.selectedSlotIsHome = isHome;
-        if (isHome && !state.isHomeVisit) {
-          state.isHomeVisit = true;
-        } else if (!isHome && state.isHomeVisit && !specificVisit) {
-          state.isHomeVisit = false;
-        }
-        document.getElementById('nextBtn2').classList.add('enabled');
-      };
-      if (state.selectedTime === slot.time) btn.classList.add('selected');
-    }
+    btn.onclick = () => {
+      document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      state.selectedTime = slot.time;
+      state.selectedSlotIsHome = isHome;
+      if (isHome && !state.isHomeVisit) state.isHomeVisit = true;
+      else if (!isHome && state.isHomeVisit && !specificVisit) state.isHomeVisit = false;
+      document.getElementById('nextBtn2').classList.add('enabled');
+    };
+    if (state.selectedTime === slot.time) btn.classList.add('selected');
     grid.appendChild(btn);
   });
 }
