@@ -710,6 +710,26 @@
     <div style="font-size:12px;color:var(--text-soft);margin-bottom:24px">קבל סיכום תורים יומי למייל</div>
 
     <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:16px">
+      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:16px;font-weight:700;text-transform:uppercase">כתובת מייל לשליחה</div>
+      <div style="background:rgba(232,213,176,0.06);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:8px">
+        <span style="font-size:16px">✉️</span>
+        <span id="currentEmailDisplay" style="font-size:13px;color:var(--primary);font-weight:600">meirgm10@gmail.com</span>
+      </div>
+      <input id="adminEmailInput" type="email" placeholder="הכנס כתובת מייל חדשה" 
+        style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:13px 16px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;border-radius:10px;margin-bottom:16px;direction:ltr;text-align:left">
+    </div>
+
+    <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:16px">
+      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:12px;font-weight:700;text-transform:uppercase">כתובת מייל לקבלת סיכום</div>
+      <input type="email" id="adminEmailAddress" value="meirgm10@gmail.com" 
+        style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px 16px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:10px;direction:ltr;text-align:left"
+        placeholder="your@email.com">
+      <div id="currentEmailDisplay" style="font-size:11px;color:var(--text-soft);margin-top:8px;text-align:center">
+        ✉️ כרגע נשלח ל: <span style="color:var(--primary);font-weight:600">meirgm10@gmail.com</span>
+      </div>
+    </div>
+
+    <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:16px">
       <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:16px;font-weight:700;text-transform:uppercase">שעת שליחה</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div>
@@ -2033,11 +2053,15 @@ async function loadEmailSettings() {
     const res = await fetch(APPS_SCRIPT_URL_EMAIL + '?action=getSettings');
     const data = await res.json();
     if (data.success && data.settings) {
-      const { hour, minute, dayMode } = data.settings;
+      const { hour, minute, dayMode, adminEmail } = data.settings;
       document.getElementById('emailHour').value = hour || '08';
       document.getElementById('emailMinute').value = minute || '00';
       currentDayMode = dayMode || 'today';
       setDayMode(currentDayMode);
+      const email = adminEmail || 'meirgm10@gmail.com';
+      document.getElementById('currentEmailDisplay').textContent = email;
+      document.getElementById('adminEmailInput').value = '';
+      document.getElementById('adminEmailInput').placeholder = email;
     }
   } catch(e) {
     console.warn('Could not load email settings:', e);
@@ -2047,12 +2071,26 @@ async function loadEmailSettings() {
 async function saveEmailSettings() {
   const hour = document.getElementById('emailHour').value;
   const minute = document.getElementById('emailMinute').value;
+  const emailInput = document.getElementById('adminEmailInput').value.trim();
+  const currentEmail = document.getElementById('currentEmailDisplay').textContent;
+  const adminEmail = emailInput || currentEmail;
   const msg = document.getElementById('emailSettingsMsg');
+
+  if (emailInput && !emailInput.includes('@')) {
+    msg.textContent = '⚠️ כתובת מייל לא תקינה';
+    msg.style.color = 'var(--red)';
+    setTimeout(() => { msg.textContent = ''; }, 3000);
+    return;
+  }
+
   msg.textContent = '⏳ שומר...';
   msg.style.color = 'var(--text-soft)';
   try {
-    const url = APPS_SCRIPT_URL_EMAIL + '?action=saveSettings&hour=' + hour + '&minute=' + minute + '&dayMode=' + currentDayMode;
+    const url = APPS_SCRIPT_URL_EMAIL + '?action=saveSettings&hour=' + hour + '&minute=' + minute + '&dayMode=' + currentDayMode + '&adminEmail=' + encodeURIComponent(adminEmail);
     await fetch(url);
+    document.getElementById('currentEmailDisplay').textContent = adminEmail;
+    document.getElementById('adminEmailInput').value = '';
+    document.getElementById('adminEmailInput').placeholder = adminEmail;
     msg.textContent = '✓ ההגדרות נשמרו בהצלחה!';
     msg.style.color = 'var(--success)';
     setTimeout(() => { msg.textContent = ''; }, 3000);
