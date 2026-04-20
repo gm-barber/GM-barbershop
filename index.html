@@ -647,7 +647,7 @@ document.head.appendChild(link);
     <button onclick="switchAdminTab('bookings')" id="tab-bookings" style="background:none;border:none;color:var(--gold);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid var(--gold);white-space:nowrap">📋 תורים</button>
     <button onclick="switchAdminTab('services')" id="tab-services" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">✂️ שירותים</button>
     <button onclick="switchAdminTab('hours')" id="tab-hours" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🕐 תכנית עבודה</button>
-    <button onclick="switchAdminTab('blocked')" id="tab-blocked" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🚫 חסימות</button>
+    <button onclick="switchAdminTab('blocked')" id="tab-blocked" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🏖️ ימי חופש</button>
     <button onclick="switchAdminTab('settings')" id="tab-settings" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">⚙️ הגדרות</button>
     <button onclick="switchAdminTab('reports')" id="tab-reports" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">📊 דוחות</button>
     <button onclick="switchAdminTab('images')" id="tab-images" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🖼️ תמונות</button>
@@ -729,17 +729,17 @@ document.head.appendChild(link);
   
   <!-- TAB: BLOCKED DAYS -->
   <div id="admintab-blocked" style="display:none;flex:1;overflow-y:auto;padding:16px 20px">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:4px">ימים חסומים</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:4px">ימי חופש</div>
     <div style="font-size:18px;color:var(--grey);margin-bottom:16px">חופשות, מחלה, ואירועים — ניתן להגדיר מראש לכל עתיד</div>
     <div id="blockedDaysList"></div>
     <div style="background:var(--card);border:1px solid rgba(230,57,70,0.2);padding:16px;margin-top:8px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">
-      <div style="font-size:17px;color:#e63946;letter-spacing:2px;margin-bottom:12px">חסום יום / תקופה</div>
+      <div style="font-size:17px;color:#e63946;letter-spacing:2px;margin-bottom:12px">הוסף יום חופש / תקופה</div>
       <input type="date" id="blockDateFrom" style="width:100%;background:#111;border:1px solid rgba(230,57,70,0.2);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;margin-bottom:8px;color-scheme:dark">
       <div style="font-size:17px;color:var(--grey);margin-bottom:6px">עד תאריך (אופציונלי — ליום אחד השאר ריק)</div>
       <input type="date" id="blockDateTo" style="width:100%;background:#111;border:1px solid rgba(230,57,70,0.2);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;margin-bottom:10px;color-scheme:dark">
       <input type="text" id="blockReason" placeholder="סיבה (אופציונלי — חופשה, מחלה...)"
         style="width:100%;background:#111;border:1px solid rgba(230,57,70,0.15);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:17px;outline:none;margin-bottom:12px">
-      <button onclick="addBlockedDay()" style="width:100%;background:rgba(230,57,70,0.12);border:1px solid rgba(230,57,70,0.4);color:#e63946;padding:14px;font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;cursor:pointer;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">חסום תאריך</button>
+      <button onclick="addBlockedDay()" style="width:100%;background:rgba(230,57,70,0.12);border:1px solid rgba(230,57,70,0.4);color:#e63946;padding:14px;font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;cursor:pointer;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">הוסף יום חופש</button>
     </div>
   </div>
 
@@ -1814,7 +1814,7 @@ function renderAdminServices() {
     <div style="background:var(--card);border:1px solid rgba(201,168,76,0.15);padding:16px;margin-bottom:10px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <div style="font-size:24px">${s.icon}</div>
-        <button onclick="deleteService(${i})" style="background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.3);color:#e63946;padding:6px 12px;font-size:17px;cursor:pointer;font-family:'Heebo',sans-serif">מחק</button>
+        <button onclick="deleteService(${i})" style="background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.3);color:#e63946;padding:6px 12px;font-size:17px;cursor:pointer;font-family:'Heebo',sans-serif">הסר</button>
       </div>
       <input value="${s.name}" onchange="updateService(${i},'name',this.value)"
         style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;margin-bottom:8px">
@@ -1994,7 +1994,7 @@ function renderBlockedDays() {
   }).sort((a,b) => a.from.localeCompare(b.from));
 
   if (future.length === 0) {
-    list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--grey);font-size:17px">אין ימים חסומים מוגדרים</div>';
+    list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--grey);font-size:17px">אין ימי חופש מוגדרים</div>';
     return;
   }
 
@@ -2010,10 +2010,10 @@ function renderBlockedDays() {
     return `
     <div style="background:rgba(230,57,70,0.06);border:1px solid rgba(230,57,70,0.2);padding:14px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">
       <div>
-        <div style="font-weight:700;font-size:18px;color:#e63946">🚫 ${rangeLabel}</div>
+        <div style="font-weight:700;font-size:18px;color:#e63946">🏖️ ${rangeLabel}</div>
         ${b.reason ? `<div style="font-size:18px;color:var(--grey);margin-top:3px">${b.reason}</div>` : ''}
       </div>
-      <button onclick="deleteBlockedDay(${blocked.indexOf(b)})" style="background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.3);color:#e63946;padding:6px 12px;font-size:17px;cursor:pointer;font-family:'Heebo',sans-serif">מחק</button>
+      <button onclick="deleteBlockedDay(${blocked.indexOf(b)})" style="background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.3);color:#e63946;padding:6px 12px;font-size:17px;cursor:pointer;font-family:'Heebo',sans-serif">הסר</button>
     </div>`;
   }).join('');
 }
@@ -2080,7 +2080,7 @@ function renderAdminHomeVisits() {
         <div style="font-weight:700;font-size:18px;color:#7ec8ff">🏠 יום ${dayNames[d.getDay()]}, ${d.getDate()} ב${HEBREW_MONTHS[d.getMonth()]}</div>
         <div style="font-size:18px;color:var(--grey);margin-top:3px">${v.from} — ${v.to}</div>
       </div>
-      <button onclick="deleteHomeVisit(${visits.indexOf(v)})" style="background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.3);color:#e63946;padding:6px 12px;font-size:17px;cursor:pointer;font-family:'Heebo',sans-serif">מחק</button>
+      <button onclick="deleteHomeVisit(${visits.indexOf(v)})" style="background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.3);color:#e63946;padding:6px 12px;font-size:17px;cursor:pointer;font-family:'Heebo',sans-serif">הסר</button>
     </div>`;
   }).join('');
 }
