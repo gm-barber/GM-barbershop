@@ -2387,8 +2387,7 @@ async function downloadCustomers() {
     csvRows.push([c.name, c.phone, c.email, c.address, formatDate(c.firstVisit), formatDate(c.lastVisit), c.visits, '₪' + c.totalSpent]);
   });
 
-  const csv = bom + csvRows.map(row => row.map(cell => '"' + String(cell||'').replace(/"/g,'""') + '"').join(',')).join('
-');
+  const csv = bom + csvRows.map(row => row.map(cell => '"' + String(cell||'').replace(/"/g,'""') + '"').join(',')).join('\n');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -2771,8 +2770,7 @@ function generateExcelReport(appointments, type, from, to) {
 
   // Convert to CSV with BOM for Excel Hebrew support
   const bom = '﻿';
-  const csv = bom + csvRows.map(row => row.map(cell => '"' + String(cell||'').replace(/"/g,'""') + '"').join(',')).join('
-');
+  const csv = bom + csvRows.map(row => row.map(cell => '"' + String(cell||'').replace(/"/g,'""') + '"').join(',')).join('\n');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -2832,8 +2830,7 @@ async function downloadCustomers() {
     csvRows.push([c.name, c.phone, c.email, c.address, formatDate(c.firstVisit), formatDate(c.lastVisit), c.visits, '₪' + c.totalSpent]);
   });
 
-  const csv = bom + csvRows.map(row => row.map(cell => '"' + String(cell||'').replace(/"/g,'""') + '"').join(',')).join('
-');
+  const csv = bom + csvRows.map(row => row.map(cell => '"' + String(cell||'').replace(/"/g,'""') + '"').join(',')).join('\n');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
