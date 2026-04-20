@@ -11,8 +11,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="GM מספרה">
 <title>GM המספרה</title>
-<link rel="icon" type="image/jpeg" href="https://res.cloudinary.com/dyvx2rz4s/image/upload/v1776719393/%D7%9C%D7%95%D7%92%D7%95_%D7%9E%D7%A1%D7%A4%D7%A8%D7%94_c62alt.jpg">
-<link rel="apple-touch-icon" href="https://res.cloudinary.com/dyvx2rz4s/image/upload/v1776719393/%D7%9C%D7%95%D7%92%D7%95_%D7%9E%D7%A1%D7%A4%D7%A8%D7%94_c62alt.jpg">
+<link rel="icon" type="image/jpeg" href="https://res.cloudinary.com/dyvx2rz4s/image/upload/q_auto/f_auto/v1776721264/%D7%9C%D7%95%D7%92%D7%95_%D7%92%D7%95%D7%9C%D7%9F_%D7%94%D7%A1%D7%A4%D7%A8_jhd89p.jpg">
+<link rel="apple-touch-icon" href="https://res.cloudinary.com/dyvx2rz4s/image/upload/q_auto/f_auto/v1776721264/%D7%9C%D7%95%D7%92%D7%95_%D7%92%D7%95%D7%9C%D7%9F_%D7%94%D7%A1%D7%A4%D7%A8_jhd89p.jpg">
 
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Heebo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
 <style>
@@ -38,6 +38,7 @@
     background: var(--bg);
     color: var(--text);
     font-family: 'Heebo', sans-serif;
+    font-size: 16px;
     min-height: 100vh;
     overflow-x: hidden;
   }
@@ -380,6 +381,7 @@
   .slot-btn {
     background: var(--card);
     border: 1px solid var(--border);
+    font-size: 15px;
     color: var(--text);
     padding: 14px 8px;
     text-align: center;
@@ -574,8 +576,8 @@ const manifestData = {
   background_color: "#181818",
   theme_color: "#181818",
   icons: [
-    { src: "https://res.cloudinary.com/dyvx2rz4s/image/upload/v1776719393/%D7%9C%D7%95%D7%92%D7%95_%D7%9E%D7%A1%D7%A4%D7%A8%D7%94_c62alt.jpg", sizes: "192x192", type: "image/jpeg" },
-    { src: "https://res.cloudinary.com/dyvx2rz4s/image/upload/v1776719393/%D7%9C%D7%95%D7%92%D7%95_%D7%9E%D7%A1%D7%A4%D7%A8%D7%94_c62alt.jpg", sizes: "512x512", type: "image/jpeg" }
+    { src: "https://res.cloudinary.com/dyvx2rz4s/image/upload/q_auto/f_auto/v1776721264/%D7%9C%D7%95%D7%92%D7%95_%D7%92%D7%95%D7%9C%D7%9F_%D7%94%D7%A1%D7%A4%D7%A8_jhd89p.jpg", sizes: "192x192", type: "image/jpeg" },
+    { src: "https://res.cloudinary.com/dyvx2rz4s/image/upload/q_auto/f_auto/v1776721264/%D7%9C%D7%95%D7%92%D7%95_%D7%92%D7%95%D7%9C%D7%9F_%D7%94%D7%A1%D7%A4%D7%A8_jhd89p.jpg", sizes: "512x512", type: "image/jpeg" }
   ]
 };
 const blob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
@@ -602,32 +604,34 @@ document.head.appendChild(link);
   <div class="splash-bg"></div>
   <div class="splash-lines"></div>
   <div class="splash-content">
-    <div class="splash-pole">💈</div>
+    <div style="width:130px;height:130px;border-radius:50%;overflow:hidden;margin:0 auto 12px;border:2px solid rgba(232,213,176,0.4);background:white;box-shadow:0 4px 20px rgba(0,0,0,0.3)">
+      <img src="https://res.cloudinary.com/dyvx2rz4s/image/upload/q_auto/f_auto/v1776721264/%D7%9C%D7%95%D7%92%D7%95_%D7%92%D7%95%D7%9C%D7%9F_%D7%94%D7%A1%D7%A4%D7%A8_jhd89p.jpg" style="width:100%;height:100%;object-fit:cover">
+    </div>
     <div class="splash-gm">GM</div>
     <div class="splash-sub">המספרה</div>
     <div class="splash-tagline">LOOK SHARP. FEEL SHARP.</div><div class="splash-divider"></div>
     <button class="splash-btn" onclick="goTo('home')">קבע תור עכשיו</button>
     <div style="margin-top:32px;display:flex;flex-direction:column;align-items:center;gap:12px">
-      <button onclick="showInstallModal()" style="background:transparent;border:1px solid rgba(232,213,176,0.25);color:rgba(232,213,176,0.7);padding:10px 24px;font-family:'Heebo',sans-serif;font-size:12px;cursor:pointer;border-radius:50px;letter-spacing:2px">
+      <button onclick="showInstallModal()" style="background:transparent;border:1px solid rgba(232,213,176,0.25);color:rgba(232,213,176,0.7);padding:10px 24px;font-family:'Heebo',sans-serif;font-size:18px;cursor:pointer;border-radius:50px;letter-spacing:2px">
         📲 הוסף למסך הבית
       </button>
-      <span id="adminToggle" onclick="toggleAdminLogin()" style="font-size:11px;color:#555;cursor:pointer;letter-spacing:3px;user-select:none;border:1px solid #333;padding:6px 16px;border-radius:2px">כניסת מנהל</span>
+      <span id="adminToggle" onclick="toggleAdminLogin()" style="font-size:17px;color:#555;cursor:pointer;letter-spacing:3px;user-select:none;border:1px solid #333;padding:6px 16px;border-radius:2px">כניסת מנהל</span>
     </div>
     <!-- Admin login — subtle, hidden by default -->
     <div id="adminLoginBox" style="display:none;margin-top:16px;animation:fadeIn 0.3s ease">
       <div style="position:relative;display:inline-block">
         <input id="adminPassInput" type="password" placeholder="סיסמה"
-          style="background:rgba(255,255,255,0.05);border:1px solid rgba(201,168,76,0.25);color:var(--white);padding:12px 40px 12px 18px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;width:200px;text-align:center;border-radius:2px;letter-spacing:3px"
+          style="background:rgba(255,255,255,0.05);border:1px solid rgba(201,168,76,0.25);color:var(--white);padding:12px 40px 12px 18px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;width:200px;text-align:center;border-radius:2px;letter-spacing:3px"
           onkeydown="if(event.key==='Enter') checkAdminPass()">
         <span onclick="togglePassView('adminPassInput','eyeAdmin')" id="eyeAdmin"
-          style="position:absolute;left:10px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:16px;user-select:none">👁️</span>
+          style="position:absolute;left:10px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:18px;user-select:none">👁️</span>
       </div>
       <br>
       <button onclick="checkAdminPass()"
-        style="margin-top:10px;background:transparent;border:1px solid rgba(201,168,76,0.3);color:rgba(201,168,76,0.7);padding:8px 24px;font-family:'Heebo',sans-serif;font-size:12px;cursor:pointer;letter-spacing:2px">
+        style="margin-top:10px;background:transparent;border:1px solid rgba(201,168,76,0.3);color:rgba(201,168,76,0.7);padding:8px 24px;font-family:'Heebo',sans-serif;font-size:18px;cursor:pointer;letter-spacing:2px">
         כניסה
       </button>
-      <div id="adminErrMsg" style="font-size:11px;color:#e63946;margin-top:8px;min-height:16px"></div>
+      <div id="adminErrMsg" style="font-size:17px;color:#e63946;margin-top:8px;min-height:16px"></div>
     </div>
   </div>
 </div>
@@ -637,68 +641,68 @@ document.head.appendChild(link);
   <div class="topbar">
     <button class="topbar-back" onclick="goTo('splash')">← <span>יציאה</span></button>
     <div class="topbar-logo">GM</div>
-    <div style="font-size:10px;color:var(--gold);letter-spacing:2px;background:rgba(201,168,76,0.1);padding:4px 10px;border:1px solid rgba(201,168,76,0.2)">מנהל</div>
+    <div style="font-size:18px;color:var(--gold);letter-spacing:2px;background:rgba(201,168,76,0.1);padding:4px 10px;border:1px solid rgba(201,168,76,0.2)">מנהל</div>
   </div>
 
   <!-- Admin tabs -->
   <div style="display:flex;border-bottom:1px solid rgba(201,168,76,0.15);padding:0 20px;gap:4px;overflow-x:auto">
-    <button onclick="switchAdminTab('bookings')" id="tab-bookings" style="background:none;border:none;color:var(--gold);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid var(--gold);white-space:nowrap">📋 תורים</button>
-    <button onclick="switchAdminTab('services')" id="tab-services" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">✂️ שירותים</button>
-    <button onclick="switchAdminTab('hours')" id="tab-hours" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🕐 שעות</button>
-    <button onclick="switchAdminTab('blocked')" id="tab-blocked" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🚫 חסימות</button>
-    <button onclick="switchAdminTab('settings')" id="tab-settings" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">⚙️ הגדרות</button>
-    <button onclick="switchAdminTab('reports')" id="tab-reports" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">📊 דוחות</button>
-    <button onclick="switchAdminTab('images')" id="tab-images" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🖼️ תמונות</button>
-    <button onclick="switchAdminTab('email')" id="tab-email" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">✉️ מייל</button>
+    <button onclick="switchAdminTab('bookings')" id="tab-bookings" style="background:none;border:none;color:var(--gold);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid var(--gold);white-space:nowrap">📋 תורים</button>
+    <button onclick="switchAdminTab('services')" id="tab-services" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">✂️ שירותים</button>
+    <button onclick="switchAdminTab('hours')" id="tab-hours" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🕐 שעות</button>
+    <button onclick="switchAdminTab('blocked')" id="tab-blocked" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🚫 חסימות</button>
+    <button onclick="switchAdminTab('settings')" id="tab-settings" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">⚙️ הגדרות</button>
+    <button onclick="switchAdminTab('reports')" id="tab-reports" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">📊 דוחות</button>
+    <button onclick="switchAdminTab('images')" id="tab-images" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🖼️ תמונות</button>
+    <button onclick="switchAdminTab('email')" id="tab-email" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">✉️ מייל</button>
   </div>
 
   <!-- TAB: BOOKINGS -->
   <div id="admintab-bookings" style="flex:1;overflow-y:auto">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px 20px">
       <div style="background:var(--card);border:1px solid rgba(201,168,76,0.15);padding:16px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">
-        <div style="font-size:10px;color:var(--grey);letter-spacing:2px;margin-bottom:6px">תורים שנקבעו</div>
+        <div style="font-size:18px;color:var(--grey);letter-spacing:2px;margin-bottom:6px">תורים שנקבעו</div>
         <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--gold)" id="adminTodayCount">0</div>
       </div>
       <div style="background:var(--card);border:1px solid rgba(201,168,76,0.15);padding:16px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">
-        <div style="font-size:10px;color:var(--grey);letter-spacing:2px;margin-bottom:6px">כסף שנכנס</div>
+        <div style="font-size:18px;color:var(--grey);letter-spacing:2px;margin-bottom:6px">כסף שנכנס</div>
         <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--gold)" id="adminTodayRevenue">₪0</div>
       </div>
     </div>
     <div style="padding:0 20px 12px">
       <div style="display:flex;gap:8px;align-items:center">
-        <input type="date" id="adminDatePicker" style="flex:1;background:var(--card);border:1px solid rgba(201,168,76,0.25);color:var(--white);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);color-scheme:dark" onchange="filterAdminByDate()">
-        <button onclick="setAdminToday()" style="background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);color:var(--gold);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap;clip-path:polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)">היום</button>
-        <button onclick="setAdminTomorrow()" style="background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);color:var(--gold);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap;clip-path:polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)">מחר</button>
+        <input type="date" id="adminDatePicker" style="flex:1;background:var(--card);border:1px solid rgba(201,168,76,0.25);color:var(--white);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);color-scheme:dark" onchange="filterAdminByDate()">
+        <button onclick="setAdminToday()" style="background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);color:var(--gold);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:18px;cursor:pointer;white-space:nowrap;clip-path:polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)">היום</button>
+        <button onclick="setAdminTomorrow()" style="background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);color:var(--gold);padding:12px 14px;font-family:'Heebo',sans-serif;font-size:18px;cursor:pointer;white-space:nowrap;clip-path:polygon(4px 0%,100% 0%,calc(100% - 4px) 100%,0% 100%)">מחר</button>
       </div>
     </div>
     <div style="padding:0 20px 4px;display:flex;justify-content:space-between">
-      <div style="font-size:10px;letter-spacing:3px;color:var(--grey);text-transform:uppercase">תורים</div>
-      <div style="font-size:11px;color:var(--gold)" id="adminDateLabel"></div>
+      <div style="font-size:18px;letter-spacing:3px;color:var(--grey);text-transform:uppercase">תורים</div>
+      <div style="font-size:17px;color:var(--gold)" id="adminDateLabel"></div>
     </div>
     <div id="adminBookingsList" style="padding:0 20px 16px"></div>
 
     <div style="padding:0 20px 24px">
-      <button onclick="showDailySummary()" style="width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:14px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border-radius:12px;margin-bottom:10px">
+      <button onclick="showDailySummary()" style="width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:14px;font-family:'Heebo',sans-serif;font-size:18px;font-weight:600;cursor:pointer;border-radius:12px;margin-bottom:10px">
         📊 סיכום יומי וחודשי
       </button>
       <div id="dailySummaryBox" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px">
-        <div style="font-size:10px;letter-spacing:3px;color:var(--text-soft);text-transform:uppercase;margin-bottom:14px;font-weight:700">סיכום</div>
+        <div style="font-size:18px;letter-spacing:3px;color:var(--text-soft);text-transform:uppercase;margin-bottom:14px;font-weight:700">סיכום</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
           <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center">
             <div style="font-size:26px;font-weight:900;color:var(--text)" id="summaryBooked">0</div>
-            <div style="font-size:10px;color:var(--text-soft);margin-top:3px;letter-spacing:1px">תורים שנקבעו</div>
+            <div style="font-size:18px;color:var(--text-soft);margin-top:3px;letter-spacing:1px">תורים שנקבעו</div>
           </div>
           <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center">
             <div style="font-size:26px;font-weight:900;color:var(--success)" id="summaryDone">0</div>
-            <div style="font-size:10px;color:var(--text-soft);margin-top:3px;letter-spacing:1px">תורים שהתקיימו</div>
+            <div style="font-size:18px;color:var(--text-soft);margin-top:3px;letter-spacing:1px">תורים שהתקיימו</div>
           </div>
           <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center">
             <div style="font-size:22px;font-weight:900;color:var(--primary)" id="summaryDailyRevenue">₪0</div>
-            <div style="font-size:10px;color:var(--text-soft);margin-top:3px;letter-spacing:1px">רווח יומי</div>
+            <div style="font-size:18px;color:var(--text-soft);margin-top:3px;letter-spacing:1px">רווח יומי</div>
           </div>
           <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center">
             <div style="font-size:22px;font-weight:900;color:var(--primary)" id="summaryMonthRevenue">₪0</div>
-            <div style="font-size:10px;color:var(--text-soft);margin-top:3px;letter-spacing:1px">רווח חודשי</div>
+            <div style="font-size:18px;color:var(--text-soft);margin-top:3px;letter-spacing:1px">רווח חודשי</div>
           </div>
         </div>
       </div>
@@ -708,38 +712,38 @@ document.head.appendChild(link);
   <!-- TAB: SERVICES -->
   <div id="admintab-services" style="display:none;flex:1;overflow-y:auto;padding:16px 20px">
     <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:4px">שירותים ומחירים</div>
-    <div style="font-size:12px;color:var(--grey);margin-bottom:20px">ערוך, הוסף או מחק שירותים</div>
+    <div style="font-size:18px;color:var(--grey);margin-bottom:20px">ערוך, הוסף או מחק שירותים</div>
     <div id="servicesAdminList"></div>
-    <button onclick="addNewService()" style="width:100%;background:rgba(201,168,76,0.1);border:1px dashed rgba(201,168,76,0.4);color:var(--gold);padding:16px;font-family:'Heebo',sans-serif;font-size:14px;cursor:pointer;margin-top:8px">+ הוסף שירות חדש</button>
+    <button onclick="addNewService()" style="width:100%;background:rgba(201,168,76,0.1);border:1px dashed rgba(201,168,76,0.4);color:var(--gold);padding:16px;font-family:'Heebo',sans-serif;font-size:18px;cursor:pointer;margin-top:8px">+ הוסף שירות חדש</button>
   </div>
 
   <!-- TAB: HOURS -->
   <div id="admintab-hours" style="display:none;flex:1;overflow-y:auto;padding:16px 20px">
     <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:4px">שעות עבודה</div>
-    <div style="font-size:12px;color:var(--grey);margin-bottom:16px">הגדרות חוזרות כל שבוע אוטומטית</div>
+    <div style="font-size:18px;color:var(--grey);margin-bottom:16px">הגדרות חוזרות כל שבוע אוטומטית</div>
     <div id="hoursAdminList"></div>
-    <button onclick="saveWorkingHours()" style="width:100%;background:var(--gold);color:var(--black);border:none;padding:16px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:16px;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)">שמור שעות עבודה ✓</button>
-    <div id="hoursSaveMsg" style="text-align:center;font-size:12px;color:#2ecc71;margin-top:8px;min-height:16px"></div>
+    <button onclick="saveWorkingHours()" style="width:100%;background:var(--gold);color:var(--black);border:none;padding:16px;font-family:'Heebo',sans-serif;font-size:17px;font-weight:700;cursor:pointer;margin-top:16px;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)">שמור שעות עבודה ✓</button>
+    <div id="hoursSaveMsg" style="text-align:center;font-size:18px;color:#2ecc71;margin-top:8px;min-height:16px"></div>
 
     <!-- Home visits in hours tab -->
     <div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(201,168,76,0.15)">
       <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#7ec8ff;margin-bottom:4px">🏠 הגעה לבית</div>
-      <div style="font-size:12px;color:var(--grey);margin-bottom:16px">תאריכים ספציפיים שבהם אתה מגיע ללקוחות</div>
+      <div style="font-size:18px;color:var(--grey);margin-bottom:16px">תאריכים ספציפיים שבהם אתה מגיע ללקוחות</div>
       <div id="homeVisitsList"></div>
       <div style="background:var(--card);border:1px solid rgba(100,180,255,0.2);padding:16px;margin-top:8px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">
-        <div style="font-size:11px;color:#7ec8ff;letter-spacing:2px;margin-bottom:12px">הוסף תאריך הגעה לבית</div>
-        <input type="date" id="homeVisitDate" style="width:100%;background:#111;border:1px solid rgba(100,180,255,0.2);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;margin-bottom:10px;color-scheme:dark">
+        <div style="font-size:17px;color:#7ec8ff;letter-spacing:2px;margin-bottom:12px">הוסף תאריך הגעה לבית</div>
+        <input type="date" id="homeVisitDate" style="width:100%;background:#111;border:1px solid rgba(100,180,255,0.2);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;margin-bottom:10px;color-scheme:dark">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
           <div>
-            <div style="font-size:11px;color:var(--grey);margin-bottom:4px">משעה</div>
-            <input type="time" id="homeVisitFrom" style="width:100%;background:#111;border:1px solid rgba(100,180,255,0.2);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;color-scheme:dark">
+            <div style="font-size:17px;color:var(--grey);margin-bottom:4px">משעה</div>
+            <input type="time" id="homeVisitFrom" style="width:100%;background:#111;border:1px solid rgba(100,180,255,0.2);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;color-scheme:dark">
           </div>
           <div>
-            <div style="font-size:11px;color:var(--grey);margin-bottom:4px">עד שעה</div>
-            <input type="time" id="homeVisitTo" style="width:100%;background:#111;border:1px solid rgba(100,180,255,0.2);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;color-scheme:dark">
+            <div style="font-size:17px;color:var(--grey);margin-bottom:4px">עד שעה</div>
+            <input type="time" id="homeVisitTo" style="width:100%;background:#111;border:1px solid rgba(100,180,255,0.2);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;color-scheme:dark">
           </div>
         </div>
-        <button onclick="addHomeVisitDate()" style="width:100%;background:rgba(100,180,255,0.15);border:1px solid rgba(100,180,255,0.4);color:#7ec8ff;padding:14px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">+ הוסף תאריך</button>
+        <button onclick="addHomeVisitDate()" style="width:100%;background:rgba(100,180,255,0.15);border:1px solid rgba(100,180,255,0.4);color:#7ec8ff;padding:14px;font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;cursor:pointer;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">+ הוסף תאריך</button>
       </div>
     </div>
   </div>
@@ -747,62 +751,62 @@ document.head.appendChild(link);
   <!-- TAB: BLOCKED DAYS -->
   <div id="admintab-blocked" style="display:none;flex:1;overflow-y:auto;padding:16px 20px">
     <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:4px">ימים חסומים</div>
-    <div style="font-size:12px;color:var(--grey);margin-bottom:16px">חופשות, מחלה, ואירועים — ניתן להגדיר מראש לכל עתיד</div>
+    <div style="font-size:18px;color:var(--grey);margin-bottom:16px">חופשות, מחלה, ואירועים — ניתן להגדיר מראש לכל עתיד</div>
     <div id="blockedDaysList"></div>
     <div style="background:var(--card);border:1px solid rgba(230,57,70,0.2);padding:16px;margin-top:8px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">
-      <div style="font-size:11px;color:#e63946;letter-spacing:2px;margin-bottom:12px">חסום יום / תקופה</div>
-      <input type="date" id="blockDateFrom" style="width:100%;background:#111;border:1px solid rgba(230,57,70,0.2);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;margin-bottom:8px;color-scheme:dark">
-      <div style="font-size:11px;color:var(--grey);margin-bottom:6px">עד תאריך (אופציונלי — ליום אחד השאר ריק)</div>
-      <input type="date" id="blockDateTo" style="width:100%;background:#111;border:1px solid rgba(230,57,70,0.2);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;margin-bottom:10px;color-scheme:dark">
+      <div style="font-size:17px;color:#e63946;letter-spacing:2px;margin-bottom:12px">חסום יום / תקופה</div>
+      <input type="date" id="blockDateFrom" style="width:100%;background:#111;border:1px solid rgba(230,57,70,0.2);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;margin-bottom:8px;color-scheme:dark">
+      <div style="font-size:17px;color:var(--grey);margin-bottom:6px">עד תאריך (אופציונלי — ליום אחד השאר ריק)</div>
+      <input type="date" id="blockDateTo" style="width:100%;background:#111;border:1px solid rgba(230,57,70,0.2);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;margin-bottom:10px;color-scheme:dark">
       <input type="text" id="blockReason" placeholder="סיבה (אופציונלי — חופשה, מחלה...)"
-        style="width:100%;background:#111;border:1px solid rgba(230,57,70,0.15);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:13px;outline:none;margin-bottom:12px">
-      <button onclick="addBlockedDay()" style="width:100%;background:rgba(230,57,70,0.12);border:1px solid rgba(230,57,70,0.4);color:#e63946;padding:14px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">חסום תאריך</button>
+        style="width:100%;background:#111;border:1px solid rgba(230,57,70,0.15);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:17px;outline:none;margin-bottom:12px">
+      <button onclick="addBlockedDay()" style="width:100%;background:rgba(230,57,70,0.12);border:1px solid rgba(230,57,70,0.4);color:#e63946;padding:14px;font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;cursor:pointer;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">חסום תאריך</button>
     </div>
   </div>
 
   <!-- TAB: REPORTS -->
   <div id="admintab-reports" style="display:none;flex:1;overflow-y:auto;padding:16px 20px;font-family:'Heebo',sans-serif">
     <div style="font-size:22px;font-weight:900;margin-bottom:4px">דוחות ונתונים</div>
-    <div style="font-size:12px;color:var(--text-soft);margin-bottom:20px">הורד דוחות ושלח מיילים לפי תאריך</div>
+    <div style="font-size:18px;color:var(--text-soft);margin-bottom:20px">הורד דוחות ושלח מיילים לפי תאריך</div>
 
     <!-- Send with date -->
     <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:14px">
-      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:14px;font-weight:700;text-transform:uppercase">בחר תאריך</div>
-      <input type="date" id="reportSendDate" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;border-radius:10px;margin-bottom:12px;direction:ltr">
+      <div style="font-size:17px;letter-spacing:3px;color:var(--text-soft);margin-bottom:14px;font-weight:700;text-transform:uppercase">בחר תאריך</div>
+      <input type="date" id="reportSendDate" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;border-radius:10px;margin-bottom:12px;direction:ltr">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <button onclick="sendWorkPlanForDate()" style="background:rgba(232,213,176,0.1);border:1px solid var(--primary);color:var(--primary);padding:13px 8px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:12px">📋 שלח תכנית עבודה</button>
-        <button onclick="sendSummaryForDate()" style="background:rgba(232,213,176,0.1);border:1px solid var(--primary);color:var(--primary);padding:13px 8px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:12px">📊 שלח סיכום יומי</button>
+        <button onclick="sendWorkPlanForDate()" style="background:rgba(232,213,176,0.1);border:1px solid var(--primary);color:var(--primary);padding:13px 8px;font-family:'Heebo',sans-serif;font-size:17px;font-weight:700;cursor:pointer;border-radius:12px">📋 שלח תכנית עבודה</button>
+        <button onclick="sendSummaryForDate()" style="background:rgba(232,213,176,0.1);border:1px solid var(--primary);color:var(--primary);padding:13px 8px;font-family:'Heebo',sans-serif;font-size:17px;font-weight:700;cursor:pointer;border-radius:12px">📊 שלח סיכום יומי</button>
       </div>
     </div>
 
     <!-- Download reports -->
     <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:14px">
-      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:14px;font-weight:700;text-transform:uppercase">הורדת דוחות לאקסל</div>
+      <div style="font-size:17px;letter-spacing:3px;color:var(--text-soft);margin-bottom:14px;font-weight:700;text-transform:uppercase">הורדת דוחות לאקסל</div>
       
       <!-- Report type selection -->
-      <div style="font-size:12px;color:var(--text-soft);margin-bottom:10px;font-weight:600">בחר סוג דוח</div>
+      <div style="font-size:18px;color:var(--text-soft);margin-bottom:10px;font-weight:600">בחר סוג דוח</div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">
-        <button id="rtype-daily" onclick="selectReportType('daily')" style="padding:11px 6px;border-radius:10px;border:1.5px solid var(--primary);background:rgba(232,213,176,0.1);color:var(--primary);font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer">📅 יומי</button>
-        <button id="rtype-range" onclick="selectReportType('range')" style="padding:11px 6px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--text-soft);font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer">📆 טווח תאריכים</button>
-        <button id="rtype-monthly" onclick="selectReportType('monthly')" style="padding:11px 6px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--text-soft);font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer">🗓️ חודשי</button>
+        <button id="rtype-daily" onclick="selectReportType('daily')" style="padding:11px 6px;border-radius:10px;border:1.5px solid var(--primary);background:rgba(232,213,176,0.1);color:var(--primary);font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;cursor:pointer">📅 יומי</button>
+        <button id="rtype-range" onclick="selectReportType('range')" style="padding:11px 6px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--text-soft);font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;cursor:pointer">📆 טווח תאריכים</button>
+        <button id="rtype-monthly" onclick="selectReportType('monthly')" style="padding:11px 6px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--text-soft);font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;cursor:pointer">🗓️ חודשי</button>
       </div>
 
       <!-- Daily date picker -->
       <div id="rfield-daily" style="margin-bottom:14px">
-        <div style="font-size:11px;color:var(--text-soft);margin-bottom:6px">בחר תאריך</div>
-        <input type="date" id="reportSingleDate" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;border-radius:10px;direction:ltr">
+        <div style="font-size:17px;color:var(--text-soft);margin-bottom:6px">בחר תאריך</div>
+        <input type="date" id="reportSingleDate" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;border-radius:10px;direction:ltr">
       </div>
 
       <!-- Range date picker -->
       <div id="rfield-range" style="display:none;margin-bottom:14px">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
           <div>
-            <div style="font-size:11px;color:var(--text-soft);margin-bottom:6px">מתאריך</div>
-            <input type="date" id="reportFromDate" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:10px;font-family:'Heebo',sans-serif;font-size:13px;outline:none;border-radius:10px;direction:ltr">
+            <div style="font-size:17px;color:var(--text-soft);margin-bottom:6px">מתאריך</div>
+            <input type="date" id="reportFromDate" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:10px;font-family:'Heebo',sans-serif;font-size:17px;outline:none;border-radius:10px;direction:ltr">
           </div>
           <div>
-            <div style="font-size:11px;color:var(--text-soft);margin-bottom:6px">עד תאריך</div>
-            <input type="date" id="reportToDate" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:10px;font-family:'Heebo',sans-serif;font-size:13px;outline:none;border-radius:10px;direction:ltr">
+            <div style="font-size:17px;color:var(--text-soft);margin-bottom:6px">עד תאריך</div>
+            <input type="date" id="reportToDate" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:10px;font-family:'Heebo',sans-serif;font-size:17px;outline:none;border-radius:10px;direction:ltr">
           </div>
         </div>
       </div>
@@ -811,12 +815,12 @@ document.head.appendChild(link);
       <div id="rfield-monthly" style="display:none;margin-bottom:14px">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
           <div>
-            <div style="font-size:11px;color:var(--text-soft);margin-bottom:6px">שנה</div>
-            <select id="reportYear" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;border-radius:10px"></select>
+            <div style="font-size:17px;color:var(--text-soft);margin-bottom:6px">שנה</div>
+            <select id="reportYear" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;border-radius:10px"></select>
           </div>
           <div>
-            <div style="font-size:11px;color:var(--text-soft);margin-bottom:6px">חודש</div>
-            <select id="reportMonth" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;border-radius:10px">
+            <div style="font-size:17px;color:var(--text-soft);margin-bottom:6px">חודש</div>
+            <select id="reportMonth" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;border-radius:10px">
               <option value="01">ינואר</option>
               <option value="02">פברואר</option>
               <option value="03">מרץ</option>
@@ -834,80 +838,80 @@ document.head.appendChild(link);
         </div>
       </div>
 
-      <button onclick="downloadReportSmart()" style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:14px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border-radius:12px">⬇️ הורד דוח</button>
+      <button onclick="downloadReportSmart()" style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:14px;font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;cursor:pointer;border-radius:12px">⬇️ הורד דוח</button>
     </div>
 
     <!-- Customer database -->
     <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:14px">
-      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:14px;font-weight:700;text-transform:uppercase">מאגר לקוחות</div>
-      <div style="font-size:12px;color:var(--text-soft);margin-bottom:12px">רשימת לקוחות ייחודיים ללא כפילויות</div>
-      <button onclick="downloadCustomers()" style="width:100%;background:rgba(232,213,176,0.1);border:1px solid var(--primary);color:var(--primary);padding:14px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border-radius:12px">👥 הורד מאגר לקוחות (Excel)</button>
+      <div style="font-size:17px;letter-spacing:3px;color:var(--text-soft);margin-bottom:14px;font-weight:700;text-transform:uppercase">מאגר לקוחות</div>
+      <div style="font-size:18px;color:var(--text-soft);margin-bottom:12px">רשימת לקוחות ייחודיים ללא כפילויות</div>
+      <button onclick="downloadCustomers()" style="width:100%;background:rgba(232,213,176,0.1);border:1px solid var(--primary);color:var(--primary);padding:14px;font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;cursor:pointer;border-radius:12px">👥 הורד מאגר לקוחות (Excel)</button>
     </div>
 
-    <div id="reportsMsg" style="text-align:center;font-size:13px;min-height:20px;color:var(--success)"></div>
+    <div id="reportsMsg" style="text-align:center;font-size:17px;min-height:20px;color:var(--success)"></div>
   </div>
 
   <!-- TAB: IMAGES -->
   <div id="admintab-images" style="display:none;flex:1;overflow-y:auto;padding:16px 20px">
     <div style="font-family:'Heebo',sans-serif;font-size:22px;font-weight:900;margin-bottom:4px">תמונות</div>
-    <div style="font-size:12px;color:var(--text-soft);margin-bottom:20px">נהל את תמונות המספרה</div>
+    <div style="font-size:18px;color:var(--text-soft);margin-bottom:20px">נהל את תמונות המספרה</div>
 
     <!-- Logo -->
     <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:14px">
-      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:14px;font-weight:700;text-transform:uppercase">לוגו / תמונת פרופיל</div>
+      <div style="font-size:17px;letter-spacing:3px;color:var(--text-soft);margin-bottom:14px;font-weight:700;text-transform:uppercase">לוגו / תמונת פרופיל</div>
       <div style="display:flex;align-items:center;gap:14px">
         <div id="logoPreview" style="width:72px;height:72px;border-radius:12px;background:var(--bg);border:1px solid var(--border);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:28px">💈</div>
         <div style="flex:1">
-          <button onclick="triggerImageUpload('logo')" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-radius:10px;margin-bottom:8px">📷 העלה תמונה</button>
-          <button onclick="removeImage('logo')" style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text-soft);padding:10px;font-family:'Heebo',sans-serif;font-size:12px;cursor:pointer;border-radius:10px">הסר תמונה</button>
+          <button onclick="triggerImageUpload('logo')" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-radius:10px;margin-bottom:8px">📷 העלה תמונה</button>
+          <button onclick="removeImage('logo')" style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text-soft);padding:10px;font-family:'Heebo',sans-serif;font-size:18px;cursor:pointer;border-radius:10px">הסר תמונה</button>
         </div>
       </div>
     </div>
 
     <!-- Cover/Banner -->
     <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:14px">
-      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:14px;font-weight:700;text-transform:uppercase">תמונת רקע (Splash)</div>
-      <div id="coverPreview" style="width:100%;height:120px;border-radius:10px;background:var(--bg);border:1px solid var(--border);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--text-soft);margin-bottom:10px">אין תמונה</div>
+      <div style="font-size:17px;letter-spacing:3px;color:var(--text-soft);margin-bottom:14px;font-weight:700;text-transform:uppercase">תמונת רקע (Splash)</div>
+      <div id="coverPreview" style="width:100%;height:120px;border-radius:10px;background:var(--bg);border:1px solid var(--border);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--text-soft);margin-bottom:10px">אין תמונה</div>
       <div style="display:flex;gap:8px">
-        <button onclick="triggerImageUpload('cover')" style="flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-radius:10px">📷 העלה</button>
-        <button onclick="removeImage('cover')" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text-soft);padding:12px;font-family:'Heebo',sans-serif;font-size:12px;cursor:pointer;border-radius:10px">הסר</button>
+        <button onclick="triggerImageUpload('cover')" style="flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-radius:10px">📷 העלה</button>
+        <button onclick="removeImage('cover')" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text-soft);padding:12px;font-family:'Heebo',sans-serif;font-size:18px;cursor:pointer;border-radius:10px">הסר</button>
       </div>
     </div>
 
     <!-- Gallery -->
     <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:14px">
-      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:14px;font-weight:700;text-transform:uppercase">גלריית עבודות</div>
+      <div style="font-size:17px;letter-spacing:3px;color:var(--text-soft);margin-bottom:14px;font-weight:700;text-transform:uppercase">גלריית עבודות</div>
       <div id="galleryGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px"></div>
-      <button onclick="triggerImageUpload('gallery')" style="width:100%;background:var(--bg);border:1px dashed var(--border);color:var(--text-soft);padding:14px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-radius:10px">+ הוסף תמונה לגלריה</button>
+      <button onclick="triggerImageUpload('gallery')" style="width:100%;background:var(--bg);border:1px dashed var(--border);color:var(--text-soft);padding:14px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-radius:10px">+ הוסף תמונה לגלריה</button>
     </div>
 
-    <div id="uploadStatus" style="text-align:center;font-size:13px;color:var(--text-soft);min-height:20px"></div>
+    <div id="uploadStatus" style="text-align:center;font-size:17px;color:var(--text-soft);min-height:20px"></div>
     <input type="file" id="imageFileInput" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
   </div>
 
   <!-- TAB: EMAIL SETTINGS -->
   <div id="admintab-email" style="display:none;flex:1;overflow-y:auto;padding:16px 20px">
     <div style="font-family:'Heebo',sans-serif;font-size:22px;font-weight:900;margin-bottom:4px">הגדרות מייל יומי</div>
-    <div style="font-size:12px;color:var(--text-soft);margin-bottom:20px">קבל תכנית עבודה וסיכום יומי למייל</div>
+    <div style="font-size:18px;color:var(--text-soft);margin-bottom:20px">קבל תכנית עבודה וסיכום יומי למייל</div>
 
     <!-- Single email field -->
     <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:16px">
-      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:12px;font-weight:700;text-transform:uppercase">כתובת לקבלת מיילים</div>
+      <div style="font-size:17px;letter-spacing:3px;color:var(--text-soft);margin-bottom:12px;font-weight:700;text-transform:uppercase">כתובת לקבלת מיילים</div>
       <div style="background:rgba(232,213,176,0.06);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:10px;display:flex;align-items:center;gap:8px">
-        <span style="font-size:14px">✉️</span>
-        <span id="currentEmailDisplay" style="font-size:13px;color:var(--primary);font-weight:600">meirgm10@gmail.com</span>
+        <span style="font-size:18px">✉️</span>
+        <span id="currentEmailDisplay" style="font-size:17px;color:var(--primary);font-weight:600">meirgm10@gmail.com</span>
       </div>
       <input id="adminEmailInput" type="email" placeholder="שנה כתובת מייל"
-        style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:13px 16px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;border-radius:10px;direction:ltr;text-align:left">
+        style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:13px 16px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;border-radius:10px;direction:ltr;text-align:left">
     </div>
 
     <!-- Work plan email settings -->
     <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:16px">
-      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:16px;font-weight:700;text-transform:uppercase">מייל תכנית עבודה</div>
+      <div style="font-size:17px;letter-spacing:3px;color:var(--text-soft);margin-bottom:16px;font-weight:700;text-transform:uppercase">מייל תכנית עבודה</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
         <div>
-          <div style="font-size:11px;color:var(--text-soft);margin-bottom:6px">שעה</div>
-          <select id="emailHour" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:10px">
+          <div style="font-size:17px;color:var(--text-soft);margin-bottom:6px">שעה</div>
+          <select id="emailHour" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:17px;outline:none;border-radius:10px">
             <option value="00">00:00</option>
             <option value="01">01:00</option>
             <option value="02">02:00</option>
@@ -935,27 +939,27 @@ document.head.appendChild(link);
           </select>
         </div>
         <div>
-          <div style="font-size:11px;color:var(--text-soft);margin-bottom:6px">דקות</div>
-          <select id="emailMinute" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:10px">
+          <div style="font-size:17px;color:var(--text-soft);margin-bottom:6px">דקות</div>
+          <select id="emailMinute" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:17px;outline:none;border-radius:10px">
             <option value="00" selected>:00</option>
             <option value="30">:30</option>
           </select>
         </div>
       </div>
-      <div style="font-size:11px;color:var(--text-soft);margin-bottom:8px;font-weight:600">תכנית של</div>
+      <div style="font-size:17px;color:var(--text-soft);margin-bottom:8px;font-weight:600">תכנית של</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <button id="dayModeToday" onclick="setDayMode('today')" style="padding:12px;border-radius:10px;border:1.5px solid var(--primary);background:rgba(232,213,176,0.1);color:var(--primary);font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer">📅 היום</button>
-        <button id="dayModeTomorrow" onclick="setDayMode('tomorrow')" style="padding:12px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--text-soft);font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer">📅 מחר</button>
+        <button id="dayModeToday" onclick="setDayMode('today')" style="padding:12px;border-radius:10px;border:1.5px solid var(--primary);background:rgba(232,213,176,0.1);color:var(--primary);font-family:'Heebo',sans-serif;font-size:17px;font-weight:700;cursor:pointer">📅 היום</button>
+        <button id="dayModeTomorrow" onclick="setDayMode('tomorrow')" style="padding:12px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--text-soft);font-family:'Heebo',sans-serif;font-size:17px;font-weight:700;cursor:pointer">📅 מחר</button>
       </div>
     </div>
 
     <!-- Summary email settings -->
     <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:16px">
-      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:16px;font-weight:700;text-transform:uppercase">מייל סיכום יומי</div>
+      <div style="font-size:17px;letter-spacing:3px;color:var(--text-soft);margin-bottom:16px;font-weight:700;text-transform:uppercase">מייל סיכום יומי</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
         <div>
-          <div style="font-size:11px;color:var(--text-soft);margin-bottom:6px">שעה</div>
-          <select id="summaryHour" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:10px">
+          <div style="font-size:17px;color:var(--text-soft);margin-bottom:6px">שעה</div>
+          <select id="summaryHour" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:17px;outline:none;border-radius:10px">
             <option value="00">00:00</option>
             <option value="01">01:00</option>
             <option value="02">02:00</option>
@@ -983,44 +987,44 @@ document.head.appendChild(link);
           </select>
         </div>
         <div>
-          <div style="font-size:11px;color:var(--text-soft);margin-bottom:6px">דקות</div>
-          <select id="summaryMinute" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:10px">
+          <div style="font-size:17px;color:var(--text-soft);margin-bottom:6px">דקות</div>
+          <select id="summaryMinute" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:17px;outline:none;border-radius:10px">
             <option value="00" selected>:00</option>
             <option value="30">:30</option>
           </select>
         </div>
       </div>
-      <div style="font-size:11px;color:var(--text-soft);margin-bottom:8px;font-weight:600">סיכום של</div>
+      <div style="font-size:17px;color:var(--text-soft);margin-bottom:8px;font-weight:600">סיכום של</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <button id="summaryModeToday" onclick="setSummaryMode('today')" style="padding:12px;border-radius:10px;border:1.5px solid var(--primary);background:rgba(232,213,176,0.1);color:var(--primary);font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer">📅 היום</button>
-        <button id="summaryModeYesterday" onclick="setSummaryMode('yesterday')" style="padding:12px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--text-soft);font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer">📅 יום קודם</button>
+        <button id="summaryModeToday" onclick="setSummaryMode('today')" style="padding:12px;border-radius:10px;border:1.5px solid var(--primary);background:rgba(232,213,176,0.1);color:var(--primary);font-family:'Heebo',sans-serif;font-size:17px;font-weight:700;cursor:pointer">📅 היום</button>
+        <button id="summaryModeYesterday" onclick="setSummaryMode('yesterday')" style="padding:12px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--text-soft);font-family:'Heebo',sans-serif;font-size:17px;font-weight:700;cursor:pointer">📅 יום קודם</button>
       </div>
     </div>
 
-    <button onclick="saveEmailSettings()" style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:16px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:14px;margin-bottom:12px">שמור הגדרות ✓</button>
+    <button onclick="saveEmailSettings()" style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:16px;font-family:'Heebo',sans-serif;font-size:17px;font-weight:700;cursor:pointer;border-radius:14px;margin-bottom:12px">שמור הגדרות ✓</button>
 
-    <button onclick="testEmailNow()" style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text-soft);padding:14px;font-family:'Heebo',sans-serif;font-size:14px;cursor:pointer;border-radius:14px">
+    <button onclick="testEmailNow()" style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text-soft);padding:14px;font-family:'Heebo',sans-serif;font-size:18px;cursor:pointer;border-radius:14px">
       ✉️ שלח מייל בדיקה
     </button>
     
-    <div id="emailSettingsMsg" style="text-align:center;font-size:12px;margin-top:10px;min-height:16px;color:var(--success)"></div>
+    <div id="emailSettingsMsg" style="text-align:center;font-size:18px;margin-top:10px;min-height:16px;color:var(--success)"></div>
   </div>
 
   <!-- TAB: SETTINGS -->
   <div id="admintab-settings" style="display:none;flex:1;overflow-y:auto;padding:16px 20px">
     <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:20px">הגדרות</div>
     <div style="background:var(--card);border:1px solid rgba(201,168,76,0.1);padding:20px;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)">
-      <div style="font-size:11px;letter-spacing:3px;color:var(--gold);margin-bottom:14px">שינוי סיסמה</div>
+      <div style="font-size:17px;letter-spacing:3px;color:var(--gold);margin-bottom:14px">שינוי סיסמה</div>
       <div style="position:relative;margin-bottom:10px">
         <input id="newPass1" type="password" placeholder="סיסמה חדשה" class="form-input" style="padding-left:40px">
-        <span onclick="togglePassView('newPass1','eye1')" id="eye1" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:16px;user-select:none">👁️</span>
+        <span onclick="togglePassView('newPass1','eye1')" id="eye1" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:18px;user-select:none">👁️</span>
       </div>
       <div style="position:relative;margin-bottom:14px">
         <input id="newPass2" type="password" placeholder="אימות סיסמה" class="form-input" style="padding-left:40px">
-        <span onclick="togglePassView('newPass2','eye2')" id="eye2" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:16px;user-select:none">👁️</span>
+        <span onclick="togglePassView('newPass2','eye2')" id="eye2" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:18px;user-select:none">👁️</span>
       </div>
-      <button onclick="changeAdminPass()" style="background:transparent;border:1px solid rgba(201,168,76,0.3);color:var(--gold);padding:12px 24px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;letter-spacing:2px;width:100%">עדכן סיסמה</button>
-      <div id="passChangeMsg" style="font-size:12px;margin-top:8px;min-height:16px;text-align:center"></div>
+      <button onclick="changeAdminPass()" style="background:transparent;border:1px solid rgba(201,168,76,0.3);color:var(--gold);padding:12px 24px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;letter-spacing:2px;width:100%">עדכן סיסמה</button>
+      <div id="passChangeMsg" style="font-size:18px;margin-top:8px;min-height:16px;text-align:center"></div>
     </div>
   </div>
 </div>
@@ -1030,7 +1034,7 @@ document.head.appendChild(link);
   <div class="topbar">
     <button class="topbar-back" onclick="goTo('splash')">← <span>ראשי</span></button>
     <div class="topbar-logo">GM</div>
-    <div style="font-size:11px;color:var(--grey);letter-spacing:2px">המספרה</div>
+    <div style="font-size:17px;color:var(--grey);letter-spacing:2px">המספרה</div>
   </div>
   <div class="progress-bar"><div class="progress-fill" style="width:33%"></div></div>
 
@@ -1045,7 +1049,7 @@ document.head.appendChild(link);
 
   <div class="ornament">✦ ✦ ✦</div>
   <button class="cta-btn" id="nextBtn" onclick="goTo('date')">בחר תאריך ושעה ←</button>
-  <button onclick="goTo('mybookings')" style="margin:0 20px 32px;background:transparent;border:1px solid rgba(201,168,76,0.2);color:var(--grey);padding:12px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;width:calc(100% - 40px)">📋 התורים שלי</button>
+  <button onclick="goTo('mybookings')" style="margin:0 20px 32px;background:transparent;border:1px solid rgba(201,168,76,0.2);color:var(--grey);padding:12px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;width:calc(100% - 40px)">📋 התורים שלי</button>
 </div>
 
 <!-- ═══════════════ DATE ═══════════════ -->
@@ -1057,7 +1061,7 @@ document.head.appendChild(link);
   <div class="progress-bar"><div class="progress-fill" style="width:66%"></div></div>
 
   <div class="section-title">
-    <div style="font-size:11px;letter-spacing:4px;color:var(--gold);margin-bottom:6px">✦ שלב 2 מתוך 3</div>
+    <div style="font-size:17px;letter-spacing:4px;color:var(--gold);margin-bottom:6px">✦ שלב 2 מתוך 3</div>
     <h2>בחר תאריך<br>ושעה</h2>
   </div>
 
@@ -1096,7 +1100,7 @@ document.head.appendChild(link);
   <div class="progress-bar"><div class="progress-fill" style="width:90%"></div></div>
 
   <div class="section-title">
-    <div style="font-size:11px;letter-spacing:4px;color:var(--gold);margin-bottom:6px">✦ שלב 3 מתוך 3</div>
+    <div style="font-size:17px;letter-spacing:4px;color:var(--gold);margin-bottom:6px">✦ שלב 3 מתוך 3</div>
     <h2>פרטים<br>אישיים</h2>
   </div>
 
@@ -1143,7 +1147,7 @@ document.head.appendChild(link);
   </div>
   <div style="padding:20px">
     <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:4px">התורים שלי</div>
-    <div style="font-size:12px;color:var(--grey);margin-bottom:20px">היסטוריית הזמנות במכשיר זה</div>
+    <div style="font-size:18px;color:var(--grey);margin-bottom:20px">היסטוריית הזמנות במכשיר זה</div>
     <div id="myBookingsList"></div>
   </div>
 </div>
@@ -1164,15 +1168,15 @@ document.head.appendChild(link);
     <div class="success-detail" id="suc-datetime"></div>
     <div class="success-detail" id="suc-name"></div>
     <div style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);">
-      <div style="font-size:11px;color:var(--grey);letter-spacing:2px;margin-bottom:4px">לתשלום במקום</div>
+      <div style="font-size:17px;color:var(--grey);letter-spacing:2px;margin-bottom:4px">לתשלום במקום</div>
       <div style="font-size:28px;font-family:'Bebas Neue',sans-serif;color:var(--gold);letter-spacing:2px" id="suc-price"></div>
     </div>
   </div>
-  <button onclick="addToCalendar()" style="margin-bottom:12px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.4);color:var(--gold);padding:16px 40px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:1px;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);width:100%;max-width:280px;transition:all 0.2s">
+  <button onclick="addToCalendar()" style="margin-bottom:12px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.4);color:var(--gold);padding:16px 40px;font-family:'Heebo',sans-serif;font-size:17px;font-weight:600;cursor:pointer;letter-spacing:1px;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);width:100%;max-width:280px;transition:all 0.2s">
     📅 הוסף ליומן הטלפון
   </button>
-  <div style="font-size:11px;color:#444;margin-bottom:16px;letter-spacing:1px">⏰ תזכורת שעה לפני התור ביומן</div>
-  <button onclick="goTo('mybookings')" style="margin-bottom:12px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);color:var(--grey);padding:14px 40px;font-family:'Heebo',sans-serif;font-size:14px;cursor:pointer;width:100%;max-width:280px">📋 התורים שלי</button>
+  <div style="font-size:17px;color:#444;margin-bottom:16px;letter-spacing:1px">⏰ תזכורת שעה לפני התור ביומן</div>
+  <button onclick="goTo('mybookings')" style="margin-bottom:12px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);color:var(--grey);padding:14px 40px;font-family:'Heebo',sans-serif;font-size:18px;cursor:pointer;width:100%;max-width:280px">📋 התורים שלי</button>
   <button class="new-booking-btn" onclick="newBooking()" style="margin-bottom:32px">הזמנה חדשה +</button>
 </div>
 
@@ -1186,31 +1190,31 @@ document.head.appendChild(link);
 
     <!-- Android instructions -->
     <div id="androidInstructions">
-      <div style="font-size:13px;color:var(--text-soft);margin-bottom:20px;line-height:1.6">
+      <div style="font-size:17px;color:var(--text-soft);margin-bottom:20px;line-height:1.6">
         התקן את האפליקציה על הטלפון שלך לגישה מהירה ונוחה
       </div>
-      <button id="installPwaBtn" onclick="triggerInstall()" style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:16px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:14px;margin-bottom:12px">
+      <button id="installPwaBtn" onclick="triggerInstall()" style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:16px;font-family:'Heebo',sans-serif;font-size:17px;font-weight:700;cursor:pointer;border-radius:14px;margin-bottom:12px">
         📲 התקן עכשיו
       </button>
     </div>
 
     <!-- iOS instructions -->
     <div id="iosInstructions" style="display:none">
-      <div style="font-size:13px;color:var(--text-soft);margin-bottom:20px;line-height:1.6">
+      <div style="font-size:17px;color:var(--text-soft);margin-bottom:20px;line-height:1.6">
         להוספה למסך הבית ב-iPhone:
       </div>
       <div style="display:flex;flex-direction:column;gap:12px">
         <div style="background:var(--bg);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px">
           <div style="font-size:24px">1️⃣</div>
-          <div style="font-size:13px;color:var(--text)">לחץ על כפתור השיתוף <span style="font-size:16px">⬆️</span> בתחתית Safari</div>
+          <div style="font-size:17px;color:var(--text)">לחץ על כפתור השיתוף <span style="font-size:18px">⬆️</span> בתחתית Safari</div>
         </div>
         <div style="background:var(--bg);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px">
           <div style="font-size:24px">2️⃣</div>
-          <div style="font-size:13px;color:var(--text)">גלול מטה ולחץ על <strong>"הוסף למסך הבית"</strong></div>
+          <div style="font-size:17px;color:var(--text)">גלול מטה ולחץ על <strong>"הוסף למסך הבית"</strong></div>
         </div>
         <div style="background:var(--bg);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px">
           <div style="font-size:24px">3️⃣</div>
-          <div style="font-size:13px;color:var(--text)">לחץ <strong>"הוסף"</strong> בפינה הימנית העליונה</div>
+          <div style="font-size:17px;color:var(--text)">לחץ <strong>"הוסף"</strong> בפינה הימנית העליונה</div>
         </div>
       </div>
     </div>
@@ -1339,7 +1343,7 @@ function renderServicesGrid(filterHome=false) {
   // Show note if home visit filtered
   if (filterHome) {
     const note = document.createElement('div');
-    note.style.cssText = 'grid-column:1/-1;font-size:11px;color:#7ec8ff;text-align:center;padding:8px 0;letter-spacing:1px';
+    note.style.cssText = 'grid-column:1/-1;font-size:17px;color:#7ec8ff;text-align:center;padding:8px 0;letter-spacing:1px';
     note.textContent = '🏠 שירותים זמינים בהגעה עד בית הלקוח';
     grid.prepend(note);
   }
@@ -1592,7 +1596,7 @@ function renderSlots(dateStr) {
 
   grid.innerHTML = '';
   if (allSlots.length === 0) {
-    grid.innerHTML = '<div style="color:var(--text-soft);font-size:13px;padding:16px">אין שעות זמינות ביום זה</div>';
+    grid.innerHTML = '<div style="color:var(--text-soft);font-size:17px;padding:16px">אין שעות זמינות ביום זה</div>';
     return;
   }
 
@@ -1600,7 +1604,7 @@ function renderSlots(dateStr) {
   const hasShop = allSlots.some(s => s.type === 'shop');
   if (hasHome && hasShop && !state.isHomeVisit) {
     const legend = document.createElement('div');
-    legend.style.cssText = 'display:flex;gap:16px;padding:0 0 12px;font-size:11px;color:var(--text-soft)';
+    legend.style.cssText = 'display:flex;gap:16px;padding:0 0 12px;font-size:17px;color:var(--text-soft)';
     legend.innerHTML = '<span>🏪 מספרה</span><span style="color:#7ec8ff">🏠 עד בית הלקוח</span>';
     grid.appendChild(legend);
   }
@@ -1828,33 +1832,33 @@ function renderAdminServices() {
     <div style="background:var(--card);border:1px solid rgba(201,168,76,0.15);padding:16px;margin-bottom:10px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <div style="font-size:24px">${s.icon}</div>
-        <button onclick="deleteService(${i})" style="background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.3);color:#e63946;padding:6px 12px;font-size:11px;cursor:pointer;font-family:'Heebo',sans-serif">מחק</button>
+        <button onclick="deleteService(${i})" style="background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.3);color:#e63946;padding:6px 12px;font-size:17px;cursor:pointer;font-family:'Heebo',sans-serif">מחק</button>
       </div>
       <input value="${s.name}" onchange="updateService(${i},'name',this.value)"
-        style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;margin-bottom:8px">
+        style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;margin-bottom:8px">
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
         <div>
-          <div style="font-size:10px;color:var(--grey);margin-bottom:4px">מחיר ₪</div>
+          <div style="font-size:18px;color:var(--grey);margin-bottom:4px">מחיר ₪</div>
           <input type="number" value="${s.price}" onchange="updateService(${i},'price',+this.value)"
-            style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--gold);padding:10px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;outline:none">
+            style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--gold);padding:10px;font-family:'Heebo',sans-serif;font-size:17px;font-weight:700;outline:none">
         </div>
         <div>
-          <div style="font-size:10px;color:var(--grey);margin-bottom:4px">משך (דק׳)</div>
+          <div style="font-size:18px;color:var(--grey);margin-bottom:4px">משך (דק׳)</div>
           <input type="number" value="${s.duration}" onchange="updateService(${i},'duration',+this.value)"
-            style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:15px;outline:none">
+            style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:17px;outline:none">
         </div>
         <div>
-          <div style="font-size:10px;color:var(--grey);margin-bottom:4px">אייקון</div>
+          <div style="font-size:18px;color:var(--grey);margin-bottom:4px">אייקון</div>
           <input value="${s.icon}" onchange="updateService(${i},'icon',this.value)"
-            style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;text-align:center">
+            style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:17px;outline:none;text-align:center">
         </div>
       </div>
       <div>
-        <div style="font-size:10px;color:var(--grey);margin-bottom:6px">מיקום שירות</div>
+        <div style="font-size:18px;color:var(--grey);margin-bottom:6px">מיקום שירות</div>
         <div style="display:flex;gap:6px">
-          <button onclick="updateService(${i},'location','shop')" style="flex:1;padding:8px 4px;font-size:11px;cursor:pointer;font-family:'Heebo',sans-serif;border:1px solid ${(s.location||'shop')==='shop'?'var(--gold)':'rgba(201,168,76,0.2)'};background:${(s.location||'shop')==='shop'?'rgba(201,168,76,0.15)':'#111'};color:${(s.location||'shop')==='shop'?'var(--gold)':'var(--grey)'}">🏪 מספרה בלבד</button>
-          <button onclick="updateService(${i},'location','both')" style="flex:1;padding:8px 4px;font-size:11px;cursor:pointer;font-family:'Heebo',sans-serif;border:1px solid ${s.location==='both'?'#7ec8ff':'rgba(100,180,255,0.2)'};background:${s.location==='both'?'rgba(100,180,255,0.1)':'#111'};color:${s.location==='both'?'#7ec8ff':'var(--grey)'}">🏠 עד בית הלקוח</button>
-          <button onclick="updateService(${i},'location','home')" style="flex:1;padding:8px 4px;font-size:11px;cursor:pointer;font-family:'Heebo',sans-serif;border:1px solid ${s.location==='home'?'#7ec8ff':'rgba(100,180,255,0.2)'};background:${s.location==='home'?'rgba(100,180,255,0.1)':'#111'};color:${s.location==='home'?'#7ec8ff':'var(--grey)'}">🏠 עד בית בלבד</button>
+          <button onclick="updateService(${i},'location','shop')" style="flex:1;padding:8px 4px;font-size:17px;cursor:pointer;font-family:'Heebo',sans-serif;border:1px solid ${(s.location||'shop')==='shop'?'var(--gold)':'rgba(201,168,76,0.2)'};background:${(s.location||'shop')==='shop'?'rgba(201,168,76,0.15)':'#111'};color:${(s.location||'shop')==='shop'?'var(--gold)':'var(--grey)'}">🏪 מספרה בלבד</button>
+          <button onclick="updateService(${i},'location','both')" style="flex:1;padding:8px 4px;font-size:17px;cursor:pointer;font-family:'Heebo',sans-serif;border:1px solid ${s.location==='both'?'#7ec8ff':'rgba(100,180,255,0.2)'};background:${s.location==='both'?'rgba(100,180,255,0.1)':'#111'};color:${s.location==='both'?'#7ec8ff':'var(--grey)'}">🏠 עד בית הלקוח</button>
+          <button onclick="updateService(${i},'location','home')" style="flex:1;padding:8px 4px;font-size:17px;cursor:pointer;font-family:'Heebo',sans-serif;border:1px solid ${s.location==='home'?'#7ec8ff':'rgba(100,180,255,0.2)'};background:${s.location==='home'?'rgba(100,180,255,0.1)':'#111'};color:${s.location==='home'?'#7ec8ff':'var(--grey)'}">🏠 עד בית בלבד</button>
         </div>
       </div>
     </div>
@@ -1890,13 +1894,13 @@ function renderAdminHours() {
     const breaks = h.breaks || [];
     const breaksHtml = breaks.map((br, bi) => `
       <div style="display:flex;align-items:center;gap:6px;margin-top:6px;background:rgba(255,165,0,0.05);padding:6px 8px;border:1px solid rgba(255,165,0,0.15)">
-        <span style="font-size:11px;color:orange;min-width:36px">הפסקה</span>
+        <span style="font-size:17px;color:orange;min-width:36px">הפסקה</span>
         <input type="time" value="${br.from}" onchange="updateBreak(${i},${bi},'from',this.value)"
-          style="flex:1;background:#111;border:1px solid rgba(255,165,0,0.2);color:var(--white);padding:6px;font-family:'Heebo',sans-serif;font-size:12px;outline:none;color-scheme:dark">
-        <span style="font-size:11px;color:var(--grey)">עד</span>
+          style="flex:1;background:#111;border:1px solid rgba(255,165,0,0.2);color:var(--white);padding:6px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;color-scheme:dark">
+        <span style="font-size:17px;color:var(--grey)">עד</span>
         <input type="time" value="${br.to}" onchange="updateBreak(${i},${bi},'to',this.value)"
-          style="flex:1;background:#111;border:1px solid rgba(255,165,0,0.2);color:var(--white);padding:6px;font-family:'Heebo',sans-serif;font-size:12px;outline:none;color-scheme:dark">
-        <button onclick="removeBreak(${i},${bi})" style="background:none;border:none;color:#e63946;cursor:pointer;font-size:16px;padding:0 4px">✕</button>
+          style="flex:1;background:#111;border:1px solid rgba(255,165,0,0.2);color:var(--white);padding:6px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;color-scheme:dark">
+        <button onclick="removeBreak(${i},${bi})" style="background:none;border:none;color:#e63946;cursor:pointer;font-size:18px;padding:0 4px">✕</button>
       </div>
     `).join('');
 
@@ -1905,27 +1909,27 @@ function renderAdminHours() {
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:${h.open ? '10px' : '0'}">
         <input type="checkbox" id="day-${i}" ${h.open ? 'checked' : ''} onchange="toggleDay(${i},this.checked)"
           style="width:18px;height:18px;accent-color:var(--gold);cursor:pointer">
-        <div style="width:52px;font-size:13px;font-weight:600">${h.name}</div>
+        <div style="width:52px;font-size:17px;font-weight:600">${h.name}</div>
         ${h.open ? `
-        <span style="font-size:10px;color:var(--grey)">🏪</span>
+        <span style="font-size:18px;color:var(--grey)">🏪</span>
         <input type="time" value="${h.from}" onchange="updateHour(${i},'from',this.value)"
-          style="flex:1;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:8px;font-family:'Heebo',sans-serif;font-size:13px;outline:none;color-scheme:dark">
-        <span style="color:var(--grey);font-size:12px">עד</span>
+          style="flex:1;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:8px;font-family:'Heebo',sans-serif;font-size:17px;outline:none;color-scheme:dark">
+        <span style="color:var(--grey);font-size:18px">עד</span>
         <input type="time" value="${h.to}" onchange="updateHour(${i},'to',this.value)"
-          style="flex:1;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:8px;font-family:'Heebo',sans-serif;font-size:13px;outline:none;color-scheme:dark">
-        <button onclick="addBreak(${i})" title="הוסף הפסקה" style="background:rgba(255,165,0,0.1);border:1px solid rgba(255,165,0,0.3);color:orange;padding:6px 10px;font-size:13px;cursor:pointer;border-radius:2px">☕</button>
-        ` : `<span style="color:#444;font-size:12px">סגור</span>`}
+          style="flex:1;background:#111;border:1px solid rgba(201,168,76,0.2);color:var(--white);padding:8px;font-family:'Heebo',sans-serif;font-size:17px;outline:none;color-scheme:dark">
+        <button onclick="addBreak(${i})" title="הוסף הפסקה" style="background:rgba(255,165,0,0.1);border:1px solid rgba(255,165,0,0.3);color:orange;padding:6px 10px;font-size:17px;cursor:pointer;border-radius:2px">☕</button>
+        ` : `<span style="color:#444;font-size:18px">סגור</span>`}
       </div>
       ${h.open ? `
       <div style="display:flex;align-items:center;gap:8px;margin-top:6px;padding:8px;background:rgba(100,180,255,0.04);border:1px solid rgba(100,180,255,0.12)">
-        <span style="font-size:11px;color:#7ec8ff;min-width:52px">🏠 בבית:</span>
+        <span style="font-size:17px;color:#7ec8ff;min-width:52px">🏠 בבית:</span>
         <input type="time" value="${h.homeFrom||''}" onchange="updateHour(${i},'homeFrom',this.value)"
           placeholder="--:--"
-          style="flex:1;background:#111;border:1px solid rgba(100,180,255,0.2);color:#7ec8ff;padding:6px;font-family:'Heebo',sans-serif;font-size:12px;outline:none;color-scheme:dark">
-        <span style="font-size:11px;color:var(--grey)">עד</span>
+          style="flex:1;background:#111;border:1px solid rgba(100,180,255,0.2);color:#7ec8ff;padding:6px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;color-scheme:dark">
+        <span style="font-size:17px;color:var(--grey)">עד</span>
         <input type="time" value="${h.homeTo||''}" onchange="updateHour(${i},'homeTo',this.value)"
           placeholder="--:--"
-          style="flex:1;background:#111;border:1px solid rgba(100,180,255,0.2);color:#7ec8ff;padding:6px;font-family:'Heebo',sans-serif;font-size:12px;outline:none;color-scheme:dark">
+          style="flex:1;background:#111;border:1px solid rgba(100,180,255,0.2);color:#7ec8ff;padding:6px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;color-scheme:dark">
       </div>
       ${breaksHtml}
       ` : ''}
@@ -1965,7 +1969,7 @@ function renderBlockedDays() {
   }).sort((a,b) => a.from.localeCompare(b.from));
 
   if (future.length === 0) {
-    list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--grey);font-size:13px">אין ימים חסומים מוגדרים</div>';
+    list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--grey);font-size:17px">אין ימים חסומים מוגדרים</div>';
     return;
   }
 
@@ -1981,10 +1985,10 @@ function renderBlockedDays() {
     return `
     <div style="background:rgba(230,57,70,0.06);border:1px solid rgba(230,57,70,0.2);padding:14px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">
       <div>
-        <div style="font-weight:700;font-size:14px;color:#e63946">🚫 ${rangeLabel}</div>
-        ${b.reason ? `<div style="font-size:12px;color:var(--grey);margin-top:3px">${b.reason}</div>` : ''}
+        <div style="font-weight:700;font-size:18px;color:#e63946">🚫 ${rangeLabel}</div>
+        ${b.reason ? `<div style="font-size:18px;color:var(--grey);margin-top:3px">${b.reason}</div>` : ''}
       </div>
-      <button onclick="deleteBlockedDay(${blocked.indexOf(b)})" style="background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.3);color:#e63946;padding:6px 12px;font-size:11px;cursor:pointer;font-family:'Heebo',sans-serif">מחק</button>
+      <button onclick="deleteBlockedDay(${blocked.indexOf(b)})" style="background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.3);color:#e63946;padding:6px 12px;font-size:17px;cursor:pointer;font-family:'Heebo',sans-serif">מחק</button>
     </div>`;
   }).join('');
 }
@@ -2038,7 +2042,7 @@ function renderAdminHomeVisits() {
   const future = visits.filter(v => v.date >= today).sort((a,b) => a.date.localeCompare(b.date));
 
   if (future.length === 0) {
-    list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--grey);font-size:13px">אין תאריכי הגעה לבית מוגדרים</div>';
+    list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--grey);font-size:17px">אין תאריכי הגעה לבית מוגדרים</div>';
     return;
   }
 
@@ -2048,10 +2052,10 @@ function renderAdminHomeVisits() {
     return `
     <div style="background:rgba(100,180,255,0.06);border:1px solid rgba(100,180,255,0.2);padding:14px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">
       <div>
-        <div style="font-weight:700;font-size:14px;color:#7ec8ff">🏠 יום ${dayNames[d.getDay()]}, ${d.getDate()} ב${HEBREW_MONTHS[d.getMonth()]}</div>
-        <div style="font-size:12px;color:var(--grey);margin-top:3px">${v.from} — ${v.to}</div>
+        <div style="font-weight:700;font-size:18px;color:#7ec8ff">🏠 יום ${dayNames[d.getDay()]}, ${d.getDate()} ב${HEBREW_MONTHS[d.getMonth()]}</div>
+        <div style="font-size:18px;color:var(--grey);margin-top:3px">${v.from} — ${v.to}</div>
       </div>
-      <button onclick="deleteHomeVisit(${visits.indexOf(v)})" style="background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.3);color:#e63946;padding:6px 12px;font-size:11px;cursor:pointer;font-family:'Heebo',sans-serif">מחק</button>
+      <button onclick="deleteHomeVisit(${visits.indexOf(v)})" style="background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.3);color:#e63946;padding:6px 12px;font-size:17px;cursor:pointer;font-family:'Heebo',sans-serif">מחק</button>
     </div>`;
   }).join('');
 }
@@ -2164,7 +2168,7 @@ async function filterAdminByDate() {
   document.getElementById('adminDateLabel').textContent = label;
 
   const list = document.getElementById('adminBookingsList');
-  list.innerHTML = `<div style="text-align:center;padding:32px;color:var(--grey);font-size:14px">⏳ טוען תורים...</div>`;
+  list.innerHTML = `<div style="text-align:center;padding:32px;color:var(--grey);font-size:18px">⏳ טוען תורים...</div>`;
 
   // Try to load from Google Sheets first
   let bookings = [];
@@ -2192,19 +2196,17 @@ async function filterAdminByDate() {
   }
 
   if (bookings.length === 0) {
-    list.innerHTML = `<div style="text-align:center;padding:32px;color:var(--grey);font-size:14px">אין תורים ביום זה</div>`;
+    list.innerHTML = `<div style="text-align:center;padding:32px;color:var(--grey);font-size:18px">אין תורים ביום זה</div>`;
     return;
   }
 
   // Update stats for selected date
   document.getElementById('adminTodayCount').textContent = bookings.length;
-  // Revenue = sum of DONE appointments only
+  // Revenue = ONLY from appointments marked as done
   const done = getDoneAppointments();
   const doneForDate = done[dateStr] || {};
   const doneRevenue = Object.values(doneForDate).reduce((s,v) => s+(Number(v.price)||0), 0);
-  // Fallback: if no done tracking, use all bookings
-  const rev = doneRevenue > 0 ? doneRevenue : bookings.reduce((s,b) => s + (Number(b.price)||Number(b.Price)||0), 0);
-  document.getElementById('adminTodayRevenue').textContent = '₪' + rev;
+  document.getElementById('adminTodayRevenue').textContent = '₪' + doneRevenue;
 
   list.innerHTML = bookings
     .sort((a,b) => (a.time||'').localeCompare(b.time||''))
@@ -2214,16 +2216,16 @@ async function filterAdminByDate() {
       <div id="booking-${b.time||b.Time}" style="background:var(--card);border:1px solid ${isDone ? 'var(--success)' : 'var(--border)'};padding:16px;margin-bottom:10px;border-radius:12px;opacity:${isDone ? '0.7' : '1'}">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div style="flex:1">
-            <div style="font-weight:700;font-size:15px;margin-bottom:4px;${isDone ? 'text-decoration:line-through;color:var(--text-soft)' : ''}">${b.name}</div>
-            <div style="font-size:12px;color:var(--text-soft)">${b.service} · ${b.time}</div>
-            <div style="font-size:11px;color:var(--text-soft);margin-top:2px">${b.phone}</div>
-            ${b.homeVisit === 'כן' ? '<div style="font-size:11px;color:#7ec8ff;margin-top:2px">🏠 הגעה לבית</div>' : ''}
-            ${b.notes ? `<div style="font-size:11px;color:var(--text-soft);margin-top:2px">💬 ${b.notes}</div>` : ''}
+            <div style="font-weight:700;font-size:17px;margin-bottom:5px;${isDone ? 'text-decoration:line-through;color:var(--text-soft)' : ''}">${b.name}</div>
+            <div style="font-size:18px;color:var(--text-soft)">${b.service} · ${b.time}</div>
+            <div style="font-size:17px;color:var(--text-soft);margin-top:3px">${b.phone}</div>
+            ${b.homeVisit === 'כן' ? '<div style="font-size:17px;color:#7ec8ff;margin-top:3px">🏠 הגעה לבית</div>' : ''}
+            ${b.notes ? `<div style="font-size:17px;color:var(--text-soft);margin-top:3px">💬 ${b.notes}</div>` : ''}
           </div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
-            <div style="font-size:20px;font-weight:900;color:var(--primary)">₪${b.price||''}</div>
+            <div style="font-size:22px;font-weight:900;color:var(--primary)">₪${b.price||''}</div>
             <button onclick="toggleAppointmentDone('${b.date||dateStr}','${b.time||b.Time||''}',${b.price||0},this)"
-              style="padding:6px 12px;border-radius:8px;border:1px solid ${isDone ? 'var(--success)' : 'var(--border)'};background:${isDone ? 'rgba(76,175,125,0.15)' : 'var(--bg)'};color:${isDone ? 'var(--success)' : 'var(--text-soft)'};font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer">
+              style="padding:8px 14px;font-size:17px;border-radius:8px;border:1px solid ${isDone ? 'var(--success)' : 'var(--border)'};background:${isDone ? 'rgba(76,175,125,0.15)' : 'var(--bg)'};color:${isDone ? 'var(--success)' : 'var(--text-soft)'};font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;cursor:pointer">
               ${isDone ? '✓ בוצע' : 'סמן בוצע'}
             </button>
           </div>
@@ -2250,7 +2252,7 @@ function renderMyBookings() {
   const today = new Date().toISOString().split('T')[0];
 
   if (history.length === 0) {
-    list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--grey);font-size:14px">אין תורים קודמים</div>';
+    list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--grey);font-size:18px">אין תורים קודמים</div>';
     return;
   }
 
@@ -2259,11 +2261,11 @@ function renderMyBookings() {
     return `
     <div style="background:var(--card);border:1px solid rgba(201,168,76,${isPast ? '0.08' : '0.2'});padding:16px;margin-bottom:10px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);opacity:${isPast ? '0.6' : '1'}">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <div style="font-weight:700;font-size:15px;color:${isPast ? 'var(--grey)' : 'var(--white)'}">${b.service}</div>
+        <div style="font-weight:700;font-size:17px;color:${isPast ? 'var(--grey)' : 'var(--white)'}">${b.service}</div>
         <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold)">₪${b.price}</div>
       </div>
-      <div style="font-size:13px;color:var(--grey)">${b.dateLabel} · ${b.time}</div>
-      <div style="font-size:11px;color:#444;margin-top:4px">#${b.confirmNum} ${isPast ? '· ✓ הושלם' : '· ⏳ קרוב'}</div>
+      <div style="font-size:17px;color:var(--grey)">${b.dateLabel} · ${b.time}</div>
+      <div style="font-size:17px;color:#444;margin-top:4px">#${b.confirmNum} ${isPast ? '· ✓ הושלם' : '· ⏳ קרוב'}</div>
     </div>`;
   }).join('');
 }
@@ -2622,7 +2624,7 @@ function loadImagesTab() {
     if (imgs.cover) {
       coverEl.innerHTML = `<img src="${imgs.cover}" style="width:100%;height:100%;object-fit:cover">`;
     } else {
-      coverEl.innerHTML = '<span style="font-size:13px;color:var(--text-soft)">אין תמונה</span>';
+      coverEl.innerHTML = '<span style="font-size:17px;color:var(--text-soft)">אין תמונה</span>';
     }
   }
 
@@ -2633,7 +2635,7 @@ function loadImagesTab() {
     galleryEl.innerHTML = gallery.map((url, i) => `
       <div style="position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:var(--bg)">
         <img src="${url}" style="width:100%;height:100%;object-fit:cover">
-        <button onclick="removeGalleryImage(${i})" style="position:absolute;top:4px;left:4px;background:rgba(0,0,0,0.6);border:none;color:white;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center">✕</button>
+        <button onclick="removeGalleryImage(${i})" style="position:absolute;top:4px;left:4px;background:rgba(0,0,0,0.6);border:none;color:white;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center">✕</button>
       </div>
     `).join('');
   }
@@ -3085,7 +3087,7 @@ function toggleAppointmentDone(date, time, price, btn) {
     if (card) {
       card.style.border = '1px solid var(--border)';
       card.style.opacity = '1';
-      const nameEl = card.querySelector('div[style*="font-weight:700;font-size:15px"]');
+      const nameEl = card.querySelector('div[style*="font-weight:700;font-size:17px"]');
       if (nameEl) { nameEl.style.textDecoration = ''; nameEl.style.color = ''; }
     }
     // Sync to Sheets
@@ -3100,7 +3102,7 @@ function toggleAppointmentDone(date, time, price, btn) {
     if (card) {
       card.style.border = '1px solid var(--success)';
       card.style.opacity = '0.7';
-      const nameEl = card.querySelector('div[style*="font-weight:700;font-size:15px"]');
+      const nameEl = card.querySelector('div[style*="font-weight:700;font-size:17px"]');
       if (nameEl) { nameEl.style.textDecoration = 'line-through'; nameEl.style.color = 'var(--text-soft)'; }
     }
     // Sync to Sheets
@@ -3108,6 +3110,16 @@ function toggleAppointmentDone(date, time, price, btn) {
   }
   
   localStorage.setItem('gm_done_appointments', JSON.stringify(done));
+
+  // Refresh revenue display
+  const dateStr = document.getElementById('adminDatePicker') ? document.getElementById('adminDatePicker').value : '';
+  if (dateStr) {
+    const updatedDone = getDoneAppointments();
+    const doneForDate = updatedDone[dateStr] || {};
+    const doneRevenue = Object.values(doneForDate).reduce((s,v) => s+(Number(v.price)||0), 0);
+    const revEl = document.getElementById('adminTodayRevenue');
+    if (revEl) revEl.textContent = '₪' + doneRevenue;
+  }
 }
 
 async function showDailySummary() {
