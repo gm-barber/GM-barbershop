@@ -743,7 +743,7 @@
 
     <!-- Send with date -->
     <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:14px">
-      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:14px;font-weight:700;text-transform:uppercase">שליחת מייל לפי תאריך</div>
+      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:14px;font-weight:700;text-transform:uppercase">בחר תאריך</div>
       <input type="date" id="reportSendDate" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;border-radius:10px;margin-bottom:12px;direction:ltr">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <button onclick="sendWorkPlanForDate()" style="background:rgba(232,213,176,0.1);border:1px solid var(--primary);color:var(--primary);padding:13px 8px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:12px">📋 שלח תכנית עבודה</button>
@@ -754,21 +754,63 @@
     <!-- Download reports -->
     <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:14px">
       <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:14px;font-weight:700;text-transform:uppercase">הורדת דוחות לאקסל</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
-        <div>
-          <div style="font-size:11px;color:var(--text-soft);margin-bottom:6px">מתאריך</div>
-          <input type="date" id="reportFromDate" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:10px;font-family:'Heebo',sans-serif;font-size:13px;outline:none;border-radius:10px;direction:ltr">
-        </div>
-        <div>
-          <div style="font-size:11px;color:var(--text-soft);margin-bottom:6px">עד תאריך</div>
-          <input type="date" id="reportToDate" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:10px;font-family:'Heebo',sans-serif;font-size:13px;outline:none;border-radius:10px;direction:ltr">
+      
+      <!-- Report type selection -->
+      <div style="font-size:12px;color:var(--text-soft);margin-bottom:10px;font-weight:600">בחר סוג דוח</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">
+        <button id="rtype-daily" onclick="selectReportType('daily')" style="padding:11px 6px;border-radius:10px;border:1.5px solid var(--primary);background:rgba(232,213,176,0.1);color:var(--primary);font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer">📅 יומי</button>
+        <button id="rtype-range" onclick="selectReportType('range')" style="padding:11px 6px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--text-soft);font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer">📆 טווח תאריכים</button>
+        <button id="rtype-monthly" onclick="selectReportType('monthly')" style="padding:11px 6px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--text-soft);font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;cursor:pointer">🗓️ חודשי</button>
+      </div>
+
+      <!-- Daily date picker -->
+      <div id="rfield-daily" style="margin-bottom:14px">
+        <div style="font-size:11px;color:var(--text-soft);margin-bottom:6px">בחר תאריך</div>
+        <input type="date" id="reportSingleDate" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;border-radius:10px;direction:ltr">
+      </div>
+
+      <!-- Range date picker -->
+      <div id="rfield-range" style="display:none;margin-bottom:14px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div>
+            <div style="font-size:11px;color:var(--text-soft);margin-bottom:6px">מתאריך</div>
+            <input type="date" id="reportFromDate" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:10px;font-family:'Heebo',sans-serif;font-size:13px;outline:none;border-radius:10px;direction:ltr">
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--text-soft);margin-bottom:6px">עד תאריך</div>
+            <input type="date" id="reportToDate" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:10px;font-family:'Heebo',sans-serif;font-size:13px;outline:none;border-radius:10px;direction:ltr">
+          </div>
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-        <button onclick="downloadReport('daily')" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:12px 8px;font-family:'Heebo',sans-serif;font-size:12px;cursor:pointer;border-radius:10px">📅 דוח יומי</button>
-        <button onclick="downloadReport('weekly')" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:12px 8px;font-family:'Heebo',sans-serif;font-size:12px;cursor:pointer;border-radius:10px">📆 דוח שבועי</button>
+
+      <!-- Monthly picker -->
+      <div id="rfield-monthly" style="display:none;margin-bottom:14px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div>
+            <div style="font-size:11px;color:var(--text-soft);margin-bottom:6px">שנה</div>
+            <select id="reportYear" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;border-radius:10px"></select>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--text-soft);margin-bottom:6px">חודש</div>
+            <select id="reportMonth" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;border-radius:10px">
+              <option value="01">ינואר</option>
+              <option value="02">פברואר</option>
+              <option value="03">מרץ</option>
+              <option value="04">אפריל</option>
+              <option value="05">מאי</option>
+              <option value="06">יוני</option>
+              <option value="07">יולי</option>
+              <option value="08">אוגוסט</option>
+              <option value="09">ספטמבר</option>
+              <option value="10">אוקטובר</option>
+              <option value="11">נובמבר</option>
+              <option value="12">דצמבר</option>
+            </select>
+          </div>
+        </div>
       </div>
-      <button onclick="downloadReport('monthly')" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:12px;cursor:pointer;border-radius:10px">🗓️ דוח חודשי</button>
+
+      <button onclick="downloadReportSmart()" style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:14px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border-radius:12px">⬇️ הורד דוח</button>
     </div>
 
     <!-- Customer database -->
@@ -932,15 +974,6 @@
     </div>
 
     <button onclick="saveEmailSettings()" style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:16px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:14px;margin-bottom:12px">שמור הגדרות ✓</button>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-      <button onclick="sendWorkPlanNow()" style="background:rgba(232,213,176,0.1);border:1px solid var(--primary);color:var(--primary);padding:14px 8px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:12px">
-        📋 שלח תכנית עבודה עכשיו
-      </button>
-      <button onclick="sendSummaryNow()" style="background:rgba(232,213,176,0.1);border:1px solid var(--primary);color:var(--primary);padding:14px 8px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:12px">
-        📊 שלח סיכום יומי עכשיו
-      </button>
-    </div>
 
     <button onclick="testEmailNow()" style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text-soft);padding:14px;font-family:'Heebo',sans-serif;font-size:14px;cursor:pointer;border-radius:14px">
       ✉️ שלח מייל בדיקה
@@ -2211,14 +2244,83 @@ function renderMyBookings() {
 
 // ─── GOOGLE APPS SCRIPT CONFIG ───
 // ─── REPORTS ───
+let currentReportType = 'daily';
+
+function selectReportType(type) {
+  currentReportType = type;
+  ['daily','range','monthly'].forEach(t => {
+    const btn = document.getElementById('rtype-' + t);
+    const field = document.getElementById('rfield-' + t);
+    if (btn) {
+      btn.style.borderColor = t === type ? 'var(--primary)' : 'var(--border)';
+      btn.style.background = t === type ? 'rgba(232,213,176,0.1)' : 'transparent';
+      btn.style.color = t === type ? 'var(--primary)' : 'var(--text-soft)';
+    }
+    if (field) field.style.display = t === type ? 'block' : 'none';
+  });
+}
+
+async function downloadReportSmart() {
+  let from, to;
+  const msg = document.getElementById('reportsMsg');
+
+  if (currentReportType === 'daily') {
+    const d = document.getElementById('reportSingleDate').value;
+    if (!d) { msg.textContent = 'בחר תאריך'; return; }
+    from = d; to = d;
+  } else if (currentReportType === 'range') {
+    from = document.getElementById('reportFromDate').value;
+    to = document.getElementById('reportToDate').value;
+    if (!from || !to) { msg.textContent = 'בחר תאריכים'; return; }
+  } else {
+    const year = document.getElementById('reportYear').value;
+    const month = document.getElementById('reportMonth').value;
+    from = year + '-' + month + '-01';
+    const lastDay = new Date(parseInt(year), parseInt(month), 0).getDate();
+    to = year + '-' + month + '-' + String(lastDay).padStart(2,'0');
+  }
+
+  msg.textContent = '⏳ מכין דוח...';
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?action=getReportData&from=' + from + '&to=' + to);
+    const data = await res.json();
+    if (!data.success) throw new Error('fetch failed');
+    generateExcelReport(data.appointments, currentReportType, from, to);
+    msg.textContent = '✅ הדוח הורד!';
+  } catch(e) {
+    const all = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
+    const filtered = all.filter(b => b.date >= from && b.date <= to);
+    generateExcelReport(filtered, currentReportType, from, to);
+    msg.textContent = '✅ הדוח הורד!';
+  }
+  setTimeout(() => { msg.textContent = ''; }, 4000);
+}
+
 function initReportsTab() {
   const today = new Date().toISOString().split('T')[0];
   const fromEl = document.getElementById('reportFromDate');
   const toEl = document.getElementById('reportToDate');
   const sendEl = document.getElementById('reportSendDate');
+  const singleEl = document.getElementById('reportSingleDate');
   if (fromEl && !fromEl.value) fromEl.value = today;
   if (toEl && !toEl.value) toEl.value = today;
   if (sendEl && !sendEl.value) sendEl.value = today;
+  if (singleEl && !singleEl.value) singleEl.value = today;
+
+  // Populate year dropdown
+  const yearEl = document.getElementById('reportYear');
+  if (yearEl && !yearEl.options.length) {
+    const curYear = new Date().getFullYear();
+    for (let y = curYear; y >= curYear - 3; y--) {
+      const opt = document.createElement('option');
+      opt.value = String(y);
+      opt.textContent = String(y);
+      yearEl.appendChild(opt);
+    }
+  }
+  // Set current month
+  const monthEl = document.getElementById('reportMonth');
+  if (monthEl) monthEl.value = String(new Date().getMonth()+1).padStart(2,'0');
 }
 
 async function sendWorkPlanForDate() {
@@ -2654,14 +2756,83 @@ function openWhatsAppCustomer() {
 }
 
 // ─── REPORTS ───
+let currentReportType = 'daily';
+
+function selectReportType(type) {
+  currentReportType = type;
+  ['daily','range','monthly'].forEach(t => {
+    const btn = document.getElementById('rtype-' + t);
+    const field = document.getElementById('rfield-' + t);
+    if (btn) {
+      btn.style.borderColor = t === type ? 'var(--primary)' : 'var(--border)';
+      btn.style.background = t === type ? 'rgba(232,213,176,0.1)' : 'transparent';
+      btn.style.color = t === type ? 'var(--primary)' : 'var(--text-soft)';
+    }
+    if (field) field.style.display = t === type ? 'block' : 'none';
+  });
+}
+
+async function downloadReportSmart() {
+  let from, to;
+  const msg = document.getElementById('reportsMsg');
+
+  if (currentReportType === 'daily') {
+    const d = document.getElementById('reportSingleDate').value;
+    if (!d) { msg.textContent = 'בחר תאריך'; return; }
+    from = d; to = d;
+  } else if (currentReportType === 'range') {
+    from = document.getElementById('reportFromDate').value;
+    to = document.getElementById('reportToDate').value;
+    if (!from || !to) { msg.textContent = 'בחר תאריכים'; return; }
+  } else {
+    const year = document.getElementById('reportYear').value;
+    const month = document.getElementById('reportMonth').value;
+    from = year + '-' + month + '-01';
+    const lastDay = new Date(parseInt(year), parseInt(month), 0).getDate();
+    to = year + '-' + month + '-' + String(lastDay).padStart(2,'0');
+  }
+
+  msg.textContent = '⏳ מכין דוח...';
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?action=getReportData&from=' + from + '&to=' + to);
+    const data = await res.json();
+    if (!data.success) throw new Error('fetch failed');
+    generateExcelReport(data.appointments, currentReportType, from, to);
+    msg.textContent = '✅ הדוח הורד!';
+  } catch(e) {
+    const all = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
+    const filtered = all.filter(b => b.date >= from && b.date <= to);
+    generateExcelReport(filtered, currentReportType, from, to);
+    msg.textContent = '✅ הדוח הורד!';
+  }
+  setTimeout(() => { msg.textContent = ''; }, 4000);
+}
+
 function initReportsTab() {
   const today = new Date().toISOString().split('T')[0];
   const fromEl = document.getElementById('reportFromDate');
   const toEl = document.getElementById('reportToDate');
   const sendEl = document.getElementById('reportSendDate');
+  const singleEl = document.getElementById('reportSingleDate');
   if (fromEl && !fromEl.value) fromEl.value = today;
   if (toEl && !toEl.value) toEl.value = today;
   if (sendEl && !sendEl.value) sendEl.value = today;
+  if (singleEl && !singleEl.value) singleEl.value = today;
+
+  // Populate year dropdown
+  const yearEl = document.getElementById('reportYear');
+  if (yearEl && !yearEl.options.length) {
+    const curYear = new Date().getFullYear();
+    for (let y = curYear; y >= curYear - 3; y--) {
+      const opt = document.createElement('option');
+      opt.value = String(y);
+      opt.textContent = String(y);
+      yearEl.appendChild(opt);
+    }
+  }
+  // Set current month
+  const monthEl = document.getElementById('reportMonth');
+  if (monthEl) monthEl.value = String(new Date().getMonth()+1).padStart(2,'0');
 }
 
 async function sendWorkPlanForDate() {
