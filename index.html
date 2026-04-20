@@ -2223,8 +2223,8 @@ async function filterAdminByDate() {
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
             <div style="font-size:22px;font-weight:900;color:var(--primary)">₪${b.price||''}</div>
             <button onclick="toggleAppointmentDone('${b.date||dateStr}','${b.time||b.Time||''}',${b.price||0},this)"
-              style="padding:8px 14px;font-size:17px;border-radius:8px;border:1px solid ${isDone ? 'var(--success)' : 'var(--border)'};background:${isDone ? 'rgba(76,175,125,0.15)' : 'var(--bg)'};color:${isDone ? 'var(--success)' : 'var(--text-soft)'};font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;cursor:pointer">
-              ${isDone ? '✓ בוצע' : 'סמן בוצע'}
+              style="padding:10px 18px;border-radius:10px;border:none;background:${isDone ? '#2e7d4f' : '#c0392b'};color:white;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;min-width:90px">
+              ${isDone ? '✓ שולם' : '✗ לא שולם'}
             </button>
           </div>
         </div>
@@ -3077,10 +3077,10 @@ function toggleAppointmentDone(date, time, price, btn) {
   
   if (done[date][time]) {
     delete done[date][time];
-    btn.textContent = 'סמן בוצע';
-    btn.style.borderColor = 'var(--border)';
-    btn.style.background = 'var(--bg)';
-    btn.style.color = 'var(--text-soft)';
+    btn.textContent = '✗ לא שולם';
+    btn.style.border = 'none';
+    btn.style.background = '#c0392b';
+    btn.style.color = 'white';
     const card = btn.closest('div[id^="booking-"]');
     if (card) {
       card.style.border = '1px solid var(--border)';
@@ -3092,10 +3092,10 @@ function toggleAppointmentDone(date, time, price, btn) {
     fetch(APPS_SCRIPT_URL + '?action=markDone&date=' + date + '&time=' + encodeURIComponent(time) + '&price=' + price + '&undo=true');
   } else {
     done[date][time] = { price: price, markedAt: new Date().toISOString() };
-    btn.textContent = '✓ בוצע';
-    btn.style.borderColor = 'var(--success)';
-    btn.style.background = 'rgba(76,175,125,0.15)';
-    btn.style.color = 'var(--success)';
+    btn.textContent = '✓ שולם';
+    btn.style.border = 'none';
+    btn.style.background = '#2e7d4f';
+    btn.style.color = 'white';
     const card = btn.closest('div[id^="booking-"]');
     if (card) {
       card.style.border = '1px solid var(--success)';
