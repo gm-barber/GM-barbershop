@@ -646,7 +646,7 @@ document.head.appendChild(link);
   <div style="display:flex;border-bottom:1px solid rgba(201,168,76,0.15);padding:0 20px;gap:4px;overflow-x:auto">
     <button onclick="switchAdminTab('bookings')" id="tab-bookings" style="background:none;border:none;color:var(--gold);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid var(--gold);white-space:nowrap">📋 תורים</button>
     <button onclick="switchAdminTab('services')" id="tab-services" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">✂️ שירותים</button>
-    <button onclick="switchAdminTab('hours')" id="tab-hours" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🕐 שעות</button>
+    <button onclick="switchAdminTab('hours')" id="tab-hours" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🕐 תכנית עבודה</button>
     <button onclick="switchAdminTab('blocked')" id="tab-blocked" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🚫 חסימות</button>
     <button onclick="switchAdminTab('settings')" id="tab-settings" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">⚙️ הגדרות</button>
     <button onclick="switchAdminTab('reports')" id="tab-reports" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:17px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">📊 דוחות</button>
@@ -724,28 +724,9 @@ document.head.appendChild(link);
     <div id="hoursSaveMsg" style="text-align:center;font-size:18px;color:#2ecc71;margin-top:8px;min-height:16px"></div>
 
     <!-- Home visits in hours tab -->
-    <div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(201,168,76,0.15)">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#7ec8ff;margin-bottom:4px">🏠 הגעה לבית</div>
-      <div style="font-size:18px;color:var(--grey);margin-bottom:16px">תאריכים ספציפיים שבהם אתה מגיע ללקוחות</div>
-      <div id="homeVisitsList"></div>
-      <div style="background:var(--card);border:1px solid rgba(100,180,255,0.2);padding:16px;margin-top:8px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">
-        <div style="font-size:17px;color:#7ec8ff;letter-spacing:2px;margin-bottom:12px">הוסף תאריך הגעה לבית</div>
-        <input type="date" id="homeVisitDate" style="width:100%;background:#111;border:1px solid rgba(100,180,255,0.2);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;margin-bottom:10px;color-scheme:dark">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-          <div>
-            <div style="font-size:17px;color:var(--grey);margin-bottom:4px">משעה</div>
-            <input type="time" id="homeVisitFrom" style="width:100%;background:#111;border:1px solid rgba(100,180,255,0.2);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;color-scheme:dark">
-          </div>
-          <div>
-            <div style="font-size:17px;color:var(--grey);margin-bottom:4px">עד שעה</div>
-            <input type="time" id="homeVisitTo" style="width:100%;background:#111;border:1px solid rgba(100,180,255,0.2);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;color-scheme:dark">
-          </div>
-        </div>
-        <button onclick="addHomeVisitDate()" style="width:100%;background:rgba(100,180,255,0.15);border:1px solid rgba(100,180,255,0.4);color:#7ec8ff;padding:14px;font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;cursor:pointer;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">+ הוסף תאריך</button>
       </div>
-    </div>
-  </div>
 
+  
   <!-- TAB: BLOCKED DAYS -->
   <div id="admintab-blocked" style="display:none;flex:1;overflow-y:auto;padding:16px 20px">
     <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:4px">ימים חסומים</div>
@@ -1810,9 +1791,9 @@ function switchAdminTab(tab) {
     if (el) el.style.display = t === tab ? 'block' : 'none';
     const btn = document.getElementById('tab-' + t);
     if (btn) {
-      btn.style.color = t === tab ? 'var(--bg)' : 'var(--grey)';
+      btn.style.color = t === tab ? '#1a1a1a' : 'var(--grey)';
       btn.style.borderBottom = t === tab ? '2px solid var(--gold)' : '2px solid transparent';
-      btn.style.background = t === tab ? 'var(--gold)' : 'none';
+      btn.style.background = t === tab ? '#e8d5b0' : 'none';
       btn.style.borderRadius = t === tab ? '8px 8px 0 0' : '0';
       btn.style.fontWeight = t === tab ? '800' : '400';
     }
@@ -1895,77 +1876,87 @@ function renderAdminHours() {
   list.innerHTML = hours.map((h, i) => {
     const isOpen = h.open;
     return `
-    <div style="background:var(--card);border:1px solid ${isOpen ? 'rgba(201,168,76,0.3)' : 'rgba(255,255,255,0.05)'};border-radius:14px;margin-bottom:12px;overflow:hidden">
+    <div style="background:var(--card);border:1px solid ${isOpen ? 'rgba(201,168,76,0.3)' : 'rgba(255,255,255,0.05)'};border-radius:14px;margin-bottom:14px;overflow:hidden">
 
       <!-- Day header -->
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:${isOpen ? 'rgba(201,168,76,0.08)' : 'transparent'}">
-        <div style="display:flex;align-items:center;gap:12px">
-          <label class="toggle-switch" style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer">
-            <input type="checkbox" ${isOpen ? 'checked' : ''} onchange="toggleDay(${i},this.checked)"
-              style="opacity:0;width:0;height:0">
-            <span style="position:absolute;top:0;left:0;right:0;bottom:0;background:${isOpen ? 'var(--gold)' : '#444'};border-radius:24px;transition:0.3s">
-              <span style="position:absolute;left:${isOpen ? '22px' : '2px'};top:2px;width:20px;height:20px;background:white;border-radius:50%;transition:0.3s"></span>
-            </span>
-          </label>
-          <div style="font-size:18px;font-weight:700;color:${isOpen ? 'var(--text)' : 'var(--grey)'}">${h.name}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;background:${isOpen ? 'rgba(201,168,76,0.08)' : 'transparent'}">
+        <div style="display:flex;align-items:center;gap:14px">
+          <input type="checkbox" id="day-${i}" ${isOpen ? 'checked' : ''} onchange="toggleDay(${i},this.checked)"
+            style="width:20px;height:20px;accent-color:var(--gold);cursor:pointer">
+          <div style="font-size:20px;font-weight:800;color:${isOpen ? 'var(--text)' : 'var(--grey)'}">${h.name}</div>
         </div>
-        <div style="font-size:14px;color:${isOpen ? 'var(--gold)' : 'var(--grey)'}">
+        <div style="font-size:16px;color:${isOpen ? 'var(--gold)' : 'var(--grey)'}">
           ${isOpen ? (h.from || '') + ' - ' + (h.to || '') : 'סגור'}
         </div>
       </div>
 
-      <!-- Day details (only if open) -->
       ${isOpen ? `
-      <div style="padding:14px 16px;border-top:1px solid rgba(255,255,255,0.06)">
+      <div style="padding:16px 18px;border-top:1px solid rgba(255,255,255,0.06);display:flex;flex-direction:column;gap:16px">
 
-        <!-- Shop hours -->
-        <div style="margin-bottom:14px">
-          <div style="font-size:13px;color:var(--grey);letter-spacing:2px;margin-bottom:8px;font-weight:700">🏪 שעות מספרה</div>
-          <div style="display:flex;align-items:center;gap:10px">
-            <input type="time" value="${h.from || '09:00'}" onchange="updateHour(${i},'from',this.value)"
-              style="flex:1;background:#111;border:1px solid rgba(201,168,76,0.25);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:17px;outline:none;border-radius:8px;color-scheme:dark;text-align:center">
-            <span style="color:var(--grey);font-size:16px">עד</span>
-            <input type="time" value="${h.to || '18:00'}" onchange="updateHour(${i},'to',this.value)"
-              style="flex:1;background:#111;border:1px solid rgba(201,168,76,0.25);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:17px;outline:none;border-radius:8px;color-scheme:dark;text-align:center">
-          </div>
-        </div>
-
-        <!-- Home visits hours -->
-        <div style="margin-bottom:14px">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-            <div style="font-size:13px;color:var(--grey);letter-spacing:2px;font-weight:700">🏠 שעות בית לבית</div>
-            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px;color:var(--grey)">
-              <input type="checkbox" ${h.homeFrom ? 'checked' : ''} onchange="toggleHomeHours(${i},this.checked)"
-                style="accent-color:var(--gold);width:16px;height:16px">
-              פעיל
-            </label>
-          </div>
-          ${h.homeFrom ? `
-          <div style="display:flex;align-items:center;gap:10px">
-            <input type="time" value="${h.homeFrom || '09:00'}" onchange="updateHour(${i},'homeFrom',this.value)"
-              style="flex:1;background:#111;border:1px solid rgba(100,180,255,0.25);color:#7ec8ff;padding:10px;font-family:'Heebo',sans-serif;font-size:17px;outline:none;border-radius:8px;color-scheme:dark;text-align:center">
-            <span style="color:var(--grey);font-size:16px">עד</span>
-            <input type="time" value="${h.homeTo || '18:00'}" onchange="updateHour(${i},'homeTo',this.value)"
-              style="flex:1;background:#111;border:1px solid rgba(100,180,255,0.25);color:#7ec8ff;padding:10px;font-family:'Heebo',sans-serif;font-size:17px;outline:none;border-radius:8px;color-scheme:dark;text-align:center">
-          </div>` : '<div style="font-size:14px;color:var(--grey);padding:8px 0">לא פעיל ביום זה</div>'}
-        </div>
-
-        <!-- Breaks -->
+        <!-- SHOP HOURS -->
         <div>
-          <div style="font-size:13px;color:var(--grey);letter-spacing:2px;margin-bottom:8px;font-weight:700">☕ הפסקות</div>
+          <div style="font-size:15px;font-weight:700;color:var(--gold);letter-spacing:1px;margin-bottom:10px">🏪 מספרה</div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="flex:1">
+              <div style="font-size:13px;color:var(--grey);margin-bottom:4px">משעה</div>
+              <input type="time" value="${h.from || '09:00'}" onchange="updateHourValidated(${i},'from',this.value,this)"
+                style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.25);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;border-radius:8px;color-scheme:dark;text-align:center">
+            </div>
+            <div style="color:var(--grey);font-size:18px;padding-top:18px">—</div>
+            <div style="flex:1">
+              <div style="font-size:13px;color:var(--grey);margin-bottom:4px">עד שעה</div>
+              <input type="time" value="${h.to || '18:00'}" onchange="updateHourValidated(${i},'to',this.value,this)"
+                style="width:100%;background:#111;border:1px solid rgba(201,168,76,0.25);color:var(--white);padding:10px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;border-radius:8px;color-scheme:dark;text-align:center">
+            </div>
+          </div>
+          <div id="err-shop-${i}" style="color:#e63946;font-size:13px;margin-top:6px;min-height:16px"></div>
+        </div>
+
+        <!-- HOME VISITS -->
+        <div>
+          <div style="font-size:15px;font-weight:700;color:#7ec8ff;letter-spacing:1px;margin-bottom:10px">🏠 מבית לבית</div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="flex:1">
+              <div style="font-size:13px;color:var(--grey);margin-bottom:4px">משעה</div>
+              <input type="time" value="${h.homeFrom || ''}" onchange="updateHourValidated(${i},'homeFrom',this.value,this)"
+                style="width:100%;background:#111;border:1px solid rgba(100,180,255,0.25);color:#7ec8ff;padding:10px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;border-radius:8px;color-scheme:dark;text-align:center">
+            </div>
+            <div style="color:var(--grey);font-size:18px;padding-top:18px">—</div>
+            <div style="flex:1">
+              <div style="font-size:13px;color:var(--grey);margin-bottom:4px">עד שעה</div>
+              <input type="time" value="${h.homeTo || ''}" onchange="updateHourValidated(${i},'homeTo',this.value,this)"
+                style="width:100%;background:#111;border:1px solid rgba(100,180,255,0.25);color:#7ec8ff;padding:10px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;border-radius:8px;color-scheme:dark;text-align:center">
+            </div>
+          </div>
+          <div id="err-home-${i}" style="color:#e63946;font-size:13px;margin-top:6px;min-height:16px"></div>
+        </div>
+
+        <!-- BREAKS -->
+        <div>
+          <div style="font-size:15px;font-weight:700;color:orange;letter-spacing:1px;margin-bottom:10px">☕ הפסקות</div>
           ${(h.breaks||[]).map((br, bi) => `
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;background:rgba(255,165,0,0.05);padding:8px;border-radius:8px;border:1px solid rgba(255,165,0,0.1)">
-            <input type="time" value="${br.from}" onchange="updateBreak(${i},${bi},'from',this.value)"
-              style="flex:1;background:#111;border:1px solid rgba(255,165,0,0.2);color:orange;padding:8px;font-family:'Heebo',sans-serif;font-size:16px;outline:none;border-radius:8px;color-scheme:dark">
-            <span style="color:var(--grey);font-size:15px">עד</span>
-            <input type="time" value="${br.to}" onchange="updateBreak(${i},${bi},'to',this.value)"
-              style="flex:1;background:#111;border:1px solid rgba(255,165,0,0.2);color:orange;padding:8px;font-family:'Heebo',sans-serif;font-size:16px;outline:none;border-radius:8px;color-scheme:dark">
-            <button onclick="removeBreak(${i},${bi})" style="background:none;border:none;color:#e63946;cursor:pointer;font-size:20px;padding:0 4px">✕</button>
+          <div style="background:rgba(255,165,0,0.05);border:1px solid rgba(255,165,0,0.15);border-radius:10px;padding:10px 12px;margin-bottom:8px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="flex:1">
+                <div style="font-size:13px;color:var(--grey);margin-bottom:4px">משעה</div>
+                <input type="time" value="${br.from}" onchange="updateBreakValidated(${i},${bi},'from',this.value,this)"
+                  style="width:100%;background:#111;border:1px solid rgba(255,165,0,0.2);color:orange;padding:10px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;border-radius:8px;color-scheme:dark;text-align:center">
+              </div>
+              <div style="color:var(--grey);font-size:18px;padding-top:18px">—</div>
+              <div style="flex:1">
+                <div style="font-size:13px;color:var(--grey);margin-bottom:4px">עד שעה</div>
+                <input type="time" value="${br.to}" onchange="updateBreakValidated(${i},${bi},'to',this.value,this)"
+                  style="width:100%;background:#111;border:1px solid rgba(255,165,0,0.2);color:orange;padding:10px;font-family:'Heebo',sans-serif;font-size:18px;outline:none;border-radius:8px;color-scheme:dark;text-align:center">
+              </div>
+              <button onclick="removeBreak(${i},${bi})" style="background:none;border:none;color:#e63946;cursor:pointer;font-size:22px;padding:0 4px;margin-top:18px">✕</button>
+            </div>
+            <div id="err-break-${i}-${bi}" style="color:#e63946;font-size:13px;margin-top:4px;min-height:16px"></div>
           </div>`).join('')}
-          <button onclick="addBreak(${i})" style="background:none;border:1px dashed rgba(255,165,0,0.3);color:orange;padding:8px 14px;border-radius:8px;font-family:'Heebo',sans-serif;font-size:14px;cursor:pointer;width:100%">
+          <button onclick="addBreak(${i})" style="width:100%;background:none;border:1px dashed rgba(255,165,0,0.3);color:orange;padding:10px;border-radius:8px;font-family:'Heebo',sans-serif;font-size:15px;cursor:pointer">
             + הוסף הפסקה
           </button>
         </div>
+
       </div>` : ''}
     </div>`;
   }).join('');
