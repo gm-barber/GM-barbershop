@@ -623,6 +623,7 @@
     <button onclick="switchAdminTab('hours')" id="tab-hours" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🕐 שעות</button>
     <button onclick="switchAdminTab('blocked')" id="tab-blocked" style="background:none;border:none;color:var(--grey);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🚫 חסימות</button>
     <button onclick="switchAdminTab('settings')" id="tab-settings" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">⚙️ הגדרות</button>
+    <button onclick="switchAdminTab('reports')" id="tab-reports" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">📊 דוחות</button>
     <button onclick="switchAdminTab('images')" id="tab-images" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">🖼️ תמונות</button>
     <button onclick="switchAdminTab('email')" id="tab-email" style="background:none;border:none;color:var(--text-soft);padding:14px 16px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap">✉️ מייל</button>
   </div>
@@ -733,6 +734,51 @@
         style="width:100%;background:#111;border:1px solid rgba(230,57,70,0.15);color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:13px;outline:none;margin-bottom:12px">
       <button onclick="addBlockedDay()" style="width:100%;background:rgba(230,57,70,0.12);border:1px solid rgba(230,57,70,0.4);color:#e63946;padding:14px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%)">חסום תאריך</button>
     </div>
+  </div>
+
+  <!-- TAB: REPORTS -->
+  <div id="admintab-reports" style="display:none;flex:1;overflow-y:auto;padding:16px 20px;font-family:'Heebo',sans-serif">
+    <div style="font-size:22px;font-weight:900;margin-bottom:4px">דוחות ונתונים</div>
+    <div style="font-size:12px;color:var(--text-soft);margin-bottom:20px">הורד דוחות ושלח מיילים לפי תאריך</div>
+
+    <!-- Send with date -->
+    <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:14px">
+      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:14px;font-weight:700;text-transform:uppercase">שליחת מייל לפי תאריך</div>
+      <input type="date" id="reportSendDate" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;border-radius:10px;margin-bottom:12px;direction:ltr">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <button onclick="sendWorkPlanForDate()" style="background:rgba(232,213,176,0.1);border:1px solid var(--primary);color:var(--primary);padding:13px 8px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:12px">📋 שלח תכנית עבודה</button>
+        <button onclick="sendSummaryForDate()" style="background:rgba(232,213,176,0.1);border:1px solid var(--primary);color:var(--primary);padding:13px 8px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:12px">📊 שלח סיכום יומי</button>
+      </div>
+    </div>
+
+    <!-- Download reports -->
+    <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:14px">
+      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:14px;font-weight:700;text-transform:uppercase">הורדת דוחות לאקסל</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        <div>
+          <div style="font-size:11px;color:var(--text-soft);margin-bottom:6px">מתאריך</div>
+          <input type="date" id="reportFromDate" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:10px;font-family:'Heebo',sans-serif;font-size:13px;outline:none;border-radius:10px;direction:ltr">
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--text-soft);margin-bottom:6px">עד תאריך</div>
+          <input type="date" id="reportToDate" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:10px;font-family:'Heebo',sans-serif;font-size:13px;outline:none;border-radius:10px;direction:ltr">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <button onclick="downloadReport('daily')" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:12px 8px;font-family:'Heebo',sans-serif;font-size:12px;cursor:pointer;border-radius:10px">📅 דוח יומי</button>
+        <button onclick="downloadReport('weekly')" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:12px 8px;font-family:'Heebo',sans-serif;font-size:12px;cursor:pointer;border-radius:10px">📆 דוח שבועי</button>
+      </div>
+      <button onclick="downloadReport('monthly')" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:12px;cursor:pointer;border-radius:10px">🗓️ דוח חודשי</button>
+    </div>
+
+    <!-- Customer database -->
+    <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:14px">
+      <div style="font-size:11px;letter-spacing:3px;color:var(--text-soft);margin-bottom:14px;font-weight:700;text-transform:uppercase">מאגר לקוחות</div>
+      <div style="font-size:12px;color:var(--text-soft);margin-bottom:12px">רשימת לקוחות ייחודיים ללא כפילויות</div>
+      <button onclick="downloadCustomers()" style="width:100%;background:rgba(232,213,176,0.1);border:1px solid var(--primary);color:var(--primary);padding:14px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border-radius:12px">👥 הורד מאגר לקוחות (Excel)</button>
+    </div>
+
+    <div id="reportsMsg" style="text-align:center;font-size:13px;min-height:20px;color:var(--success)"></div>
   </div>
 
   <!-- TAB: IMAGES -->
@@ -1700,7 +1746,7 @@ function addToCalendar() {
 
 // ─── ADMIN TABS ───
 function switchAdminTab(tab) {
-  ['bookings','services','hours','blocked','settings','email','images'].forEach(t => {
+  ['bookings','services','hours','blocked','settings','email','images','reports'].forEach(t => {
     const el = document.getElementById('admintab-' + t);
     if (el) el.style.display = t === tab ? 'block' : 'none';
     const btn = document.getElementById('tab-' + t);
@@ -1714,6 +1760,7 @@ function switchAdminTab(tab) {
   if (tab === 'blocked') renderBlockedDays();
   if (tab === 'email') loadEmailSettings();
   if (tab === 'images') loadImagesTab();
+  if (tab === 'reports') initReportsTab();
 }
 
 // ─── ADMIN SERVICES ───
@@ -2163,6 +2210,198 @@ function renderMyBookings() {
 }
 
 // ─── GOOGLE APPS SCRIPT CONFIG ───
+// ─── REPORTS ───
+function initReportsTab() {
+  const today = new Date().toISOString().split('T')[0];
+  const fromEl = document.getElementById('reportFromDate');
+  const toEl = document.getElementById('reportToDate');
+  const sendEl = document.getElementById('reportSendDate');
+  if (fromEl && !fromEl.value) fromEl.value = today;
+  if (toEl && !toEl.value) toEl.value = today;
+  if (sendEl && !sendEl.value) sendEl.value = today;
+}
+
+async function sendWorkPlanForDate() {
+  const date = document.getElementById('reportSendDate').value;
+  if (!date) return;
+  const msg = document.getElementById('reportsMsg');
+  msg.textContent = '⏳ שולח...';
+  await fetch(APPS_SCRIPT_URL + '?action=sendWorkPlanForDate&date=' + date);
+  msg.textContent = '📋 תכנית העבודה נשלחה ל-' + formatDate(date) + '!';
+  setTimeout(() => { msg.textContent = ''; }, 4000);
+}
+
+async function sendSummaryForDate() {
+  const date = document.getElementById('reportSendDate').value;
+  if (!date) return;
+  const msg = document.getElementById('reportsMsg');
+  msg.textContent = '⏳ שולח...';
+  await fetch(APPS_SCRIPT_URL + '?action=sendSummaryForDate&date=' + date);
+  msg.textContent = '📊 הסיכום נשלח ל-' + formatDate(date) + '!';
+  setTimeout(() => { msg.textContent = ''; }, 4000);
+}
+
+function formatDate(dateStr) {
+  const [y,m,d] = dateStr.split('-');
+  return d + '/' + m + '/' + y;
+}
+
+async function downloadReport(type) {
+  const from = document.getElementById('reportFromDate').value;
+  const to = document.getElementById('reportToDate').value;
+  if (!from || !to) { alert('בחר תאריכים'); return; }
+  const msg = document.getElementById('reportsMsg');
+  msg.textContent = '⏳ מכין דוח...';
+
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?action=getReportData&from=' + from + '&to=' + to);
+    const data = await res.json();
+    if (!data.success) throw new Error('fetch failed');
+    generateExcelReport(data.appointments, type, from, to);
+    msg.textContent = '✅ הדוח הורד בהצלחה!';
+  } catch(e) {
+    // Fallback: use local bookings
+    const all = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
+    const filtered = all.filter(b => b.date >= from && b.date <= to);
+    generateExcelReport(filtered, type, from, to);
+    msg.textContent = '✅ הדוח הורד בהצלחה!';
+  }
+  setTimeout(() => { msg.textContent = ''; }, 4000);
+}
+
+function generateExcelReport(appointments, type, from, to) {
+  // Group by date
+  const byDate = {};
+  appointments.forEach(a => {
+    const d = a.date || a.Date || '';
+    if (!byDate[d]) byDate[d] = [];
+    byDate[d].push(a);
+  });
+
+  const dates = Object.keys(byDate).sort();
+  const dayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+
+  let csvRows = [];
+
+  // Header
+  csvRows.push(['GM המספרה - דוח ' + (type === 'daily' ? 'יומי' : type === 'weekly' ? 'שבועי' : 'חודשי')]);
+  csvRows.push(['מתאריך: ' + formatDate(from) + ' עד: ' + formatDate(to)]);
+  csvRows.push([]);
+
+  // Summary
+  const totalAppts = appointments.length;
+  const totalRevenue = appointments.reduce((s,a) => s + (Number(a.price||a.Price)||0), 0);
+  csvRows.push(['סיכום כללי']);
+  csvRows.push(['סה"כ תורים', totalAppts]);
+  csvRows.push(['סה"כ הכנסות', '₪' + totalRevenue]);
+  csvRows.push([]);
+
+  // By date
+  csvRows.push(['פירוט לפי יום']);
+  csvRows.push(['תאריך', 'יום', 'מספר תורים', 'הכנסות', 'שירותים']);
+  dates.forEach(d => {
+    const appts = byDate[d];
+    const rev = appts.reduce((s,a) => s+(Number(a.price||a.Price)||0), 0);
+    const services = appts.map(a => a.service||a.Service||'').filter(Boolean).join(', ');
+    const dt = new Date(d);
+    const dayName = dayNames[dt.getDay()];
+    csvRows.push([formatDate(d), dayName, appts.length, '₪' + rev, services]);
+  });
+
+  csvRows.push([]);
+
+  // Detail
+  csvRows.push(['פירוט תורים']);
+  csvRows.push(['תאריך', 'שעה', 'לקוח', 'טלפון', 'שירות', 'מחיר', 'הגיע לבית']);
+  appointments.sort((a,b) => (a.date||a.Date||'').localeCompare(b.date||b.Date||'')).forEach(a => {
+    csvRows.push([
+      formatDate(a.date||a.Date||''),
+      a.time||a.Time||'',
+      a.clientName||a.ClientName||'',
+      a.clientPhone||a.ClientPhone||'',
+      a.service||a.Service||'',
+      a.price||a.Price||'',
+      (a.homeVisit||a.HomeVisit) === 'כן' || (a.homeVisit||a.HomeVisit) === true ? 'כן' : 'לא'
+    ]);
+  });
+
+  // Convert to CSV with BOM for Excel Hebrew support
+  const bom = '﻿';
+  const csv = bom + csvRows.map(row => row.map(cell => '"' + String(cell||'').replace(/"/g,'""') + '"').join(',')).join('
+');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'GM_report_' + from + '_to_' + to + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function downloadCustomers() {
+  const msg = document.getElementById('reportsMsg');
+  msg.textContent = '⏳ מכין מאגר לקוחות...';
+
+  let allAppts = [];
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?action=getAll');
+    const data = await res.json();
+    if (data.success) allAppts = data.appointments;
+  } catch(e) {
+    allAppts = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
+  }
+
+  // Deduplicate by phone
+  const customerMap = {};
+  allAppts.forEach(a => {
+    const phone = String(a.clientPhone||a.ClientPhone||'').trim();
+    if (!phone) return;
+    if (!customerMap[phone]) {
+      customerMap[phone] = {
+        name: a.clientName||a.ClientName||'',
+        phone: phone,
+        email: a.email||a.Email||'',
+        address: a.address||a.Address||'',
+        firstVisit: a.date||a.Date||'',
+        lastVisit: a.date||a.Date||'',
+        visits: 0,
+        totalSpent: 0
+      };
+    }
+    customerMap[phone].visits++;
+    customerMap[phone].totalSpent += Number(a.price||a.Price||0);
+    const d = a.date||a.Date||'';
+    if (d > customerMap[phone].lastVisit) customerMap[phone].lastVisit = d;
+    if (d < customerMap[phone].firstVisit) customerMap[phone].firstVisit = d;
+  });
+
+  const customers = Object.values(customerMap).sort((a,b) => b.visits - a.visits);
+
+  const bom = '﻿';
+  let csvRows = [];
+  csvRows.push(['GM המספרה - מאגר לקוחות']);
+  csvRows.push(['עודכן:', new Date().toLocaleDateString('he-IL')]);
+  csvRows.push(['סה"כ לקוחות:', customers.length]);
+  csvRows.push([]);
+  csvRows.push(['שם', 'טלפון', 'מייל', 'כתובת', 'ביקור ראשון', 'ביקור אחרון', 'מספר ביקורים', 'סה"כ הוצאה']);
+  customers.forEach(c => {
+    csvRows.push([c.name, c.phone, c.email, c.address, formatDate(c.firstVisit), formatDate(c.lastVisit), c.visits, '₪' + c.totalSpent]);
+  });
+
+  const csv = bom + csvRows.map(row => row.map(cell => '"' + String(cell||'').replace(/"/g,'""') + '"').join(',')).join('
+');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'GM_customers_' + new Date().toISOString().split('T')[0] + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+
+  msg.textContent = '✅ מאגר ' + customers.length + ' לקוחות הורד!';
+  setTimeout(() => { msg.textContent = ''; }, 4000);
+}
+
 // ─── PWA INSTALL ───
 function showInstallModal() {
   const modal = document.getElementById('installModal');
@@ -2330,7 +2569,7 @@ function saveImageSettings(imgs) {
   localStorage.setItem('gm_images', JSON.stringify(imgs));
 }
 
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwx6E-XGZgXYG9BXwIcsFBcpERqdIGn-QAevqRCh3b3I9aKi2PofYGK-Pia0mLq0NKRkQ/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw_VwBM3Ol2QiIJAFJDBNGzxo_QYsfa9xkWonXSO30vlvVdVq2AN8UYvJxif6Pl1sZb1A/exec';
 
 // ─── SAVE TO GOOGLE SHEETS (via Apps Script) ───
 async function saveBookingToSheets(booking) {
@@ -2414,6 +2653,198 @@ function openWhatsAppCustomer() {
 מחכים לך! LOOK SHARP. FEEL SHARP. 💈`
   );
   window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+}
+
+// ─── REPORTS ───
+function initReportsTab() {
+  const today = new Date().toISOString().split('T')[0];
+  const fromEl = document.getElementById('reportFromDate');
+  const toEl = document.getElementById('reportToDate');
+  const sendEl = document.getElementById('reportSendDate');
+  if (fromEl && !fromEl.value) fromEl.value = today;
+  if (toEl && !toEl.value) toEl.value = today;
+  if (sendEl && !sendEl.value) sendEl.value = today;
+}
+
+async function sendWorkPlanForDate() {
+  const date = document.getElementById('reportSendDate').value;
+  if (!date) return;
+  const msg = document.getElementById('reportsMsg');
+  msg.textContent = '⏳ שולח...';
+  await fetch(APPS_SCRIPT_URL + '?action=sendWorkPlanForDate&date=' + date);
+  msg.textContent = '📋 תכנית העבודה נשלחה ל-' + formatDate(date) + '!';
+  setTimeout(() => { msg.textContent = ''; }, 4000);
+}
+
+async function sendSummaryForDate() {
+  const date = document.getElementById('reportSendDate').value;
+  if (!date) return;
+  const msg = document.getElementById('reportsMsg');
+  msg.textContent = '⏳ שולח...';
+  await fetch(APPS_SCRIPT_URL + '?action=sendSummaryForDate&date=' + date);
+  msg.textContent = '📊 הסיכום נשלח ל-' + formatDate(date) + '!';
+  setTimeout(() => { msg.textContent = ''; }, 4000);
+}
+
+function formatDate(dateStr) {
+  const [y,m,d] = dateStr.split('-');
+  return d + '/' + m + '/' + y;
+}
+
+async function downloadReport(type) {
+  const from = document.getElementById('reportFromDate').value;
+  const to = document.getElementById('reportToDate').value;
+  if (!from || !to) { alert('בחר תאריכים'); return; }
+  const msg = document.getElementById('reportsMsg');
+  msg.textContent = '⏳ מכין דוח...';
+
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?action=getReportData&from=' + from + '&to=' + to);
+    const data = await res.json();
+    if (!data.success) throw new Error('fetch failed');
+    generateExcelReport(data.appointments, type, from, to);
+    msg.textContent = '✅ הדוח הורד בהצלחה!';
+  } catch(e) {
+    // Fallback: use local bookings
+    const all = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
+    const filtered = all.filter(b => b.date >= from && b.date <= to);
+    generateExcelReport(filtered, type, from, to);
+    msg.textContent = '✅ הדוח הורד בהצלחה!';
+  }
+  setTimeout(() => { msg.textContent = ''; }, 4000);
+}
+
+function generateExcelReport(appointments, type, from, to) {
+  // Group by date
+  const byDate = {};
+  appointments.forEach(a => {
+    const d = a.date || a.Date || '';
+    if (!byDate[d]) byDate[d] = [];
+    byDate[d].push(a);
+  });
+
+  const dates = Object.keys(byDate).sort();
+  const dayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+
+  let csvRows = [];
+
+  // Header
+  csvRows.push(['GM המספרה - דוח ' + (type === 'daily' ? 'יומי' : type === 'weekly' ? 'שבועי' : 'חודשי')]);
+  csvRows.push(['מתאריך: ' + formatDate(from) + ' עד: ' + formatDate(to)]);
+  csvRows.push([]);
+
+  // Summary
+  const totalAppts = appointments.length;
+  const totalRevenue = appointments.reduce((s,a) => s + (Number(a.price||a.Price)||0), 0);
+  csvRows.push(['סיכום כללי']);
+  csvRows.push(['סה"כ תורים', totalAppts]);
+  csvRows.push(['סה"כ הכנסות', '₪' + totalRevenue]);
+  csvRows.push([]);
+
+  // By date
+  csvRows.push(['פירוט לפי יום']);
+  csvRows.push(['תאריך', 'יום', 'מספר תורים', 'הכנסות', 'שירותים']);
+  dates.forEach(d => {
+    const appts = byDate[d];
+    const rev = appts.reduce((s,a) => s+(Number(a.price||a.Price)||0), 0);
+    const services = appts.map(a => a.service||a.Service||'').filter(Boolean).join(', ');
+    const dt = new Date(d);
+    const dayName = dayNames[dt.getDay()];
+    csvRows.push([formatDate(d), dayName, appts.length, '₪' + rev, services]);
+  });
+
+  csvRows.push([]);
+
+  // Detail
+  csvRows.push(['פירוט תורים']);
+  csvRows.push(['תאריך', 'שעה', 'לקוח', 'טלפון', 'שירות', 'מחיר', 'הגיע לבית']);
+  appointments.sort((a,b) => (a.date||a.Date||'').localeCompare(b.date||b.Date||'')).forEach(a => {
+    csvRows.push([
+      formatDate(a.date||a.Date||''),
+      a.time||a.Time||'',
+      a.clientName||a.ClientName||'',
+      a.clientPhone||a.ClientPhone||'',
+      a.service||a.Service||'',
+      a.price||a.Price||'',
+      (a.homeVisit||a.HomeVisit) === 'כן' || (a.homeVisit||a.HomeVisit) === true ? 'כן' : 'לא'
+    ]);
+  });
+
+  // Convert to CSV with BOM for Excel Hebrew support
+  const bom = '﻿';
+  const csv = bom + csvRows.map(row => row.map(cell => '"' + String(cell||'').replace(/"/g,'""') + '"').join(',')).join('
+');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'GM_report_' + from + '_to_' + to + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function downloadCustomers() {
+  const msg = document.getElementById('reportsMsg');
+  msg.textContent = '⏳ מכין מאגר לקוחות...';
+
+  let allAppts = [];
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?action=getAll');
+    const data = await res.json();
+    if (data.success) allAppts = data.appointments;
+  } catch(e) {
+    allAppts = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
+  }
+
+  // Deduplicate by phone
+  const customerMap = {};
+  allAppts.forEach(a => {
+    const phone = String(a.clientPhone||a.ClientPhone||'').trim();
+    if (!phone) return;
+    if (!customerMap[phone]) {
+      customerMap[phone] = {
+        name: a.clientName||a.ClientName||'',
+        phone: phone,
+        email: a.email||a.Email||'',
+        address: a.address||a.Address||'',
+        firstVisit: a.date||a.Date||'',
+        lastVisit: a.date||a.Date||'',
+        visits: 0,
+        totalSpent: 0
+      };
+    }
+    customerMap[phone].visits++;
+    customerMap[phone].totalSpent += Number(a.price||a.Price||0);
+    const d = a.date||a.Date||'';
+    if (d > customerMap[phone].lastVisit) customerMap[phone].lastVisit = d;
+    if (d < customerMap[phone].firstVisit) customerMap[phone].firstVisit = d;
+  });
+
+  const customers = Object.values(customerMap).sort((a,b) => b.visits - a.visits);
+
+  const bom = '﻿';
+  let csvRows = [];
+  csvRows.push(['GM המספרה - מאגר לקוחות']);
+  csvRows.push(['עודכן:', new Date().toLocaleDateString('he-IL')]);
+  csvRows.push(['סה"כ לקוחות:', customers.length]);
+  csvRows.push([]);
+  csvRows.push(['שם', 'טלפון', 'מייל', 'כתובת', 'ביקור ראשון', 'ביקור אחרון', 'מספר ביקורים', 'סה"כ הוצאה']);
+  customers.forEach(c => {
+    csvRows.push([c.name, c.phone, c.email, c.address, formatDate(c.firstVisit), formatDate(c.lastVisit), c.visits, '₪' + c.totalSpent]);
+  });
+
+  const csv = bom + csvRows.map(row => row.map(cell => '"' + String(cell||'').replace(/"/g,'""') + '"').join(',')).join('
+');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'GM_customers_' + new Date().toISOString().split('T')[0] + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+
+  msg.textContent = '✅ מאגר ' + customers.length + ' לקוחות הורד!';
+  setTimeout(() => { msg.textContent = ''; }, 4000);
 }
 
 // ─── PWA INSTALL ───
@@ -2540,7 +2971,7 @@ async function showDailySummary() {
 }
 
 // ─── EMAIL SETTINGS ───
-const APPS_SCRIPT_URL_EMAIL = 'https://script.google.com/macros/s/AKfycbwx6E-XGZgXYG9BXwIcsFBcpERqdIGn-QAevqRCh3b3I9aKi2PofYGK-Pia0mLq0NKRkQ/exec';
+const APPS_SCRIPT_URL_EMAIL = 'https://script.google.com/macros/s/AKfycbw_VwBM3Ol2QiIJAFJDBNGzxo_QYsfa9xkWonXSO30vlvVdVq2AN8UYvJxif6Pl1sZb1A/exec';
 
 let currentDayMode = 'today';
 let currentSummaryMode = 'today';
