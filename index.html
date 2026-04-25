@@ -4297,9 +4297,7 @@ function handleDeepLink() {
 renderCalendar();
 renderServicesGrid();
 applyImagesToApp();
-</script>
-</body>
-</html>
+handleDeepLink();
 
 function sendWhatsAppToWaitlist(phone, name, dateStr, time) {
   var parts = dateStr.split('-');
@@ -4316,3 +4314,6 @@ function callCustomer(phone) {
   window.location.href = 'tel:' + phone;
 }
 
+</script>
+</body>
+</html>
