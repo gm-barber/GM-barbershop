@@ -609,9 +609,7 @@ document.head.appendChild(link);
     </div>
     <div class="splash-tagline" style="font-size:22px;letter-spacing:4px">LOOK SHARP FEEL SHARP</div><div class="splash-divider"></div>
     <button class="splash-btn" onclick="goTo('home')">קבע תור עכשיו</button>
-    <button onclick="findNextSlot()" style="background:transparent;border:1px solid rgba(232,213,176,0.3);color:rgba(232,213,176,0.8);padding:12px 28px;font-family:'Heebo',sans-serif;font-size:16px;cursor:pointer;border-radius:50px;margin-top:8px;width:80%">
-      ⚡ מה השעה הפנויה הקרובה?
-    </button>
+
     <div style="margin-top:32px;display:flex;flex-direction:column;align-items:center;gap:12px">
       <button onclick="showInstallModal()" style="background:transparent;border:1px solid rgba(232,213,176,0.25);color:rgba(232,213,176,0.7);padding:10px 24px;font-family:'Heebo',sans-serif;font-size:18px;cursor:pointer;border-radius:50px;letter-spacing:2px">
         📲 הוסף למסך הבית
@@ -1058,6 +1056,13 @@ document.head.appendChild(link);
     <h2>בחר תאריך<br>ושעה</h2>
   </div>
 
+  <!-- Next available slot button -->
+  <div id="nextSlotBanner" style="margin:0 20px 16px;display:none">
+    <button onclick="findNextSlotForService()" style="width:100%;background:rgba(201,168,76,0.1);border:1.5px solid var(--primary);color:var(--primary);padding:14px;font-family:'Heebo',sans-serif;font-size:16px;font-weight:700;cursor:pointer;border-radius:12px">
+      ⚡ לחץ לתור הפנוי הקרוב
+    </button>
+  </div>
+
   <div class="calendar-wrap">
     <div class="cal-header">
       <button class="cal-nav" onclick="changeMonth(-1)">›</button>
@@ -1421,7 +1426,12 @@ function goTo(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + id).classList.add('active');
   window.scrollTo(0, 0);
-  if (id === 'date') renderCalendar();
+  if (id === 'date') {
+    renderCalendar();
+    // Show next slot banner only if service is selected
+    const banner = document.getElementById('nextSlotBanner');
+    if (banner) banner.style.display = state.service ? 'block' : 'none';
+  }
   if (id === 'details') { fillSummary(); autoFillCustomer(); }
   if (id === 'home') renderServicesGrid();
   if (id === 'mybookings') renderMyBookings();
@@ -2357,21 +2367,21 @@ function renderMyBookings() {
 function cancelMyBooking(confirmNum, date, time) {
   if (!confirm('האם אתה בטוח שברצונך לבטל את התור?')) return;
   
-  // Mark as cancelled in local history
-  const history = getBookingHistory();
-  const idx = history.findIndex(b => b.confirmNum === confirmNum);
+  // Mark as cancelled in local booking history
+  let history = JSON.parse(localStorage.getItem('gm_booking_history') || '[]');
+  const idx = history.findIndex(b => String(b.confirmNum) === String(confirmNum));
   if (idx !== -1) {
     history[idx].cancelled = true;
     localStorage.setItem('gm_booking_history', JSON.stringify(history));
   }
 
-  // Remove from bookings list (so slot becomes free)
-  const bookings = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
-  const filtered = bookings.filter(b => b.confirmNum !== confirmNum);
-  localStorage.setItem('gm_bookings', JSON.stringify(filtered));
+  // Remove from active bookings list (so slot becomes free)
+  let bookings = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
+  bookings = bookings.filter(b => String(b.confirmNum) !== String(confirmNum));
+  localStorage.setItem('gm_bookings', JSON.stringify(bookings));
 
   // Notify Apps Script to remove from Sheets
-  fetch(APPS_SCRIPT_URL + '?action=cancelBooking&confirmNum=' + confirmNum + '&date=' + date + '&time=' + encodeURIComponent(time));
+  fetch(APPS_SCRIPT_URL + '?action=cancelBooking&confirmNum=' + encodeURIComponent(confirmNum) + '&date=' + date + '&time=' + encodeURIComponent(time));
 
   renderMyBookings();
   showToast('התור בוטל בהצלחה');
@@ -2379,7 +2389,13 @@ function cancelMyBooking(confirmNum, date, time) {
 
 // ─── GOOGLE APPS SCRIPT CONFIG ───
 // ─── NEXT AVAILABLE SLOT ───
-function findNextSlot() {
+function findNextSlotForService() {
+  const duration = state.serviceDuration ? parseInt(state.serviceDuration) : 30;
+  findNextSlot(duration);
+}
+
+function findNextSlot(duration) {
+  duration = duration || 30;
   const today = new Date();
   const hours = getWorkingHours();
   const bookings = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
@@ -2416,10 +2432,10 @@ function findNextSlot() {
     const rangeEnd = toMins(workDay.to);
     let cur = d === 0 ? Math.max(rangeStart, toMins(toTime(today.getHours() * 60 + today.getMinutes() + 30))) : rangeStart;
     // Round up to next 30 min
-    cur = Math.ceil(cur / 30) * 30;
+    cur = Math.ceil(cur / 30) * 30; // Round to 30-min boundary
 
-    while (cur + 30 <= rangeEnd) {
-      const slotEnd = cur + 30;
+    while (cur + duration <= rangeEnd) {
+      const slotEnd = cur + duration;
       const overlaps = takenIntervals.some(t => cur < t.end && slotEnd > t.start);
       if (!overlaps) {
         // Found!
@@ -3144,7 +3160,13 @@ function openWhatsAppCustomer() {
 }
 
 // ─── NEXT AVAILABLE SLOT ───
-function findNextSlot() {
+function findNextSlotForService() {
+  const duration = state.serviceDuration ? parseInt(state.serviceDuration) : 30;
+  findNextSlot(duration);
+}
+
+function findNextSlot(duration) {
+  duration = duration || 30;
   const today = new Date();
   const hours = getWorkingHours();
   const bookings = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
@@ -3181,10 +3203,10 @@ function findNextSlot() {
     const rangeEnd = toMins(workDay.to);
     let cur = d === 0 ? Math.max(rangeStart, toMins(toTime(today.getHours() * 60 + today.getMinutes() + 30))) : rangeStart;
     // Round up to next 30 min
-    cur = Math.ceil(cur / 30) * 30;
+    cur = Math.ceil(cur / 30) * 30; // Round to 30-min boundary
 
-    while (cur + 30 <= rangeEnd) {
-      const slotEnd = cur + 30;
+    while (cur + duration <= rangeEnd) {
+      const slotEnd = cur + duration;
       const overlaps = takenIntervals.some(t => cur < t.end && slotEnd > t.start);
       if (!overlaps) {
         // Found!
