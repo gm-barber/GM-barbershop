@@ -2442,16 +2442,14 @@ function cancelMyBooking(confirmNum, date, time) {
     localStorage.setItem('gm_my_bookings', JSON.stringify(history));
   }
 
-  // Remove from active bookings list (so slot becomes free)
-  let bookings = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
-  bookings = bookings.filter(b => String(b.confirmNum) !== String(confirmNum));
-  localStorage.setItem('gm_bookings', JSON.stringify(bookings));
-
-  // Notify Apps Script to remove from Sheets
-  // Find service duration for the cancelled booking
+  // Find service duration BEFORE removing from storage
   const allBookings = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
   const cancelledB = allBookings.find(b => String(b.confirmNum) === String(confirmNum));
   const cancelDuration = cancelledB ? (cancelledB.serviceDuration || 30) : 30;
+
+  // Remove from active bookings list (so slot becomes free)
+  let bookings = allBookings.filter(b => String(b.confirmNum) !== String(confirmNum));
+  localStorage.setItem('gm_bookings', JSON.stringify(bookings));
   fetch(APPS_SCRIPT_URL + '?action=cancelBooking&confirmNum=' + encodeURIComponent(confirmNum) + '&date=' + date + '&time=' + encodeURIComponent(time) + '&serviceDuration=' + cancelDuration);
 
   renderMyBookings();
@@ -3280,7 +3278,7 @@ function saveImageSettings(imgs) {
   localStorage.setItem('gm_images', JSON.stringify(imgs));
 }
 
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwxokSAGJwL8LVFcuaxi59OnjLxY7D5mj2GwegvEFXHj_k0zHOycMmG8rNhibWvnOTsiw/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyAPD6IVQyryPBuQcAkZEZtOHCPB158tG7e95fA2q7BwZ_D7IQOVvg0xzG2BnteIWZWiA/exec';
 
 // ─── SAVE TO GOOGLE SHEETS (via Apps Script) ───
 async function saveBookingToSheets(booking) {
@@ -4156,7 +4154,7 @@ async function showDailySummary() {
 }
 
 // ─── EMAIL SETTINGS ───
-const APPS_SCRIPT_URL_EMAIL = 'https://script.google.com/macros/s/AKfycbwxokSAGJwL8LVFcuaxi59OnjLxY7D5mj2GwegvEFXHj_k0zHOycMmG8rNhibWvnOTsiw/exec';
+const APPS_SCRIPT_URL_EMAIL = 'https://script.google.com/macros/s/AKfycbyAPD6IVQyryPBuQcAkZEZtOHCPB158tG7e95fA2q7BwZ_D7IQOVvg0xzG2BnteIWZWiA/exec';
 
 let currentDayMode = 'today';
 let currentSummaryMode = 'today';
