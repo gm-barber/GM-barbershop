@@ -3280,7 +3280,7 @@ function saveImageSettings(imgs) {
   localStorage.setItem('gm_images', JSON.stringify(imgs));
 }
 
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxTe-9irI7PZi6Jc7cD9rAQbLbbW44JbW8Pb76vaj6bteV5fLgjl9wz9qbmRDNEftTk9A/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwxokSAGJwL8LVFcuaxi59OnjLxY7D5mj2GwegvEFXHj_k0zHOycMmG8rNhibWvnOTsiw/exec';
 
 // ─── SAVE TO GOOGLE SHEETS (via Apps Script) ───
 async function saveBookingToSheets(booking) {
@@ -4156,7 +4156,7 @@ async function showDailySummary() {
 }
 
 // ─── EMAIL SETTINGS ───
-const APPS_SCRIPT_URL_EMAIL = 'https://script.google.com/macros/s/AKfycbxTe-9irI7PZi6Jc7cD9rAQbLbbW44JbW8Pb76vaj6bteV5fLgjl9wz9qbmRDNEftTk9A/exec';
+const APPS_SCRIPT_URL_EMAIL = 'https://script.google.com/macros/s/AKfycbwxokSAGJwL8LVFcuaxi59OnjLxY7D5mj2GwegvEFXHj_k0zHOycMmG8rNhibWvnOTsiw/exec';
 
 let currentDayMode = 'today';
 let currentSummaryMode = 'today';
@@ -4320,20 +4320,25 @@ function handleDeepLink() {
   const time = params.get('time');
   const serviceId = params.get('service');
 
-  if (date && time) {
+  if (!date || !time) return;
+
+  // Wait for app to fully initialize
+  setTimeout(() => {
     // Check if slot is still available
     const bookings = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
     const slotTaken = bookings.some(b => b.date === date && b.time === time && !b.cancelled);
-    
+
     if (slotTaken) {
-      setTimeout(() => {
-        alert('מצטערים, התור כבר נתפס. תוכל לבחור תור אחר.');
-        goTo('splash');
-      }, 500);
+      // Show on splash screen
+      const msg = document.createElement('div');
+      msg.style.cssText = 'position:fixed;bottom:120px;left:50%;transform:translateX(-50%);background:#e63946;color:white;padding:12px 24px;border-radius:50px;font-family:Heebo,sans-serif;font-size:15px;font-weight:700;z-index:9999;white-space:nowrap';
+      msg.textContent = 'מצטערים, התור כבר נתפס';
+      document.body.appendChild(msg);
+      setTimeout(() => msg.remove(), 4000);
       return;
     }
 
-    // Set state and navigate to details
+    // Set state
     state.selectedDate = date;
     state.selectedTime = time;
 
@@ -4346,13 +4351,32 @@ function handleDeepLink() {
         state.serviceDuration = svc.duration;
         state.serviceIcon = svc.icon;
       }
+    } else {
+      // Use first service as default
+      const services = getServices();
+      if (services.length > 0) {
+        const svc = services[0];
+        state.service = svc.name;
+        state.servicePrice = svc.price;
+        state.serviceDuration = svc.duration;
+        state.serviceIcon = svc.icon;
+      }
     }
 
-    setTimeout(() => {
-      // Make sure splash is shown first then navigate
-      goTo('details');
-    }, 800);
-  }
+    // Navigate directly to details screen
+    document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+    const detailsScreen = document.getElementById('screen-details');
+    if (detailsScreen) {
+      detailsScreen.style.display = 'block';
+      renderDetailsScreen();
+    }
+  }, 1000);
+}
+
+function renderDetailsScreen() {
+  // Pre-fill any state-based UI in details screen
+  const dateEl = document.getElementById('inp-date');
+  if (dateEl && state.selectedDate) dateEl.value = state.selectedDate;
 }
 
 // Init
@@ -4379,7 +4403,7 @@ function renderAdminWaitlistInline(dateStr) {
       <div style="font-size:14px;color:var(--text-soft);margin-bottom:3px">${w.phone}</div>
       <div style="font-size:13px;color:var(--primary);margin-bottom:10px">✂️ ${w.serviceName || ''}</div>
       <div style="display:flex;gap:8px">
-        <button onclick="sendWhatsAppToWaitlist('${w.phone}','${w.name}','${dateStr}','')"
+        <button onclick="sendWhatsAppToWaitlist('${w.phone}','${w.name}','${dateStr}',getFirstAvailableTime('${dateStr}',${w.serviceDuration||30}))"
           style="flex:1;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.4);color:#25d366;padding:9px 4px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:10px">
           📱 שלח הודעה
         </button>
@@ -4409,7 +4433,7 @@ function showAdminWaitlist() {
         <div style="font-size:14px;color:var(--text-soft);margin-bottom:4px">${w.phone}${w.email ? ' · ' + w.email : ''}</div>
         <div style="font-size:14px;color:var(--primary);margin-bottom:10px">✂️ ${w.serviceName || ''} ${w.serviceDuration ? '(' + w.serviceDuration + ' דק׳)' : ''}</div>
         <div style="display:flex;gap:8px">
-          <button onclick="sendWhatsAppToWaitlist('${w.phone}','${w.name}','${dateStr}','')"
+          <button onclick="sendWhatsAppToWaitlist('${w.phone}','${w.name}','${dateStr}',getFirstAvailableTime('${dateStr}',${w.serviceDuration||30}))"
             style="flex:1;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.4);color:#25d366;padding:10px 6px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:10px">
             📱 שלח הודעה ללקוח
           </button>
@@ -4436,6 +4460,31 @@ function showAdminWaitlist() {
       ${listHtml}
     </div>`;
   document.body.appendChild(modal);
+}
+
+function getFirstAvailableTime(dateStr, duration) {
+  duration = duration || 30;
+  const hours = getWorkingHours();
+  const bookings = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
+  const dayBookings = bookings.filter(b => b.date === dateStr && !b.cancelled);
+  const takenIntervals = dayBookings.map(b => ({
+    start: toMinutesSimple(b.time),
+    end: toMinutesSimple(b.time) + (parseInt(b.serviceDuration) || 30)
+  }));
+  const d = new Date(dateStr + 'T12:00:00');
+  const workDay = hours[d.getDay()];
+  if (!workDay || !workDay.open) return '';
+  const rangeStart = toMinutesSimple(workDay.from);
+  const rangeEnd = toMinutesSimple(workDay.to);
+  let cur = rangeStart;
+  while (cur + duration <= rangeEnd) {
+    const overlaps = takenIntervals.some(t => cur < t.end && (cur + duration) > t.start);
+    if (!overlaps) {
+      return String(Math.floor(cur/60)).padStart(2,'0') + ':' + String(cur%60).padStart(2,'0');
+    }
+    cur += 30;
+  }
+  return '';
 }
 
 function sendWhatsAppToWaitlist(phone, name, dateStr, time) {
