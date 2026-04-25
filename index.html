@@ -679,6 +679,10 @@ document.head.appendChild(link);
       <div style="font-size:17px;color:var(--gold)" id="adminDateLabel"></div>
     </div>
     <div id="adminBookingsList" style="padding:0 20px 16px"></div>
+    <div id="adminWaitlistSection" style="padding:0 20px 16px;display:none">
+      <div style="font-size:13px;letter-spacing:2px;color:#7ec8ff;font-weight:700;margin-bottom:10px;padding-top:8px;border-top:1px solid rgba(100,180,255,0.15)">📋 רשימת המתנה</div>
+      <div id="adminWaitlistList"></div>
+    </div>
 
     <div style="padding:0 20px 24px">
       <button onclick="showAdminWaitlist()" style="background:rgba(100,180,255,0.1);border:1px solid rgba(100,180,255,0.3);color:#7ec8ff;padding:10px 16px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border-radius:10px;margin-left:8px">
@@ -2250,6 +2254,26 @@ function saveBooking(booking) {
     const all = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
     all.push(booking);
     localStorage.setItem('gm_bookings', JSON.stringify(all));
+
+    // Remove booker from waitlist for this date
+    if (booking.date) {
+      const waitlist = getWaitlist();
+      const phone = booking.phone || '';
+      const email = booking.email || '';
+      const filtered = waitlist.filter(w => {
+        if (w.date !== booking.date) return true;
+        // Remove if same phone or email
+        if (phone && w.phone === phone) return false;
+        if (email && w.email === email) return false;
+        return true;
+      });
+      localStorage.setItem('gm_waitlist', JSON.stringify(filtered));
+
+      // Also notify Apps Script to remove from Sheets waitlist
+      if (phone || email) {
+        fetch(APPS_SCRIPT_URL + '?action=removeWaitlist&date=' + booking.date + '&phone=' + encodeURIComponent(phone) + '&email=' + encodeURIComponent(email));
+      }
+    }
   } catch(e) {}
 }
 
@@ -2349,6 +2373,9 @@ async function filterAdminByDate() {
         </div>
       </div>`;
     }).join('');
+
+  // Render inline waitlist
+  renderAdminWaitlistInline(dateStr);
 }
 
 // ─── BOOKING HISTORY ───
@@ -3253,7 +3280,7 @@ function saveImageSettings(imgs) {
   localStorage.setItem('gm_images', JSON.stringify(imgs));
 }
 
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwL86oxc0uqhSbPx-1opfhmo8uuq0Fo7O2e1_X7DVZoc7VYoZrIzdbA2kA3ubueyWNcqw/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxTe-9irI7PZi6Jc7cD9rAQbLbbW44JbW8Pb76vaj6bteV5fLgjl9wz9qbmRDNEftTk9A/exec';
 
 // ─── SAVE TO GOOGLE SHEETS (via Apps Script) ───
 async function saveBookingToSheets(booking) {
@@ -4129,7 +4156,7 @@ async function showDailySummary() {
 }
 
 // ─── EMAIL SETTINGS ───
-const APPS_SCRIPT_URL_EMAIL = 'https://script.google.com/macros/s/AKfycbwL86oxc0uqhSbPx-1opfhmo8uuq0Fo7O2e1_X7DVZoc7VYoZrIzdbA2kA3ubueyWNcqw/exec';
+const APPS_SCRIPT_URL_EMAIL = 'https://script.google.com/macros/s/AKfycbxTe-9irI7PZi6Jc7cD9rAQbLbbW44JbW8Pb76vaj6bteV5fLgjl9wz9qbmRDNEftTk9A/exec';
 
 let currentDayMode = 'today';
 let currentSummaryMode = 'today';
@@ -4321,7 +4348,10 @@ function handleDeepLink() {
       }
     }
 
-    setTimeout(() => goTo('details'), 300);
+    setTimeout(() => {
+      // Make sure splash is shown first then navigate
+      goTo('details');
+    }, 800);
   }
 }
 
@@ -4330,6 +4360,36 @@ renderCalendar();
 renderServicesGrid();
 applyImagesToApp();
 handleDeepLink();
+
+function renderAdminWaitlistInline(dateStr) {
+  const section = document.getElementById('adminWaitlistSection');
+  const list = document.getElementById('adminWaitlistList');
+  if (!section || !list) return;
+
+  const waitlist = getWaitlist().filter(w => w.date === dateStr);
+  if (waitlist.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+
+  section.style.display = 'block';
+  list.innerHTML = waitlist.map(w => `
+    <div style="background:var(--bg);border:1px solid rgba(100,180,255,0.15);border-radius:12px;padding:12px;margin-bottom:8px">
+      <div style="font-size:16px;font-weight:700;margin-bottom:2px">${w.name}</div>
+      <div style="font-size:14px;color:var(--text-soft);margin-bottom:3px">${w.phone}</div>
+      <div style="font-size:13px;color:var(--primary);margin-bottom:10px">✂️ ${w.serviceName || ''}</div>
+      <div style="display:flex;gap:8px">
+        <button onclick="sendWhatsAppToWaitlist('${w.phone}','${w.name}','${dateStr}','')"
+          style="flex:1;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.4);color:#25d366;padding:9px 4px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:10px">
+          📱 שלח הודעה
+        </button>
+        <button onclick="callCustomer('${w.phone}')"
+          style="flex:1;background:rgba(100,180,255,0.1);border:1px solid rgba(100,180,255,0.3);color:#7ec8ff;padding:9px 4px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:10px">
+          📞 חייג
+        </button>
+      </div>
+    </div>`).join('');
+}
 
 function showAdminWaitlist() {
   const dateStr = document.getElementById('adminDatePicker') ? document.getElementById('adminDatePicker').value : new Date().toISOString().split('T')[0];
@@ -4382,8 +4442,10 @@ function sendWhatsAppToWaitlist(phone, name, dateStr, time) {
   var parts = dateStr.split('-');
   var dateFormatted = parts[2] + '/' + parts[1] + '/' + parts[0];
   var timeText = time ? 'בשעה ' + time : '';
-  var deepLink = 'https://gm-barbershop.pages.dev' + (dateStr && time ? '?date=' + dateStr + '&time=' + encodeURIComponent(time) : '');
-  var msg = 'יש לי תור בשבילך! התפנה תור בתאריך ' + dateFormatted + ' ' + timeText + '. לקביעת התור לחץ כאן: ' + deepLink + ' - GMbarbershop';
+  var deepLink = 'https://gm-barbershop.pages.dev' + (dateStr ? '?date=' + dateStr + (time ? '&time=' + encodeURIComponent(time) : '') : '');
+  var msg = time
+    ? 'יש לי תור בשבילך! התפנה תור בתאריך ' + dateFormatted + ' בשעה ' + time + '. לקביעת התור לחץ כאן: ' + deepLink + ' - GMbarbershop'
+    : 'שלום ' + name + ', יש לי תור בשבילך בתאריך ' + dateFormatted + '. לקביעת התור לחץ כאן: ' + deepLink + ' - GMbarbershop';
   var cleanPhone = phone.replace(/[^0-9]/g, '');
   var intlPhone = cleanPhone.startsWith('0') ? '972' + cleanPhone.slice(1) : cleanPhone;
   window.open('https://wa.me/' + intlPhone + '?text=' + encodeURIComponent(msg), '_blank');
