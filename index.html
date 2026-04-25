@@ -609,6 +609,9 @@ document.head.appendChild(link);
     </div>
     <div class="splash-tagline" style="font-size:22px;letter-spacing:4px">LOOK SHARP FEEL SHARP</div><div class="splash-divider"></div>
     <button class="splash-btn" onclick="goTo('home')">קבע תור עכשיו</button>
+    <button onclick="findNextSlot()" style="background:transparent;border:1px solid rgba(232,213,176,0.3);color:rgba(232,213,176,0.8);padding:12px 28px;font-family:'Heebo',sans-serif;font-size:16px;cursor:pointer;border-radius:50px;margin-top:8px;width:80%">
+      ⚡ מה השעה הפנויה הקרובה?
+    </button>
     <div style="margin-top:32px;display:flex;flex-direction:column;align-items:center;gap:12px">
       <button onclick="showInstallModal()" style="background:transparent;border:1px solid rgba(232,213,176,0.25);color:rgba(232,213,176,0.7);padding:10px 24px;font-family:'Heebo',sans-serif;font-size:18px;cursor:pointer;border-radius:50px;letter-spacing:2px">
         📲 הוסף למסך הבית
@@ -825,6 +828,17 @@ document.head.appendChild(link);
       <div style="font-size:17px;letter-spacing:3px;color:var(--text-soft);margin-bottom:14px;font-weight:700;text-transform:uppercase">מאגר לקוחות</div>
       <div style="font-size:18px;color:var(--text-soft);margin-bottom:12px">רשימת לקוחות ייחודיים ללא כפילויות</div>
       <button onclick="downloadCustomers()" style="width:100%;background:rgba(232,213,176,0.1);border:1px solid var(--primary);color:var(--primary);padding:14px;font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;cursor:pointer;border-radius:12px">👥 הורד מאגר לקוחות (Excel)</button>
+    </div>
+
+    <!-- Statistics Charts -->
+    <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:16px;margin-bottom:14px">
+      <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:16px">📈 סטטיסטיקות הכנסות</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+        <button id="chartBtn-week" onclick="showChart('week')" style="padding:10px;border-radius:10px;border:1.5px solid var(--primary);background:rgba(232,213,176,0.1);color:var(--primary);font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer">שבוע אחרון</button>
+        <button id="chartBtn-month" onclick="showChart('month')" style="padding:10px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--text-soft);font-family:'Heebo',sans-serif;font-size:13px;font-weight:700;cursor:pointer">חודש אחרון</button>
+      </div>
+      <canvas id="revenueChart" height="200" style="width:100%"></canvas>
+      <div id="chartStats" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px"></div>
     </div>
 
     <div id="reportsMsg" style="text-align:center;font-size:17px;min-height:20px;color:var(--success)"></div>
@@ -2305,25 +2319,149 @@ function renderMyBookings() {
   const today = new Date().toISOString().split('T')[0];
 
   if (history.length === 0) {
-    list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--grey);font-size:18px">אין תורים קודמים</div>';
+    list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--grey);font-size:18px">אין תורים</div>';
     return;
   }
 
-  list.innerHTML = history.map(b => {
+  // Sort: future first, then past
+  const sorted = [...history].sort((a,b) => {
+    if (a.date >= today && b.date < today) return -1;
+    if (a.date < today && b.date >= today) return 1;
+    return a.date.localeCompare(b.date) || a.time.localeCompare(b.time);
+  });
+
+  list.innerHTML = sorted.map(b => {
     const isPast = b.date < today;
+    const isCancelled = b.cancelled;
     return `
-    <div style="background:var(--card);border:1px solid rgba(201,168,76,${isPast ? '0.08' : '0.2'});padding:16px;margin-bottom:10px;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);opacity:${isPast ? '0.6' : '1'}">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <div style="font-weight:700;font-size:17px;color:${isPast ? 'var(--grey)' : 'var(--white)'}">${b.service}</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold)">₪${b.price}</div>
+    <div style="background:var(--card);border:1px solid ${isCancelled ? 'rgba(230,57,70,0.2)' : isPast ? 'rgba(201,168,76,0.08)' : 'rgba(201,168,76,0.25)'};padding:16px;margin-bottom:10px;border-radius:12px;opacity:${isCancelled || isPast ? '0.6' : '1'}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+        <div>
+          <div style="font-weight:700;font-size:17px;color:${isCancelled ? '#e63946' : isPast ? 'var(--grey)' : 'var(--white)'}">${b.service}</div>
+          <div style="font-size:15px;color:var(--grey);margin-top:2px">${b.dateLabel} · ${b.time}</div>
+          <div style="font-size:14px;color:#444;margin-top:2px">#${b.confirmNum} ${isCancelled ? '· ❌ בוטל' : isPast ? '· ✓ הושלם' : '· ⏳ קרוב'}</div>
+        </div>
+        <div style="text-align:left">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold)">₪${b.price}</div>
+          ${!isPast && !isCancelled ? `
+          <button onclick="cancelMyBooking('${b.confirmNum}', '${b.date}', '${b.time}')"
+            style="margin-top:8px;background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.4);color:#e63946;padding:6px 12px;font-family:'Heebo',sans-serif;font-size:13px;cursor:pointer;border-radius:8px;white-space:nowrap">
+            ❌ בטל תור
+          </button>` : ''}
+        </div>
       </div>
-      <div style="font-size:17px;color:var(--grey)">${b.dateLabel} · ${b.time}</div>
-      <div style="font-size:17px;color:#444;margin-top:4px">#${b.confirmNum} ${isPast ? '· ✓ הושלם' : '· ⏳ קרוב'}</div>
     </div>`;
   }).join('');
 }
 
+function cancelMyBooking(confirmNum, date, time) {
+  if (!confirm('האם אתה בטוח שברצונך לבטל את התור?')) return;
+  
+  // Mark as cancelled in local history
+  const history = getBookingHistory();
+  const idx = history.findIndex(b => b.confirmNum === confirmNum);
+  if (idx !== -1) {
+    history[idx].cancelled = true;
+    localStorage.setItem('gm_booking_history', JSON.stringify(history));
+  }
+
+  // Remove from bookings list (so slot becomes free)
+  const bookings = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
+  const filtered = bookings.filter(b => b.confirmNum !== confirmNum);
+  localStorage.setItem('gm_bookings', JSON.stringify(filtered));
+
+  // Notify Apps Script to remove from Sheets
+  fetch(APPS_SCRIPT_URL + '?action=cancelBooking&confirmNum=' + confirmNum + '&date=' + date + '&time=' + encodeURIComponent(time));
+
+  renderMyBookings();
+  showToast('התור בוטל בהצלחה');
+}
+
 // ─── GOOGLE APPS SCRIPT CONFIG ───
+// ─── NEXT AVAILABLE SLOT ───
+function findNextSlot() {
+  const today = new Date();
+  const hours = getWorkingHours();
+  const bookings = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
+
+  function toMins(t) {
+    if (!t) return 0;
+    const [h, m] = t.split(':').map(Number);
+    return h * 60 + m;
+  }
+  function toTime(mins) {
+    return String(Math.floor(mins/60)).padStart(2,'0') + ':' + String(mins%60).padStart(2,'0');
+  }
+  function pad(n) { return String(n).padStart(2,'0'); }
+  function dateStr(d) {
+    return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+  }
+
+  // Search next 14 days
+  for (let d = 0; d < 14; d++) {
+    const checkDate = new Date(today);
+    checkDate.setDate(today.getDate() + d);
+    const dayOfWeek = checkDate.getDay();
+    const workDay = hours[dayOfWeek];
+    if (!workDay || !workDay.open) continue;
+
+    const ds = dateStr(checkDate);
+    const dayBookings = bookings.filter(b => b.date === ds);
+    const takenIntervals = dayBookings.map(b => ({
+      start: toMins(b.time),
+      end: toMins(b.time) + (parseInt(b.serviceDuration) || 30)
+    }));
+
+    const rangeStart = toMins(workDay.from);
+    const rangeEnd = toMins(workDay.to);
+    let cur = d === 0 ? Math.max(rangeStart, toMins(toTime(today.getHours() * 60 + today.getMinutes() + 30))) : rangeStart;
+    // Round up to next 30 min
+    cur = Math.ceil(cur / 30) * 30;
+
+    while (cur + 30 <= rangeEnd) {
+      const slotEnd = cur + 30;
+      const overlaps = takenIntervals.some(t => cur < t.end && slotEnd > t.start);
+      if (!overlaps) {
+        // Found!
+        const dayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+        const label = d === 0 ? 'היום' : d === 1 ? 'מחר' : 'יום ' + dayNames[dayOfWeek];
+        const msg = `התור הפנוי הקרוב: ${label}, ${pad(checkDate.getDate())}/${pad(checkDate.getMonth()+1)} בשעה ${toTime(cur)}`;
+        
+        // Show as toast + option to book
+        showNextSlotModal(msg, ds, toTime(cur));
+        return;
+      }
+      cur += 30;
+    }
+  }
+  showToast('אין תורים פנויים ב-14 הימים הקרובים');
+}
+
+function showNextSlotModal(msg, date, time) {
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML = `
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px 24px;max-width:360px;width:100%;text-align:center">
+      <div style="font-size:36px;margin-bottom:12px">⚡</div>
+      <div style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:20px">${msg}</div>
+      <button onclick="bookNextSlot('${date}','${time}');this.closest('div[style*=fixed]').remove()"
+        style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:14px;font-family:'Heebo',sans-serif;font-size:16px;font-weight:700;cursor:pointer;border-radius:12px;margin-bottom:10px">
+        קבע תור עכשיו
+      </button>
+      <button onclick="this.closest('div[style*=fixed]').remove()"
+        style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text-soft);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;cursor:pointer;border-radius:12px">
+        סגור
+      </button>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function bookNextSlot(date, time) {
+  state.selectedDate = date;
+  state.selectedTime = time;
+  goTo('home');
+}
+
 // ─── MARKETING / UNSUBSCRIBE ───
 function showUnsubscribe() {
   const box = document.getElementById('unsubscribeBox');
@@ -2408,8 +2546,135 @@ async function downloadReportSmart() {
   setTimeout(() => { msg.textContent = ''; }, 4000);
 }
 
+function showChart(period) {
+  // Update button styles
+  ['week','month'].forEach(p => {
+    const btn = document.getElementById('chartBtn-' + p);
+    if (btn) {
+      btn.style.borderColor = p === period ? 'var(--primary)' : 'var(--border)';
+      btn.style.background = p === period ? 'rgba(232,213,176,0.1)' : 'transparent';
+      btn.style.color = p === period ? 'var(--primary)' : 'var(--text-soft)';
+    }
+  });
+
+  const bookings = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
+  const done = getDoneAppointments();
+  const today = new Date();
+  const days = period === 'week' ? 7 : 30;
+
+  // Build data arrays
+  const labels = [];
+  const revenues = [];
+  const counts = [];
+
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    const pad = n => String(n).padStart(2,'0');
+    const ds = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+    const label = period === 'week' 
+      ? ['א','ב','ג','ד','ה','ו','ש'][d.getDay()] + ' ' + pad(d.getDate()) + '/' + pad(d.getMonth()+1)
+      : pad(d.getDate()) + '/' + pad(d.getMonth()+1);
+    
+    labels.push(label);
+    
+    // Revenue from done appointments
+    const dayDone = done[ds] || {};
+    const rev = Object.values(dayDone).reduce((s,v) => s+(Number(v.price)||0), 0);
+    revenues.push(rev);
+    
+    const dayBookings = bookings.filter(b => b.date === ds).length;
+    counts.push(dayBookings);
+  }
+
+  const totalRevenue = revenues.reduce((s,v) => s+v, 0);
+  const totalBookings = counts.reduce((s,v) => s+v, 0);
+  const avgRevenue = totalBookings > 0 ? Math.round(totalRevenue / days) : 0;
+
+  // Update stats
+  const statsEl = document.getElementById('chartStats');
+  if (statsEl) {
+    statsEl.innerHTML = [
+      { label: 'סה"כ הכנסות', value: '₪' + totalRevenue, color: 'var(--primary)' },
+      { label: 'סה"כ תורים', value: totalBookings, color: 'var(--text)' },
+      { label: 'ממוצע יומי', value: '₪' + avgRevenue, color: '#7ec8ff' }
+    ].map(s => `
+      <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center">
+        <div style="font-size:20px;font-weight:900;color:${s.color}">${s.value}</div>
+        <div style="font-size:12px;color:var(--text-soft);margin-top:3px">${s.label}</div>
+      </div>`).join('');
+  }
+
+  // Draw chart
+  const canvas = document.getElementById('revenueChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth * window.devicePixelRatio || 600;
+  canvas.height = 200 * window.devicePixelRatio || 200;
+  ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+
+  const w = canvas.offsetWidth || 300;
+  const h = 200;
+  ctx.clearRect(0, 0, w, h);
+
+  if (revenues.every(v => v === 0)) {
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.font = '16px Heebo';
+    ctx.textAlign = 'center';
+    ctx.fillText('אין נתונים לתקופה זו', w/2, h/2);
+    return;
+  }
+
+  const maxRev = Math.max(...revenues, 1);
+  const barW = (w - 40) / labels.length;
+  const chartH = h - 50;
+  const bottomY = h - 30;
+
+  // Grid lines
+  for (let g = 0; g <= 4; g++) {
+    const y = bottomY - (g/4) * chartH;
+    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(30, y);
+    ctx.lineTo(w, y);
+    ctx.stroke();
+    if (g > 0) {
+      ctx.fillStyle = 'rgba(255,255,255,0.3)';
+      ctx.font = '10px Heebo';
+      ctx.textAlign = 'right';
+      ctx.fillText('₪' + Math.round(maxRev * g/4), 28, y + 4);
+    }
+  }
+
+  // Bars
+  labels.forEach((label, i) => {
+    const barH = (revenues[i] / maxRev) * chartH;
+    const x = 35 + i * barW;
+    const y = bottomY - barH;
+
+    // Gradient bar
+    const grad = ctx.createLinearGradient(0, y, 0, bottomY);
+    grad.addColorStop(0, '#c9a84c');
+    grad.addColorStop(1, 'rgba(201,168,76,0.3)');
+    ctx.fillStyle = revenues[i] > 0 ? grad : 'rgba(255,255,255,0.05)';
+    ctx.beginPath();
+    ctx.roundRect(x + 2, y, barW - 6, barH, 4);
+    ctx.fill();
+
+    // Label
+    if (period === 'week' || i % 5 === 0) {
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx.font = '10px Heebo';
+      ctx.textAlign = 'center';
+      ctx.fillText(label, x + barW/2, bottomY + 14);
+    }
+  });
+}
+
 function initReportsTab() {
   const today = new Date().toISOString().split('T')[0];
+  setTimeout(() => showChart('week'), 100);
   const fromEl = document.getElementById('reportFromDate');
   const toEl = document.getElementById('reportToDate');
   const sendEl = document.getElementById('reportSendDate');
@@ -2878,6 +3143,90 @@ function openWhatsAppCustomer() {
   window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
 }
 
+// ─── NEXT AVAILABLE SLOT ───
+function findNextSlot() {
+  const today = new Date();
+  const hours = getWorkingHours();
+  const bookings = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
+
+  function toMins(t) {
+    if (!t) return 0;
+    const [h, m] = t.split(':').map(Number);
+    return h * 60 + m;
+  }
+  function toTime(mins) {
+    return String(Math.floor(mins/60)).padStart(2,'0') + ':' + String(mins%60).padStart(2,'0');
+  }
+  function pad(n) { return String(n).padStart(2,'0'); }
+  function dateStr(d) {
+    return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+  }
+
+  // Search next 14 days
+  for (let d = 0; d < 14; d++) {
+    const checkDate = new Date(today);
+    checkDate.setDate(today.getDate() + d);
+    const dayOfWeek = checkDate.getDay();
+    const workDay = hours[dayOfWeek];
+    if (!workDay || !workDay.open) continue;
+
+    const ds = dateStr(checkDate);
+    const dayBookings = bookings.filter(b => b.date === ds);
+    const takenIntervals = dayBookings.map(b => ({
+      start: toMins(b.time),
+      end: toMins(b.time) + (parseInt(b.serviceDuration) || 30)
+    }));
+
+    const rangeStart = toMins(workDay.from);
+    const rangeEnd = toMins(workDay.to);
+    let cur = d === 0 ? Math.max(rangeStart, toMins(toTime(today.getHours() * 60 + today.getMinutes() + 30))) : rangeStart;
+    // Round up to next 30 min
+    cur = Math.ceil(cur / 30) * 30;
+
+    while (cur + 30 <= rangeEnd) {
+      const slotEnd = cur + 30;
+      const overlaps = takenIntervals.some(t => cur < t.end && slotEnd > t.start);
+      if (!overlaps) {
+        // Found!
+        const dayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+        const label = d === 0 ? 'היום' : d === 1 ? 'מחר' : 'יום ' + dayNames[dayOfWeek];
+        const msg = `התור הפנוי הקרוב: ${label}, ${pad(checkDate.getDate())}/${pad(checkDate.getMonth()+1)} בשעה ${toTime(cur)}`;
+        
+        // Show as toast + option to book
+        showNextSlotModal(msg, ds, toTime(cur));
+        return;
+      }
+      cur += 30;
+    }
+  }
+  showToast('אין תורים פנויים ב-14 הימים הקרובים');
+}
+
+function showNextSlotModal(msg, date, time) {
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML = `
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px 24px;max-width:360px;width:100%;text-align:center">
+      <div style="font-size:36px;margin-bottom:12px">⚡</div>
+      <div style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:20px">${msg}</div>
+      <button onclick="bookNextSlot('${date}','${time}');this.closest('div[style*=fixed]').remove()"
+        style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:14px;font-family:'Heebo',sans-serif;font-size:16px;font-weight:700;cursor:pointer;border-radius:12px;margin-bottom:10px">
+        קבע תור עכשיו
+      </button>
+      <button onclick="this.closest('div[style*=fixed]').remove()"
+        style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text-soft);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;cursor:pointer;border-radius:12px">
+        סגור
+      </button>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function bookNextSlot(date, time) {
+  state.selectedDate = date;
+  state.selectedTime = time;
+  goTo('home');
+}
+
 // ─── MARKETING / UNSUBSCRIBE ───
 function showUnsubscribe() {
   const box = document.getElementById('unsubscribeBox');
@@ -2962,8 +3311,135 @@ async function downloadReportSmart() {
   setTimeout(() => { msg.textContent = ''; }, 4000);
 }
 
+function showChart(period) {
+  // Update button styles
+  ['week','month'].forEach(p => {
+    const btn = document.getElementById('chartBtn-' + p);
+    if (btn) {
+      btn.style.borderColor = p === period ? 'var(--primary)' : 'var(--border)';
+      btn.style.background = p === period ? 'rgba(232,213,176,0.1)' : 'transparent';
+      btn.style.color = p === period ? 'var(--primary)' : 'var(--text-soft)';
+    }
+  });
+
+  const bookings = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
+  const done = getDoneAppointments();
+  const today = new Date();
+  const days = period === 'week' ? 7 : 30;
+
+  // Build data arrays
+  const labels = [];
+  const revenues = [];
+  const counts = [];
+
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    const pad = n => String(n).padStart(2,'0');
+    const ds = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+    const label = period === 'week' 
+      ? ['א','ב','ג','ד','ה','ו','ש'][d.getDay()] + ' ' + pad(d.getDate()) + '/' + pad(d.getMonth()+1)
+      : pad(d.getDate()) + '/' + pad(d.getMonth()+1);
+    
+    labels.push(label);
+    
+    // Revenue from done appointments
+    const dayDone = done[ds] || {};
+    const rev = Object.values(dayDone).reduce((s,v) => s+(Number(v.price)||0), 0);
+    revenues.push(rev);
+    
+    const dayBookings = bookings.filter(b => b.date === ds).length;
+    counts.push(dayBookings);
+  }
+
+  const totalRevenue = revenues.reduce((s,v) => s+v, 0);
+  const totalBookings = counts.reduce((s,v) => s+v, 0);
+  const avgRevenue = totalBookings > 0 ? Math.round(totalRevenue / days) : 0;
+
+  // Update stats
+  const statsEl = document.getElementById('chartStats');
+  if (statsEl) {
+    statsEl.innerHTML = [
+      { label: 'סה"כ הכנסות', value: '₪' + totalRevenue, color: 'var(--primary)' },
+      { label: 'סה"כ תורים', value: totalBookings, color: 'var(--text)' },
+      { label: 'ממוצע יומי', value: '₪' + avgRevenue, color: '#7ec8ff' }
+    ].map(s => `
+      <div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center">
+        <div style="font-size:20px;font-weight:900;color:${s.color}">${s.value}</div>
+        <div style="font-size:12px;color:var(--text-soft);margin-top:3px">${s.label}</div>
+      </div>`).join('');
+  }
+
+  // Draw chart
+  const canvas = document.getElementById('revenueChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth * window.devicePixelRatio || 600;
+  canvas.height = 200 * window.devicePixelRatio || 200;
+  ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+
+  const w = canvas.offsetWidth || 300;
+  const h = 200;
+  ctx.clearRect(0, 0, w, h);
+
+  if (revenues.every(v => v === 0)) {
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.font = '16px Heebo';
+    ctx.textAlign = 'center';
+    ctx.fillText('אין נתונים לתקופה זו', w/2, h/2);
+    return;
+  }
+
+  const maxRev = Math.max(...revenues, 1);
+  const barW = (w - 40) / labels.length;
+  const chartH = h - 50;
+  const bottomY = h - 30;
+
+  // Grid lines
+  for (let g = 0; g <= 4; g++) {
+    const y = bottomY - (g/4) * chartH;
+    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(30, y);
+    ctx.lineTo(w, y);
+    ctx.stroke();
+    if (g > 0) {
+      ctx.fillStyle = 'rgba(255,255,255,0.3)';
+      ctx.font = '10px Heebo';
+      ctx.textAlign = 'right';
+      ctx.fillText('₪' + Math.round(maxRev * g/4), 28, y + 4);
+    }
+  }
+
+  // Bars
+  labels.forEach((label, i) => {
+    const barH = (revenues[i] / maxRev) * chartH;
+    const x = 35 + i * barW;
+    const y = bottomY - barH;
+
+    // Gradient bar
+    const grad = ctx.createLinearGradient(0, y, 0, bottomY);
+    grad.addColorStop(0, '#c9a84c');
+    grad.addColorStop(1, 'rgba(201,168,76,0.3)');
+    ctx.fillStyle = revenues[i] > 0 ? grad : 'rgba(255,255,255,0.05)';
+    ctx.beginPath();
+    ctx.roundRect(x + 2, y, barW - 6, barH, 4);
+    ctx.fill();
+
+    // Label
+    if (period === 'week' || i % 5 === 0) {
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx.font = '10px Heebo';
+      ctx.textAlign = 'center';
+      ctx.fillText(label, x + barW/2, bottomY + 14);
+    }
+  });
+}
+
 function initReportsTab() {
   const today = new Date().toISOString().split('T')[0];
+  setTimeout(() => showChart('week'), 100);
   const fromEl = document.getElementById('reportFromDate');
   const toEl = document.getElementById('reportToDate');
   const sendEl = document.getElementById('reportSendDate');
