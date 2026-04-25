@@ -2368,11 +2368,11 @@ function cancelMyBooking(confirmNum, date, time) {
   if (!confirm('האם אתה בטוח שברצונך לבטל את התור?')) return;
   
   // Mark as cancelled in local booking history
-  let history = JSON.parse(localStorage.getItem('gm_booking_history') || '[]');
+  let history = JSON.parse(localStorage.getItem('gm_my_bookings') || '[]');
   const idx = history.findIndex(b => String(b.confirmNum) === String(confirmNum));
   if (idx !== -1) {
     history[idx].cancelled = true;
-    localStorage.setItem('gm_booking_history', JSON.stringify(history));
+    localStorage.setItem('gm_my_bookings', JSON.stringify(history));
   }
 
   // Remove from active bookings list (so slot becomes free)
@@ -2455,27 +2455,35 @@ function findNextSlot(duration) {
 
 function showNextSlotModal(msg, date, time) {
   const modal = document.createElement('div');
-  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.id = 'nextSlotModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
   modal.innerHTML = `
     <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px 24px;max-width:360px;width:100%;text-align:center">
       <div style="font-size:36px;margin-bottom:12px">⚡</div>
       <div style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:20px">${msg}</div>
-      <button onclick="bookNextSlot('${date}','${time}');this.closest('div[style*=fixed]').remove()"
+      <button onclick="bookNextSlotNow('${date}','${time}')"
         style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:14px;font-family:'Heebo',sans-serif;font-size:16px;font-weight:700;cursor:pointer;border-radius:12px;margin-bottom:10px">
         קבע תור עכשיו
       </button>
-      <button onclick="this.closest('div[style*=fixed]').remove()"
+      <button onclick="document.getElementById('nextSlotModal').remove()"
         style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text-soft);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;cursor:pointer;border-radius:12px">
-        סגור
+        קבע תור אחר
       </button>
     </div>`;
   document.body.appendChild(modal);
 }
 
-function bookNextSlot(date, time) {
+function bookNextSlotNow(date, time) {
+  // Remove modal
+  const modal = document.getElementById('nextSlotModal');
+  if (modal) modal.remove();
+  
+  // Set selected date and time in state
   state.selectedDate = date;
   state.selectedTime = time;
-  goTo('home');
+  
+  // Go directly to step 3 (details)
+  goTo('details');
 }
 
 // ─── MARKETING / UNSUBSCRIBE ───
@@ -3226,27 +3234,35 @@ function findNextSlot(duration) {
 
 function showNextSlotModal(msg, date, time) {
   const modal = document.createElement('div');
-  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.id = 'nextSlotModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
   modal.innerHTML = `
     <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px 24px;max-width:360px;width:100%;text-align:center">
       <div style="font-size:36px;margin-bottom:12px">⚡</div>
       <div style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:20px">${msg}</div>
-      <button onclick="bookNextSlot('${date}','${time}');this.closest('div[style*=fixed]').remove()"
+      <button onclick="bookNextSlotNow('${date}','${time}')"
         style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:14px;font-family:'Heebo',sans-serif;font-size:16px;font-weight:700;cursor:pointer;border-radius:12px;margin-bottom:10px">
         קבע תור עכשיו
       </button>
-      <button onclick="this.closest('div[style*=fixed]').remove()"
+      <button onclick="document.getElementById('nextSlotModal').remove()"
         style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text-soft);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;cursor:pointer;border-radius:12px">
-        סגור
+        קבע תור אחר
       </button>
     </div>`;
   document.body.appendChild(modal);
 }
 
-function bookNextSlot(date, time) {
+function bookNextSlotNow(date, time) {
+  // Remove modal
+  const modal = document.getElementById('nextSlotModal');
+  if (modal) modal.remove();
+  
+  // Set selected date and time in state
   state.selectedDate = date;
   state.selectedTime = time;
-  goTo('home');
+  
+  // Go directly to step 3 (details)
+  goTo('details');
 }
 
 // ─── MARKETING / UNSUBSCRIBE ───
