@@ -1072,9 +1072,9 @@ document.head.appendChild(link);
 
   <div class="calendar-wrap">
     <div class="cal-header">
-      <button class="cal-nav" onclick="changeMonth(-1)">›</button>
+      <button class="cal-nav" onclick="changeMonth(1)">›</button>
       <div class="cal-month" id="calMonthLabel"></div>
-      <button class="cal-nav" onclick="changeMonth(1)">‹</button>
+      <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
     </div>
     <div class="cal-days-header">
       <div class="cal-day-name">א׳</div>
@@ -2058,6 +2058,105 @@ function renderAdminHours() {
   }).join('');
 }
 
+function toMinutes(t) {
+  if (!t) return 0;
+  const [h, m] = t.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function toggleHomeHours(i, active) {
+  const hours = getWorkingHours();
+  if (active) {
+    hours[i].homeFrom = hours[i].homeFrom || '09:00';
+    hours[i].homeTo = hours[i].homeTo || '18:00';
+  } else {
+    hours[i].homeFrom = '';
+    hours[i].homeTo = '';
+  }
+  saveWorkingHoursData(hours);
+  renderAdminHours();
+}
+
+function updateHourValidated(i, field, value, el) {
+  const hours = getWorkingHours();
+  const h = hours[i];
+  const errShop = document.getElementById('err-shop-' + i);
+  const errHome = document.getElementById('err-home-' + i);
+
+  if (field === 'from' || field === 'to') {
+    const from = field === 'from' ? value : h.from;
+    const to = field === 'to' ? value : h.to;
+    if (from && to && toMinutes(from) >= toMinutes(to)) {
+      if (errShop) errShop.textContent = 'שגיאה: שעת הסיום חייבת להיות אחרי שעת ההתחלה';
+      el.style.borderColor = '#e63946';
+      return;
+    }
+    if (errShop) errShop.textContent = '';
+    el.style.borderColor = '';
+  }
+
+  if (field === 'homeFrom' || field === 'homeTo') {
+    const from = field === 'homeFrom' ? value : h.homeFrom;
+    const to = field === 'homeTo' ? value : h.homeTo;
+    if (from && to) {
+      if (toMinutes(from) >= toMinutes(to)) {
+        if (errHome) errHome.textContent = 'שגיאה: שעת הסיום חייבת להיות אחרי שעת ההתחלה';
+        el.style.borderColor = '#e63946';
+        return;
+      }
+      if (h.from && h.to) {
+        const shopFrom = toMinutes(h.from);
+        const shopTo = toMinutes(h.to);
+        const hFrom = toMinutes(from);
+        const hTo = toMinutes(to);
+        if (hFrom < shopTo && hTo > shopFrom) {
+          if (errHome) errHome.textContent = 'שגיאה: שעות מבית לבית חופפות עם שעות המספרה (' + h.from + '-' + h.to + ')';
+          el.style.borderColor = '#e63946';
+          return;
+        }
+      }
+    }
+    if (errHome) errHome.textContent = '';
+    el.style.borderColor = '';
+  }
+
+  hours[i][field] = value;
+  saveWorkingHoursData(hours);
+  renderAdminHours();
+}
+
+function updateBreakValidated(i, bi, field, value, el) {
+  const hours = getWorkingHours();
+  const br = hours[i].breaks[bi];
+  const from = field === 'from' ? value : br.from;
+  const to = field === 'to' ? value : br.to;
+  const errEl = document.getElementById('err-break-' + i + '-' + bi);
+
+  if (from && to) {
+    if (toMinutes(from) >= toMinutes(to)) {
+      if (errEl) errEl.textContent = 'שגיאה: שעת סיום ההפסקה חייבת להיות אחרי שעת ההתחלה';
+      el.style.borderColor = '#e63946';
+      return;
+    }
+    const h = hours[i];
+    if (h.from && h.to) {
+      const brFrom = toMinutes(from);
+      const brTo = toMinutes(to);
+      if (brFrom < toMinutes(h.from) || brTo > toMinutes(h.to)) {
+        if (errEl) errEl.textContent = 'שגיאה: ההפסקה חייבת להיות בתוך שעות המספרה (' + h.from + '-' + h.to + ')';
+        el.style.borderColor = '#e63946';
+        return;
+      }
+    }
+  }
+
+  if (errEl) errEl.textContent = '';
+  el.style.borderColor = '';
+  hours[i].breaks[bi][field] = value;
+  saveWorkingHoursData(hours);
+  renderAdminHours();
+}
+
 function addBreak(dayIdx) {
   const hours = getWorkingHours();
   if (!hours[dayIdx].breaks) hours[dayIdx].breaks = [];
@@ -2368,6 +2467,10 @@ async function filterAdminByDate() {
             <button onclick="toggleAppointmentDone('${b.date||dateStr}','${b.time||b.Time||''}',${b.price||0},this)"
               style="padding:10px 18px;border-radius:10px;border:none;background:${isDone ? '#2e7d4f' : '#c0392b'};color:white;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;min-width:90px">
               ${isDone ? '✓ שולם' : '✗ לא שולם'}
+            </button>
+            <button onclick="adminCancelBooking('${b.confirmNum||''}','${b.date||dateStr}','${b.time||b.Time||''}','${b.clientPhone||b.ClientPhone||''}','${b.clientName||b.ClientName||''}')"
+              style="padding:10px 14px;border-radius:10px;border:1px solid rgba(230,57,70,0.4);background:transparent;color:#e63946;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:6px;width:100%">
+              🚫 בטל תור
             </button>
           </div>
         </div>
@@ -4382,6 +4485,35 @@ renderCalendar();
 renderServicesGrid();
 applyImagesToApp();
 handleDeepLink();
+
+function adminCancelBooking(confirmNum, date, time, phone, name) {
+  if (!confirm('לבטל את התור של ' + name + ' ב-' + time + '?')) return;
+
+  // Remove from Sheets
+  fetch(APPS_SCRIPT_URL + '?action=cancelBooking&confirmNum=' + encodeURIComponent(confirmNum) + '&date=' + date + '&time=' + encodeURIComponent(time) + '&serviceDuration=30');
+
+  // Remove from local bookings
+  let bookings = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
+  bookings = bookings.filter(b => String(b.confirmNum) !== String(confirmNum));
+  localStorage.setItem('gm_bookings', JSON.stringify(bookings));
+
+  // Send WhatsApp to customer
+  if (phone) {
+    const pad = n => String(n).padStart(2,'0');
+    const d = new Date(date + 'T12:00:00');
+    const dateFormatted = pad(d.getDate()) + '/' + pad(d.getMonth()+1) + '/' + d.getFullYear();
+    const appUrl = 'https://gm-barbershop.pages.dev';
+    const msg = 'שלום ' + name + ', לצערנו נאלצנו לבטל את התור שלך בתאריך ' + dateFormatted + ' בשעה ' + time + ' עקב אילוצים. נשמח לראותך שוב, לקביעת תור חדש: ' + appUrl + ' - GMbarbershop';
+    const cleanPhone = phone.replace(/[^0-9]/g, '');
+    const intlPhone = cleanPhone.startsWith('0') ? '972' + cleanPhone.slice(1) : cleanPhone;
+    window.open('https://wa.me/' + intlPhone + '?text=' + encodeURIComponent(msg), '_blank');
+  }
+
+  // Refresh admin view
+  const picker = document.getElementById('adminDatePicker');
+  if (picker) filterAdminByDate(picker.value);
+  showToast('התור בוטל');
+}
 
 function renderAdminWaitlistInline(dateStr) {
   const section = document.getElementById('adminWaitlistSection');
