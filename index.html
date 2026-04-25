@@ -1103,8 +1103,34 @@ document.head.appendChild(link);
     <div class="form-group">
       <label class="form-label">אימייל</label>
       <input class="form-input" id="inp-email" type="email" placeholder="israel@gmail.com" autocomplete="email" dir="ltr">
-      
     </div>
+
+    <!-- Marketing consent -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:4px">
+      <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer">
+        <input type="checkbox" id="inp-marketing" checked
+          style="width:20px;height:20px;accent-color:var(--primary);margin-top:2px;flex-shrink:0;cursor:pointer">
+        <span style="font-size:14px;color:var(--text-soft);line-height:1.5">
+          אני מסכים/ה לקבל הטבות והודעות שיווקיות מ-GM Barbershop במייל
+        </span>
+      </label>
+    </div>
+    <div style="text-align:left;margin-bottom:12px">
+      <a href="javascript:void(0)" onclick="showUnsubscribe()" style="font-size:13px;color:var(--text-soft);text-decoration:underline">
+        להסרה מרשימת התפוצה לחץ כאן
+      </a>
+    </div>
+
+    <div id="unsubscribeBox" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:12px">
+      <div style="font-size:15px;font-weight:700;margin-bottom:10px">הסרה מרשימת התפוצה</div>
+      <input type="email" id="inp-unsub-email" placeholder="הכנס את המייל שלך" dir="ltr"
+        style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:10px;margin-bottom:10px">
+      <button onclick="submitUnsubscribe()" style="width:100%;background:#e63946;border:none;color:white;padding:12px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:10px">
+        הסר מרשימת התפוצה
+      </button>
+      <div id="unsubMsg" style="text-align:center;font-size:13px;margin-top:8px;min-height:16px"></div>
+    </div>
+
     <div class="form-group" id="addressGroup" style="display:none">
       <label class="form-label">כתובת (להגעה לבית)</label>
       <input class="form-input" id="inp-address" type="text" placeholder="רחוב, מספר בית, עיר">
@@ -1646,6 +1672,7 @@ function confirmBooking() {
 
   state.lastBooking = { name, phone, email, notes, address, dateLabel, confirmNum };
 
+  const marketingConsent = document.getElementById('inp-marketing') ? document.getElementById('inp-marketing').checked : true;
   saveBooking({
     name, phone, email, notes, address,
     service: state.service,
@@ -1654,6 +1681,7 @@ function confirmBooking() {
     price: state.servicePrice,
     isHomeVisit: state.isHomeVisit,
     serviceDuration: parseInt(state.serviceDuration) || 30,
+    marketingConsent,
     confirmNum, dateLabel
   });
 
@@ -1838,9 +1866,9 @@ function renderAdminServices() {
       <div>
         <div style="font-size:18px;color:var(--grey);margin-bottom:6px">מיקום שירות</div>
         <div style="display:flex;gap:6px">
-          <button onclick="updateService(${i},'location','shop')" style="flex:1;padding:8px 4px;font-size:17px;cursor:pointer;font-family:'Heebo',sans-serif;border:1px solid ${(s.location||'shop')==='shop'?'var(--gold)':'rgba(201,168,76,0.2)'};background:${(s.location||'shop')==='shop'?'rgba(201,168,76,0.15)':'#111'};color:${(s.location||'shop')==='shop'?'var(--gold)':'var(--grey)'}">🏪 מספרה בלבד</button>
+          <button onclick="updateService(${i},'location','shop')" style="flex:1;padding:8px 4px;font-size:17px;cursor:pointer;font-family:'Heebo',sans-serif;border:1px solid ${(s.location||'shop')==='shop'?'var(--gold)':'rgba(201,168,76,0.2)'};background:${(s.location||'shop')==='shop'?'rgba(201,168,76,0.15)':'#111'};color:${(s.location||'shop')==='shop'?'var(--gold)':'var(--grey)'}">🏪 מספרה</button>
           <button onclick="updateService(${i},'location','both')" style="flex:1;padding:8px 4px;font-size:17px;cursor:pointer;font-family:'Heebo',sans-serif;border:1px solid ${s.location==='both'?'#7ec8ff':'rgba(100,180,255,0.2)'};background:${s.location==='both'?'rgba(100,180,255,0.1)':'#111'};color:${s.location==='both'?'#7ec8ff':'var(--grey)'}">🏠 עד בית הלקוח</button>
-          <button onclick="updateService(${i},'location','home')" style="flex:1;padding:8px 4px;font-size:17px;cursor:pointer;font-family:'Heebo',sans-serif;border:1px solid ${s.location==='home'?'#7ec8ff':'rgba(100,180,255,0.2)'};background:${s.location==='home'?'rgba(100,180,255,0.1)':'#111'};color:${s.location==='home'?'#7ec8ff':'var(--grey)'}">🏠 עד בית בלבד</button>
+          
         </div>
       </div>
     </div>
@@ -2296,6 +2324,37 @@ function renderMyBookings() {
 }
 
 // ─── GOOGLE APPS SCRIPT CONFIG ───
+// ─── MARKETING / UNSUBSCRIBE ───
+function showUnsubscribe() {
+  const box = document.getElementById('unsubscribeBox');
+  if (box) box.style.display = box.style.display === 'none' ? 'block' : 'none';
+}
+
+async function submitUnsubscribe() {
+  const emailEl = document.getElementById('inp-unsub-email');
+  const msgEl = document.getElementById('unsubMsg');
+  const email = emailEl ? emailEl.value.trim() : '';
+  if (!email) { if (msgEl) msgEl.textContent = 'יש להכניס כתובת מייל'; return; }
+
+  // Save to unsubscribed list in localStorage
+  const unsub = JSON.parse(localStorage.getItem('gm_unsubscribed') || '[]');
+  if (!unsub.includes(email)) unsub.push(email);
+  localStorage.setItem('gm_unsubscribed', JSON.stringify(unsub));
+
+  // Also notify Apps Script
+  try {
+    await fetch(APPS_SCRIPT_URL + '?action=unsubscribe&email=' + encodeURIComponent(email));
+  } catch(e) {}
+
+  if (msgEl) { msgEl.textContent = '✅ המייל הוסר מרשימת התפוצה'; msgEl.style.color = 'var(--success)'; }
+  if (emailEl) emailEl.value = '';
+}
+
+function isUnsubscribed(email) {
+  const unsub = JSON.parse(localStorage.getItem('gm_unsubscribed') || '[]');
+  return unsub.includes(email);
+}
+
 // ─── REPORTS ───
 let currentReportType = 'daily';
 
@@ -2505,11 +2564,19 @@ async function downloadCustomers() {
     allAppts = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
   }
 
-  // Deduplicate by phone
+  // Get unsubscribed list
+  const unsubscribed = JSON.parse(localStorage.getItem('gm_unsubscribed') || '[]');
+
+  // Deduplicate by phone - only include consented customers
   const customerMap = {};
   allAppts.forEach(a => {
     const phone = String(a.clientPhone||a.ClientPhone||'').trim();
+    const email = String(a.email||a.Email||'').trim().toLowerCase();
     if (!phone) return;
+    // Skip if unsubscribed
+    if (email && unsubscribed.includes(email)) return;
+    // Skip if explicitly declined marketing
+    if (a.marketingConsent === false || a.marketingConsent === 'false') return;
     if (!customerMap[phone]) {
       customerMap[phone] = {
         name: a.clientName||a.ClientName||'',
@@ -2811,6 +2878,37 @@ function openWhatsAppCustomer() {
   window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
 }
 
+// ─── MARKETING / UNSUBSCRIBE ───
+function showUnsubscribe() {
+  const box = document.getElementById('unsubscribeBox');
+  if (box) box.style.display = box.style.display === 'none' ? 'block' : 'none';
+}
+
+async function submitUnsubscribe() {
+  const emailEl = document.getElementById('inp-unsub-email');
+  const msgEl = document.getElementById('unsubMsg');
+  const email = emailEl ? emailEl.value.trim() : '';
+  if (!email) { if (msgEl) msgEl.textContent = 'יש להכניס כתובת מייל'; return; }
+
+  // Save to unsubscribed list in localStorage
+  const unsub = JSON.parse(localStorage.getItem('gm_unsubscribed') || '[]');
+  if (!unsub.includes(email)) unsub.push(email);
+  localStorage.setItem('gm_unsubscribed', JSON.stringify(unsub));
+
+  // Also notify Apps Script
+  try {
+    await fetch(APPS_SCRIPT_URL + '?action=unsubscribe&email=' + encodeURIComponent(email));
+  } catch(e) {}
+
+  if (msgEl) { msgEl.textContent = '✅ המייל הוסר מרשימת התפוצה'; msgEl.style.color = 'var(--success)'; }
+  if (emailEl) emailEl.value = '';
+}
+
+function isUnsubscribed(email) {
+  const unsub = JSON.parse(localStorage.getItem('gm_unsubscribed') || '[]');
+  return unsub.includes(email);
+}
+
 // ─── REPORTS ───
 
 
@@ -3020,11 +3118,19 @@ async function downloadCustomers() {
     allAppts = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
   }
 
-  // Deduplicate by phone
+  // Get unsubscribed list
+  const unsubscribed = JSON.parse(localStorage.getItem('gm_unsubscribed') || '[]');
+
+  // Deduplicate by phone - only include consented customers
   const customerMap = {};
   allAppts.forEach(a => {
     const phone = String(a.clientPhone||a.ClientPhone||'').trim();
+    const email = String(a.email||a.Email||'').trim().toLowerCase();
     if (!phone) return;
+    // Skip if unsubscribed
+    if (email && unsubscribed.includes(email)) return;
+    // Skip if explicitly declined marketing
+    if (a.marketingConsent === false || a.marketingConsent === 'false') return;
     if (!customerMap[phone]) {
       customerMap[phone] = {
         name: a.clientName||a.ClientName||'',
