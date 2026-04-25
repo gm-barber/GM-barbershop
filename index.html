@@ -681,6 +681,9 @@ document.head.appendChild(link);
     <div id="adminBookingsList" style="padding:0 20px 16px"></div>
 
     <div style="padding:0 20px 24px">
+      <button onclick="showAdminWaitlist()" style="background:rgba(100,180,255,0.1);border:1px solid rgba(100,180,255,0.3);color:#7ec8ff;padding:10px 16px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border-radius:10px;margin-left:8px">
+        📋 רשימת המתנה
+      </button>
       <button onclick="showDailySummary()" style="width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:14px;font-family:'Heebo',sans-serif;font-size:18px;font-weight:600;cursor:pointer;border-radius:12px;margin-bottom:10px">
         📊 סיכום יומי וחודשי
       </button>
@@ -1458,6 +1461,7 @@ function renderCalendar() {
   const today = new Date(); today.setHours(0,0,0,0);
   const hours = getWorkingHours();
   const homeVisits = getHomeVisits();
+  const serviceDuration = state.serviceDuration ? parseInt(state.serviceDuration) : 30;
 
   const firstDay = new Date(y, m, 1).getDay();
   const daysInMonth = new Date(y, m + 1, 0).getDate();
@@ -1488,13 +1492,49 @@ function renderCalendar() {
     if (isPast) { cell.classList.add('past'); }
     else if (!isAvailable) { cell.classList.add('closed'); }
     else {
-      cell.classList.add('available');
-      if (state.selectedDate === dateStr) cell.classList.add('selected');
-      if (date.toDateString() === today.toDateString()) cell.classList.add('today');
-      cell.onclick = () => selectDate(dateStr, cell);
+      // Check if day is fully booked
+      const isFull = !isPast && isAvailable && isDayFullyBooked(dateStr, workDay, serviceDuration);
+
+      if (isFull) {
+        cell.classList.add('available');
+        cell.style.background = 'rgba(230,57,70,0.15)';
+        cell.style.borderColor = 'rgba(230,57,70,0.4)';
+        cell.style.color = '#e63946';
+        cell.onclick = () => showFullDayModal(dateStr);
+      } else {
+        cell.classList.add('available');
+        if (state.selectedDate === dateStr) cell.classList.add('selected');
+        if (date.toDateString() === today.toDateString()) cell.classList.add('today');
+        cell.onclick = () => selectDate(dateStr, cell);
+      }
     }
     grid.appendChild(cell);
   }
+}
+
+function isDayFullyBooked(dateStr, workDay, duration) {
+  if (!workDay || !workDay.from || !workDay.to) return false;
+  const bookings = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
+  const dayBookings = bookings.filter(b => b.date === dateStr && !b.cancelled);
+  const takenIntervals = dayBookings.map(b => ({
+    start: toMinutesSimple(b.time),
+    end: toMinutesSimple(b.time) + (parseInt(b.serviceDuration) || 30)
+  }));
+  const rangeStart = toMinutesSimple(workDay.from);
+  const rangeEnd = toMinutesSimple(workDay.to);
+  let cur = rangeStart;
+  while (cur + duration <= rangeEnd) {
+    const overlaps = takenIntervals.some(t => cur < t.end && (cur + duration) > t.start);
+    if (!overlaps) return false;
+    cur += 30;
+  }
+  return true;
+}
+
+function toMinutesSimple(t) {
+  if (!t) return 0;
+  const [h, m] = t.split(':').map(Number);
+  return h * 60 + m;
 }
 
 function changeMonth(dir) {
@@ -2381,13 +2421,131 @@ function cancelMyBooking(confirmNum, date, time) {
   localStorage.setItem('gm_bookings', JSON.stringify(bookings));
 
   // Notify Apps Script to remove from Sheets
-  fetch(APPS_SCRIPT_URL + '?action=cancelBooking&confirmNum=' + encodeURIComponent(confirmNum) + '&date=' + date + '&time=' + encodeURIComponent(time));
+  // Find service duration for the cancelled booking
+  const allBookings = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
+  const cancelledB = allBookings.find(b => String(b.confirmNum) === String(confirmNum));
+  const cancelDuration = cancelledB ? (cancelledB.serviceDuration || 30) : 30;
+  fetch(APPS_SCRIPT_URL + '?action=cancelBooking&confirmNum=' + encodeURIComponent(confirmNum) + '&date=' + date + '&time=' + encodeURIComponent(time) + '&serviceDuration=' + cancelDuration);
 
   renderMyBookings();
   showToast('התור בוטל בהצלחה');
 }
 
 // ─── GOOGLE APPS SCRIPT CONFIG ───
+// ─── WAITLIST ───
+function getWaitlist() {
+  try { return JSON.parse(localStorage.getItem('gm_waitlist') || '[]'); }
+  catch(e) { return []; }
+}
+
+function showFullDayModal(dateStr) {
+  const [y,m,d] = dateStr.split('-');
+  const date = new Date(parseInt(y), parseInt(m)-1, parseInt(d));
+  const dayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+  const MONTHS = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+  const dateLabel = `יום ${dayNames[date.getDay()]}, ${d} ב${MONTHS[date.getMonth()]} ${y}`;
+
+  const modal = document.createElement('div');
+  modal.id = 'fullDayModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:flex-end;justify-content:center';
+  modal.innerHTML = `
+    <div style="background:var(--card);border-radius:24px 24px 0 0;padding:28px 24px 40px;width:100%;max-width:500px;animation:slideUp 0.3s ease">
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-size:36px;margin-bottom:8px">📅</div>
+        <div style="font-size:18px;font-weight:700;color:var(--text)">אין תורים פנויים</div>
+        <div style="font-size:15px;color:var(--text-soft);margin-top:6px">${dateLabel}</div>
+      </div>
+      <div style="background:rgba(230,57,70,0.08);border:1px solid rgba(230,57,70,0.2);border-radius:12px;padding:16px;margin-bottom:20px;text-align:center">
+        <div style="font-size:15px;color:#e63946;font-weight:600">היום מלא — לא נשארו תורים</div>
+        <div style="font-size:13px;color:var(--text-soft);margin-top:4px">הצטרף לרשימת ההמתנה ונעדכן אותך אם יתפנה תור</div>
+      </div>
+      <button onclick="showWaitlistForm('${dateStr}', '${dateLabel}')"
+        style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:16px;font-family:'Heebo',sans-serif;font-size:16px;font-weight:700;cursor:pointer;border-radius:14px;margin-bottom:10px">
+        📋 הצטרף לרשימת ההמתנה
+      </button>
+      <button onclick="document.getElementById('fullDayModal').remove()"
+        style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text-soft);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;cursor:pointer;border-radius:14px">
+        בחר יום אחר
+      </button>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function showWaitlistForm(dateStr, dateLabel) {
+  const modal = document.getElementById('fullDayModal');
+  if (modal) modal.remove();
+
+  const services = getServices();
+  const servicesOptions = services.map(s =>
+    `<option value="${s.id}" data-duration="${s.duration}" data-name="${s.name}">${s.name} (${s.duration} דק׳) - ₪${s.price}</option>`
+  ).join('');
+
+  const form = document.createElement('div');
+  form.id = 'waitlistForm';
+  form.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:flex-end;justify-content:center;overflow-y:auto';
+  form.innerHTML = `
+    <div style="background:var(--card);border-radius:24px 24px 0 0;padding:28px 24px 40px;width:100%;max-width:500px;animation:slideUp 0.3s ease">
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-size:28px;font-weight:900;color:var(--text)">רשימת המתנה</div>
+        <div style="font-size:15px;color:var(--primary);margin-top:6px">${dateLabel}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+        <input id="wl-name" type="text" placeholder="שם מלא" autocomplete="name"
+          style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:14px;font-family:'Heebo',sans-serif;font-size:16px;outline:none;border-radius:12px">
+        <input id="wl-phone" type="tel" placeholder="טלפון" autocomplete="tel" dir="ltr"
+          style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:14px;font-family:'Heebo',sans-serif;font-size:16px;outline:none;border-radius:12px">
+        <input id="wl-email" type="email" placeholder="מייל (לקבלת עדכון)" autocomplete="email" dir="ltr"
+          style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:14px;font-family:'Heebo',sans-serif;font-size:16px;outline:none;border-radius:12px">
+        <div>
+          <div style="font-size:13px;color:var(--text-soft);margin-bottom:6px">איזה שירות תרצה?</div>
+          <select id="wl-service"
+            style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:12px">
+            <option value="">-- בחר שירות --</option>
+            ${servicesOptions}
+          </select>
+        </div>
+      </div>
+      <button onclick="submitWaitlist('${dateStr}', '${dateLabel}')"
+        style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:16px;font-family:'Heebo',sans-serif;font-size:16px;font-weight:700;cursor:pointer;border-radius:14px;margin-bottom:10px">
+        אני רוצה להיכנס לרשימה ✓
+      </button>
+      <button onclick="document.getElementById('waitlistForm').remove()"
+        style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text-soft);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;cursor:pointer;border-radius:14px">
+        ביטול
+      </button>
+    </div>`;
+  document.body.appendChild(form);
+}
+
+async function submitWaitlist(dateStr, dateLabel) {
+  const name = document.getElementById('wl-name').value.trim();
+  const phone = document.getElementById('wl-phone').value.trim();
+  const email = document.getElementById('wl-email').value.trim();
+  const serviceEl = document.getElementById('wl-service');
+  const serviceId = serviceEl ? serviceEl.value : '';
+  const serviceOpt = serviceEl ? serviceEl.options[serviceEl.selectedIndex] : null;
+  const serviceName = serviceOpt ? serviceOpt.dataset.name || serviceOpt.text : '';
+  const serviceDuration = serviceOpt ? parseInt(serviceOpt.dataset.duration) || 30 : 30;
+
+  if (!name || !phone) { showToast('יש למלא שם וטלפון'); return; }
+  if (!serviceId) { showToast('יש לבחור שירות'); return; }
+
+  const entry = { name, phone, email, date: dateStr, dateLabel, serviceId, serviceName, serviceDuration, addedAt: new Date().toISOString() };
+
+  // Save locally
+  const waitlist = getWaitlist();
+  waitlist.push(entry);
+  localStorage.setItem('gm_waitlist', JSON.stringify(waitlist));
+
+  // Save to Sheets via Apps Script
+  try {
+    await fetch(APPS_SCRIPT_URL + '?action=addWaitlist&name=' + encodeURIComponent(name) + '&phone=' + encodeURIComponent(phone) + '&email=' + encodeURIComponent(email) + '&date=' + dateStr + '&dateLabel=' + encodeURIComponent(dateLabel) + '&serviceId=' + encodeURIComponent(serviceId) + '&serviceName=' + encodeURIComponent(serviceName) + '&serviceDuration=' + serviceDuration);
+  } catch(e) {}
+
+  document.getElementById('waitlistForm').remove();
+  showToast('נכנסת לרשימת ההמתנה! נעדכן אותך אם יתפנה תור 📋');
+}
+
 // ─── NEXT AVAILABLE SLOT ───
 function findNextSlotForService() {
   const duration = state.serviceDuration ? parseInt(state.serviceDuration) : 30;
@@ -2961,6 +3119,7 @@ async function handleImageUpload(event) {
     saveImageSettings(imgs);
     loadImagesTab();
     applyImagesToApp();
+handleDeepLink();
     status.textContent = '✅ התמונה הועלתה בהצלחה!';
     status.style.color = 'var(--success)';
     setTimeout(() => { status.textContent = ''; }, 3000);
@@ -3078,7 +3237,7 @@ function saveImageSettings(imgs) {
   localStorage.setItem('gm_images', JSON.stringify(imgs));
 }
 
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw_VwBM3Ol2QiIJAFJDBNGzxo_QYsfa9xkWonXSO30vlvVdVq2AN8UYvJxif6Pl1sZb1A/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwL86oxc0uqhSbPx-1opfhmo8uuq0Fo7O2e1_X7DVZoc7VYoZrIzdbA2kA3ubueyWNcqw/exec';
 
 // ─── SAVE TO GOOGLE SHEETS (via Apps Script) ───
 async function saveBookingToSheets(booking) {
@@ -3165,6 +3324,120 @@ function openWhatsAppCustomer() {
 מחכים לך! LOOK SHARP. FEEL SHARP. 💈`
   );
   window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+}
+
+// ─── WAITLIST ───
+function getWaitlist() {
+  try { return JSON.parse(localStorage.getItem('gm_waitlist') || '[]'); }
+  catch(e) { return []; }
+}
+
+function showFullDayModal(dateStr) {
+  const [y,m,d] = dateStr.split('-');
+  const date = new Date(parseInt(y), parseInt(m)-1, parseInt(d));
+  const dayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+  const MONTHS = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+  const dateLabel = `יום ${dayNames[date.getDay()]}, ${d} ב${MONTHS[date.getMonth()]} ${y}`;
+
+  const modal = document.createElement('div');
+  modal.id = 'fullDayModal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:flex-end;justify-content:center';
+  modal.innerHTML = `
+    <div style="background:var(--card);border-radius:24px 24px 0 0;padding:28px 24px 40px;width:100%;max-width:500px;animation:slideUp 0.3s ease">
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-size:36px;margin-bottom:8px">📅</div>
+        <div style="font-size:18px;font-weight:700;color:var(--text)">אין תורים פנויים</div>
+        <div style="font-size:15px;color:var(--text-soft);margin-top:6px">${dateLabel}</div>
+      </div>
+      <div style="background:rgba(230,57,70,0.08);border:1px solid rgba(230,57,70,0.2);border-radius:12px;padding:16px;margin-bottom:20px;text-align:center">
+        <div style="font-size:15px;color:#e63946;font-weight:600">היום מלא — לא נשארו תורים</div>
+        <div style="font-size:13px;color:var(--text-soft);margin-top:4px">הצטרף לרשימת ההמתנה ונעדכן אותך אם יתפנה תור</div>
+      </div>
+      <button onclick="showWaitlistForm('${dateStr}', '${dateLabel}')"
+        style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:16px;font-family:'Heebo',sans-serif;font-size:16px;font-weight:700;cursor:pointer;border-radius:14px;margin-bottom:10px">
+        📋 הצטרף לרשימת ההמתנה
+      </button>
+      <button onclick="document.getElementById('fullDayModal').remove()"
+        style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text-soft);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;cursor:pointer;border-radius:14px">
+        בחר יום אחר
+      </button>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function showWaitlistForm(dateStr, dateLabel) {
+  const modal = document.getElementById('fullDayModal');
+  if (modal) modal.remove();
+
+  const services = getServices();
+  const servicesOptions = services.map(s =>
+    `<option value="${s.id}" data-duration="${s.duration}" data-name="${s.name}">${s.name} (${s.duration} דק׳) - ₪${s.price}</option>`
+  ).join('');
+
+  const form = document.createElement('div');
+  form.id = 'waitlistForm';
+  form.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:flex-end;justify-content:center;overflow-y:auto';
+  form.innerHTML = `
+    <div style="background:var(--card);border-radius:24px 24px 0 0;padding:28px 24px 40px;width:100%;max-width:500px;animation:slideUp 0.3s ease">
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-size:28px;font-weight:900;color:var(--text)">רשימת המתנה</div>
+        <div style="font-size:15px;color:var(--primary);margin-top:6px">${dateLabel}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+        <input id="wl-name" type="text" placeholder="שם מלא" autocomplete="name"
+          style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:14px;font-family:'Heebo',sans-serif;font-size:16px;outline:none;border-radius:12px">
+        <input id="wl-phone" type="tel" placeholder="טלפון" autocomplete="tel" dir="ltr"
+          style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:14px;font-family:'Heebo',sans-serif;font-size:16px;outline:none;border-radius:12px">
+        <input id="wl-email" type="email" placeholder="מייל (לקבלת עדכון)" autocomplete="email" dir="ltr"
+          style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:14px;font-family:'Heebo',sans-serif;font-size:16px;outline:none;border-radius:12px">
+        <div>
+          <div style="font-size:13px;color:var(--text-soft);margin-bottom:6px">איזה שירות תרצה?</div>
+          <select id="wl-service"
+            style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:12px">
+            <option value="">-- בחר שירות --</option>
+            ${servicesOptions}
+          </select>
+        </div>
+      </div>
+      <button onclick="submitWaitlist('${dateStr}', '${dateLabel}')"
+        style="width:100%;background:var(--primary);color:var(--bg);border:none;padding:16px;font-family:'Heebo',sans-serif;font-size:16px;font-weight:700;cursor:pointer;border-radius:14px;margin-bottom:10px">
+        אני רוצה להיכנס לרשימה ✓
+      </button>
+      <button onclick="document.getElementById('waitlistForm').remove()"
+        style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text-soft);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;cursor:pointer;border-radius:14px">
+        ביטול
+      </button>
+    </div>`;
+  document.body.appendChild(form);
+}
+
+async function submitWaitlist(dateStr, dateLabel) {
+  const name = document.getElementById('wl-name').value.trim();
+  const phone = document.getElementById('wl-phone').value.trim();
+  const email = document.getElementById('wl-email').value.trim();
+  const serviceEl = document.getElementById('wl-service');
+  const serviceId = serviceEl ? serviceEl.value : '';
+  const serviceOpt = serviceEl ? serviceEl.options[serviceEl.selectedIndex] : null;
+  const serviceName = serviceOpt ? serviceOpt.dataset.name || serviceOpt.text : '';
+  const serviceDuration = serviceOpt ? parseInt(serviceOpt.dataset.duration) || 30 : 30;
+
+  if (!name || !phone) { showToast('יש למלא שם וטלפון'); return; }
+  if (!serviceId) { showToast('יש לבחור שירות'); return; }
+
+  const entry = { name, phone, email, date: dateStr, dateLabel, serviceId, serviceName, serviceDuration, addedAt: new Date().toISOString() };
+
+  // Save locally
+  const waitlist = getWaitlist();
+  waitlist.push(entry);
+  localStorage.setItem('gm_waitlist', JSON.stringify(waitlist));
+
+  // Save to Sheets via Apps Script
+  try {
+    await fetch(APPS_SCRIPT_URL + '?action=addWaitlist&name=' + encodeURIComponent(name) + '&phone=' + encodeURIComponent(phone) + '&email=' + encodeURIComponent(email) + '&date=' + dateStr + '&dateLabel=' + encodeURIComponent(dateLabel) + '&serviceId=' + encodeURIComponent(serviceId) + '&serviceName=' + encodeURIComponent(serviceName) + '&serviceDuration=' + serviceDuration);
+  } catch(e) {}
+
+  document.getElementById('waitlistForm').remove();
+  showToast('נכנסת לרשימת ההמתנה! נעדכן אותך אם יתפנה תור 📋');
 }
 
 // ─── NEXT AVAILABLE SLOT ───
@@ -3824,7 +4097,7 @@ async function showDailySummary() {
 }
 
 // ─── EMAIL SETTINGS ───
-const APPS_SCRIPT_URL_EMAIL = 'https://script.google.com/macros/s/AKfycbw_VwBM3Ol2QiIJAFJDBNGzxo_QYsfa9xkWonXSO30vlvVdVq2AN8UYvJxif6Pl1sZb1A/exec';
+const APPS_SCRIPT_URL_EMAIL = 'https://script.google.com/macros/s/AKfycbwL86oxc0uqhSbPx-1opfhmo8uuq0Fo7O2e1_X7DVZoc7VYoZrIzdbA2kA3ubueyWNcqw/exec';
 
 let currentDayMode = 'today';
 let currentSummaryMode = 'today';
@@ -3981,6 +4254,45 @@ async function testEmailNow() {
   }
 }
 
+// ─── DEEP LINK HANDLER ───
+function handleDeepLink() {
+  const params = new URLSearchParams(window.location.search);
+  const date = params.get('date');
+  const time = params.get('time');
+  const serviceId = params.get('service');
+
+  if (date && time) {
+    // Check if slot is still available
+    const bookings = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
+    const slotTaken = bookings.some(b => b.date === date && b.time === time && !b.cancelled);
+    
+    if (slotTaken) {
+      setTimeout(() => {
+        alert('מצטערים, התור כבר נתפס. תוכל לבחור תור אחר.');
+        goTo('splash');
+      }, 500);
+      return;
+    }
+
+    // Set state and navigate to details
+    state.selectedDate = date;
+    state.selectedTime = time;
+
+    if (serviceId) {
+      const services = getServices();
+      const svc = services.find(s => String(s.id) === String(serviceId));
+      if (svc) {
+        state.service = svc.name;
+        state.servicePrice = svc.price;
+        state.serviceDuration = svc.duration;
+        state.serviceIcon = svc.icon;
+      }
+    }
+
+    setTimeout(() => goTo('details'), 300);
+  }
+}
+
 // Init
 renderCalendar();
 renderServicesGrid();
@@ -3988,3 +4300,19 @@ applyImagesToApp();
 </script>
 </body>
 </html>
+
+function sendWhatsAppToWaitlist(phone, name, dateStr, time) {
+  var parts = dateStr.split('-');
+  var dateFormatted = parts[2] + '/' + parts[1] + '/' + parts[0];
+  var timeText = time ? 'בשעה ' + time : '';
+  var deepLink = 'https://gm-barbershop.pages.dev' + (dateStr && time ? '?date=' + dateStr + '&time=' + encodeURIComponent(time) : '');
+  var msg = 'יש לי תור בשבילך! התפנה תור בתאריך ' + dateFormatted + ' ' + timeText + '. לקביעת התור לחץ כאן: ' + deepLink + ' - GMbarbershop';
+  var cleanPhone = phone.replace(/[^0-9]/g, '');
+  var intlPhone = cleanPhone.startsWith('0') ? '972' + cleanPhone.slice(1) : cleanPhone;
+  window.open('https://wa.me/' + intlPhone + '?text=' + encodeURIComponent(msg), '_blank');
+}
+
+function callCustomer(phone) {
+  window.location.href = 'tel:' + phone;
+}
+
