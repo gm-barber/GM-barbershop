@@ -1072,9 +1072,9 @@ document.head.appendChild(link);
 
   <div class="calendar-wrap">
     <div class="cal-header">
-      <button class="cal-nav" onclick="changeMonth(1)">‹</button>
+      <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
       <div class="cal-month" id="calMonthLabel"></div>
-      <button class="cal-nav" onclick="changeMonth(-1)">›</button>
+      <button class="cal-nav" onclick="changeMonth(1)">›</button>
     </div>
     <div class="cal-days-header">
       <div class="cal-day-name">א׳</div>
@@ -4503,7 +4503,7 @@ function adminCancelBooking(confirmNum, date, time, phone, name) {
     const d = new Date(date + 'T12:00:00');
     const dateFormatted = pad(d.getDate()) + '/' + pad(d.getMonth()+1) + '/' + d.getFullYear();
     const appUrl = 'https://gm-barbershop.pages.dev';
-    const msg = 'שלום ' + name + ', לצערנו נאלצנו לבטל את התור שלך בתאריך ' + dateFormatted + ' בשעה ' + time + ' עקב אילוצים. נשמח לראותך שוב, לקביעת תור חדש: ' + appUrl + ' - GMbarbershop';
+    const msg = 'עקב אילוצים התור שהיה אמור להיות לך בתאריך ' + dateFormatted + ' בשעה ' + time + ' בוטל, אנו מתנצלים על אי הנוחות, נשמח לראותך שוב, לקביעת תור חדש: ' + appUrl + ' - GMbarbershop';
     const cleanPhone = phone.replace(/[^0-9]/g, '');
     const intlPhone = cleanPhone.startsWith('0') ? '972' + cleanPhone.slice(1) : cleanPhone;
     window.open('https://wa.me/' + intlPhone + '?text=' + encodeURIComponent(msg), '_blank');
