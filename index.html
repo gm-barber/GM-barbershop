@@ -1518,11 +1518,11 @@ function renderCalendar() {
 
 function isDayFullyBooked(dateStr, workDay, duration) {
   if (!workDay || !workDay.from || !workDay.to) return false;
-  const bookings = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
-  const dayBookings = bookings.filter(b => b.date === dateStr && !b.cancelled);
-  const takenIntervals = dayBookings.map(b => ({
+  // Use getTakenSlots which combines both localStorage AND Sheets cache
+  const taken = getTakenSlots(dateStr);
+  const takenIntervals = taken.map(b => ({
     start: toMinutesSimple(b.time),
-    end: toMinutesSimple(b.time) + (parseInt(b.serviceDuration) || 30)
+    end: toMinutesSimple(b.time) + (parseInt(b.duration) || 30)
   }));
   const rangeStart = toMinutesSimple(workDay.from);
   const rangeEnd = toMinutesSimple(workDay.to);
@@ -1553,12 +1553,27 @@ function changeMonth(dir) {
   renderCalendar();
 }
 
-function selectDate(dateStr, cell) {
+async function selectDate(dateStr, cell) {
   document.querySelectorAll('.cal-cell').forEach(c => c.classList.remove('selected'));
   cell.classList.add('selected');
   state.selectedDate = dateStr;
   state.selectedTime = null;
   document.getElementById('nextBtn2').classList.remove('enabled');
+
+  // Show loading while fetching live data from Sheets
+  const grid = document.getElementById('slotsGrid');
+  const title = document.getElementById('timeSectionTitle');
+  if (grid) grid.innerHTML = '<div style="text-align:center;padding:28px;color:var(--text-soft);font-size:14px">⏳ טוען שעות פנויות...</div>';
+  if (title) title.style.display = 'none';
+
+  // Always fetch fresh data from Sheets so booked slots from any device show correctly
+  try {
+    const sheetsBookings = await loadBookingsFromSheets(dateStr);
+    if (sheetsBookings) {
+      localStorage.setItem('gm_sheets_cache_' + dateStr, JSON.stringify(sheetsBookings));
+    }
+  } catch(e) { /* fallback to local cache */ }
+
   renderSlots(dateStr);
 }
 
@@ -2496,10 +2511,48 @@ function saveBookingHistory(booking) {
   localStorage.setItem('gm_my_bookings', JSON.stringify(history.slice(0, 20))); // Keep last 20
 }
 
-function renderMyBookings() {
-  const history = getBookingHistory();
+async function renderMyBookings() {
   const list = document.getElementById('myBookingsList');
   const today = new Date().toISOString().split('T')[0];
+
+  // Show local data immediately while loading from Sheets
+  let history = getBookingHistory();
+  list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text-soft);font-size:14px">⏳ טוען תורים...</div>';
+
+  // Try to fetch from Sheets by phone (so bookings from any device show up)
+  try {
+    const lastCustomer = JSON.parse(localStorage.getItem('gm_last_customer') || 'null');
+    const phone = lastCustomer && lastCustomer.phone;
+    if (phone) {
+      const res = await fetch(APPS_SCRIPT_URL + '?action=getByPhone&phone=' + encodeURIComponent(phone));
+      const data = await res.json();
+      if (data.success && data.appointments && data.appointments.length > 0) {
+        const HEBREW_MONTHS_SHORT = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+        const sheetsBookings = data.appointments.map(a => {
+          const d = a.date ? new Date(a.date + 'T12:00:00') : null;
+          const dateLabel = d ? 'יום ' + ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'][d.getDay()] + ', ' + d.getDate() + ' ב' + HEBREW_MONTHS_SHORT[d.getMonth()] : a.date;
+          return {
+            confirmNum: a.confirmNum || '',
+            date: a.date || '',
+            time: a.time || '',
+            service: a.service || '',
+            price: a.price || 0,
+            dateLabel: dateLabel,
+            cancelled: false
+          };
+        });
+        // Merge: Sheets is source of truth; keep local only for cancelled flags
+        const cancelledNums = new Set(history.filter(b => b.cancelled).map(b => String(b.confirmNum)));
+        const merged = sheetsBookings.map(b => ({ ...b, cancelled: cancelledNums.has(String(b.confirmNum)) }));
+        // Add any local entries not in Sheets (e.g. very recent bookings not yet visible)
+        const sheetsNums = new Set(sheetsBookings.map(b => String(b.confirmNum)));
+        const localOnly = history.filter(b => !sheetsNums.has(String(b.confirmNum)));
+        history = [...merged, ...localOnly];
+        // Update local storage with merged result
+        localStorage.setItem('gm_my_bookings', JSON.stringify(history.slice(0, 20)));
+      }
+    }
+  } catch(e) { /* use local history */ }
 
   if (history.length === 0) {
     list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--grey);font-size:18px">אין תורים</div>';
