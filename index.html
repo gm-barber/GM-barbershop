@@ -3381,7 +3381,7 @@ function saveImageSettings(imgs) {
   localStorage.setItem('gm_images', JSON.stringify(imgs));
 }
 
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw2BqEXehmhYywwIW_yhlFJLJAC3a05lEa-IYTLETZyZpKLGKR3bK6rwye3m_G2_OyqGg/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwK0ZOzPPcI9d4jS9DZDA1Vpu_CHDYVVYGW7ENQHKeOw503N8t69KQI7nkx80cAOKKyIg/exec';
 
 // ─── SAVE TO GOOGLE SHEETS (via Apps Script) ───
 async function saveBookingToSheets(booking) {
@@ -4257,7 +4257,7 @@ async function showDailySummary() {
 }
 
 // ─── EMAIL SETTINGS ───
-const APPS_SCRIPT_URL_EMAIL = 'https://script.google.com/macros/s/AKfycbw2BqEXehmhYywwIW_yhlFJLJAC3a05lEa-IYTLETZyZpKLGKR3bK6rwye3m_G2_OyqGg/exec';
+const APPS_SCRIPT_URL_EMAIL = 'https://script.google.com/macros/s/AKfycbwK0ZOzPPcI9d4jS9DZDA1Vpu_CHDYVVYGW7ENQHKeOw503N8t69KQI7nkx80cAOKKyIg/exec';
 
 let currentDayMode = 'today';
 let currentSummaryMode = 'today';
@@ -4622,9 +4622,7 @@ function sendWhatsAppToWaitlist(phone, name, dateStr, time) {
   var dateFormatted = parts[2] + '/' + parts[1] + '/' + parts[0];
   var timeText = time ? 'בשעה ' + time : '';
   var deepLink = 'https://gm-barbershop.pages.dev' + (dateStr ? '?date=' + dateStr + (time ? '&time=' + encodeURIComponent(time) : '') : '');
-  var msg = time
-    ? 'יש לי תור בשבילך! התפנה תור בתאריך ' + dateFormatted + ' בשעה ' + time + '. לקביעת התור לחץ כאן: ' + deepLink + ' - GMbarbershop'
-    : 'שלום ' + name + ', יש לי תור בשבילך בתאריך ' + dateFormatted + '. לקביעת התור לחץ כאן: ' + deepLink + ' - GMbarbershop';
+  var msg = 'היי ' + name + ', התפנה תור במיוחד בשבילך בתאריך ' + dateFormatted + (time ? ' בשעה ' + time : '') + '. לקביעת התור כנס לקישור: ' + deepLink;
   var cleanPhone = phone.replace(/[^0-9]/g, '');
   var intlPhone = cleanPhone.startsWith('0') ? '972' + cleanPhone.slice(1) : cleanPhone;
   window.open('https://wa.me/' + intlPhone + '?text=' + encodeURIComponent(msg), '_blank');
