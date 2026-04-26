@@ -1072,9 +1072,9 @@ document.head.appendChild(link);
 
   <div class="calendar-wrap">
     <div class="cal-header">
-      <button class="cal-nav" onclick="changeMonth(1)">›</button>
+      <button class="cal-nav" onclick="changeMonth(1)">‹</button>
       <div class="cal-month" id="calMonthLabel"></div>
-      <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
+      <button class="cal-nav" onclick="changeMonth(-1)">›</button>
     </div>
     <div class="cal-days-header">
       <div class="cal-day-name">א׳</div>
@@ -2468,7 +2468,7 @@ async function filterAdminByDate() {
               style="padding:10px 18px;border-radius:10px;border:none;background:${isDone ? '#2e7d4f' : '#c0392b'};color:white;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;min-width:90px">
               ${isDone ? '✓ שולם' : '✗ לא שולם'}
             </button>
-            <button onclick="adminCancelBooking('${b.confirmNum||''}','${b.date||dateStr}','${b.time||b.Time||''}','${b.clientPhone||b.ClientPhone||''}','${b.clientName||b.ClientName||''}')"
+            <button onclick="adminCancelBooking('${b.confirmNum||b.ConfirmNum||''}','${b.date||dateStr}','${b.time||b.Time||''}','${b.phone||b.clientPhone||b.ClientPhone||''}','${b.name||b.clientName||b.ClientName||''}')"
               style="padding:10px 14px;border-radius:10px;border:1px solid rgba(230,57,70,0.4);background:transparent;color:#e63946;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-top:6px;width:100%">
               🚫 בטל תור
             </button>
