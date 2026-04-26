@@ -2418,13 +2418,16 @@ async function filterAdminByDate() {
       // Cache for getTakenSlots
       localStorage.setItem('gm_sheets_cache_' + dateStr, JSON.stringify(sheetsBookings));
       bookings = sheetsBookings.map(b => ({
-        name: b.ClientName || b.clientName || '',
-        phone: b.ClientPhone || b.clientPhone || '',
-        service: b.Service || b.service || '',
-        time: b.Time || b.time || '',
-        price: b.Price || b.price || 0,
-        homeVisit: b.HomeVisit || b.homeVisit || '',
-        notes: b.Notes || b.notes || ''
+        name: b.clientName || '',
+        phone: b.clientPhone || '',
+        service: b.service || '',
+        time: b.time || '',
+        price: b.price || 0,
+        homeVisit: b.homeVisit || '',
+        notes: b.notes || '',
+        confirmNum: b.confirmNum || '',
+        date: b.date || dateStr,
+        serviceDuration: b.duration || 30
       }));
     } else {
       // Fallback to localStorage
@@ -3381,7 +3384,7 @@ function saveImageSettings(imgs) {
   localStorage.setItem('gm_images', JSON.stringify(imgs));
 }
 
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwK0ZOzPPcI9d4jS9DZDA1Vpu_CHDYVVYGW7ENQHKeOw503N8t69KQI7nkx80cAOKKyIg/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzC1K953_pkDDCSo9_ryVcyAvpFmItO2BtJPF7L7eeCSVD5KATV32loBRks0U_Ky1jbzw/exec';
 
 // ─── SAVE TO GOOGLE SHEETS (via Apps Script) ───
 async function saveBookingToSheets(booking) {
@@ -3413,15 +3416,12 @@ async function saveBookingToSheets(booking) {
 }
 
 // ─── LOAD BOOKINGS FROM GOOGLE SHEETS (for admin) ───
-async function loadBookingsFromSheets(dateStr) {
+async async function loadBookingsFromSheets(dateStr) {
   try {
-    const res = await fetch(APPS_SCRIPT_URL + '?action=getAll');
+    const res = await fetch(APPS_SCRIPT_URL + '?action=getByDate&date=' + dateStr);
     const data = await res.json();
     if (data.success && data.appointments) {
-      return data.appointments.filter(a => {
-        const d = String(a.Date || a.date || '').trim();
-        return d === dateStr;
-      });
+      return data.appointments;
     }
     return [];
   } catch(e) {
@@ -4257,7 +4257,7 @@ async function showDailySummary() {
 }
 
 // ─── EMAIL SETTINGS ───
-const APPS_SCRIPT_URL_EMAIL = 'https://script.google.com/macros/s/AKfycbwK0ZOzPPcI9d4jS9DZDA1Vpu_CHDYVVYGW7ENQHKeOw503N8t69KQI7nkx80cAOKKyIg/exec';
+const APPS_SCRIPT_URL_EMAIL = 'https://script.google.com/macros/s/AKfycbzC1K953_pkDDCSo9_ryVcyAvpFmItO2BtJPF7L7eeCSVD5KATV32loBRks0U_Ky1jbzw/exec';
 
 let currentDayMode = 'today';
 let currentSummaryMode = 'today';
@@ -4489,8 +4489,13 @@ handleDeepLink();
 function adminCancelBooking(confirmNum, date, time, phone, name) {
   if (!confirm('לבטל את התור של ' + name + ' ב-' + time + '?')) return;
 
+  // Find service duration from local bookings or use b.duration from Sheets
+  const allBookings = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
+  const booking = allBookings.find(b => String(b.confirmNum) === String(confirmNum));
+  const duration = booking ? (parseInt(booking.serviceDuration) || parseInt(booking.duration) || 30) : 30;
+
   // Remove from Sheets
-  fetch(APPS_SCRIPT_URL + '?action=cancelBooking&confirmNum=' + encodeURIComponent(confirmNum) + '&date=' + date + '&time=' + encodeURIComponent(time) + '&serviceDuration=30');
+  fetch(APPS_SCRIPT_URL + '?action=cancelBooking&confirmNum=' + encodeURIComponent(confirmNum) + '&date=' + date + '&time=' + encodeURIComponent(time) + '&serviceDuration=' + duration);
 
   // Remove from local bookings
   let bookings = JSON.parse(localStorage.getItem('gm_bookings') || '[]');
