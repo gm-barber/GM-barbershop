@@ -3416,7 +3416,7 @@ async function saveBookingToSheets(booking) {
 }
 
 // ─── LOAD BOOKINGS FROM GOOGLE SHEETS (for admin) ───
-async async function loadBookingsFromSheets(dateStr) {
+async function loadBookingsFromSheets(dateStr) {
   try {
     const res = await fetch(APPS_SCRIPT_URL + '?action=getByDate&date=' + dateStr);
     const data = await res.json();
