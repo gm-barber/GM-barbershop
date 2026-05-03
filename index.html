@@ -609,6 +609,11 @@ document.head.appendChild(link);
     </div>
     <div class="splash-tagline" style="font-size:22px;letter-spacing:4px">LOOK SHARP FEEL SHARP</div><div class="splash-divider"></div>
     <button class="splash-btn" onclick="goTo('home')">קבע תור עכשיו</button>
+    <div style="margin-top:16px">
+      <button onclick="shareApp()" style="background:none;border:1px solid rgba(232,213,176,0.3);color:var(--primary-dark);padding:12px 32px;font-family:'Heebo',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;cursor:pointer;border-radius:50px;transition:all 0.2s">
+        📲 שתף עם חבר
+      </button>
+    </div>
 
     <div style="margin-top:32px;display:flex;flex-direction:column;align-items:center;gap:12px">
       <button onclick="showInstallModal()" style="background:transparent;border:1px solid rgba(232,213,176,0.25);color:rgba(232,213,176,0.7);padding:10px 24px;font-family:'Heebo',sans-serif;font-size:18px;cursor:pointer;border-radius:50px;letter-spacing:2px">
@@ -4547,6 +4552,16 @@ function renderDetailsScreen() {
   // Pre-fill any state-based UI in details screen
   const dateEl = document.getElementById('inp-date');
   if (dateEl && state.selectedDate) dateEl.value = state.selectedDate;
+}
+
+function shareApp() {
+  const url = 'https://gm-barbershop.pages.dev';
+  const text = 'קבע תור במספרה GM בקלות ובמהירות 💈\n' + url;
+  if (navigator.share) {
+    navigator.share({ title: 'GM המספרה', text: text, url: url });
+  } else {
+    window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+  }
 }
 
 // Init
