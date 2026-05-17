@@ -721,6 +721,8 @@ document.head.appendChild(link);
     <div style="font-size:18px;color:var(--grey);margin-bottom:20px">ערוך, הוסף או מחק שירותים</div>
     <div id="servicesAdminList"></div>
     <button onclick="addNewService()" style="width:100%;background:rgba(201,168,76,0.1);border:1px dashed rgba(201,168,76,0.4);color:var(--gold);padding:16px;font-family:'Heebo',sans-serif;font-size:18px;cursor:pointer;margin-top:8px">+ הוסף שירות חדש</button>
+    <button onclick="saveServicesManual()" id="saveServicesBtn" style="width:100%;background:rgba(201,168,76,0.85);border:none;color:#111;padding:16px;font-family:'Heebo',sans-serif;font-size:18px;font-weight:700;cursor:pointer;margin-top:10px;border-radius:8px;letter-spacing:1px">✓ שמור שינויים</button>
+    <div id="saveServicesMsg" style="text-align:center;color:#4caf50;font-size:15px;margin-top:8px;display:none">✓ השירותים נשמרו בהצלחה!</div>
   </div>
 
   <!-- TAB: HOURS -->
@@ -1638,7 +1640,7 @@ function renderSlots(dateStr) {
   // Sort taken intervals by start time
   const takenIntervals = takenBookings
     .filter(b => b.time)
-    .map(b => ({ start: toMins(b.time), end: toMins(b.time) + (b.duration || 30) }))
+    .map(b => ({ start: toMins(b.time), end: toMins(b.time) + (parseInt(b.duration) || parseInt(b.serviceDuration) || serviceDuration) }))
     .sort((a, b) => a.start - b.start);
 
   const isEmpty = takenIntervals.length === 0;
@@ -1650,11 +1652,11 @@ function renderSlots(dateStr) {
     const rangeEnd = toMins(toStr);
 
     if (isEmpty) {
-      // Empty day: slots every 30 min
+      // Empty day: slots every serviceDuration minutes
       let cur = rangeStart;
       while (cur + serviceDuration <= rangeEnd) {
         if (!inBreak(cur)) slots.push({ time: toTime(cur), type });
-        cur += 30;
+        cur += serviceDuration;
       }
       return slots;
     }
@@ -1884,7 +1886,7 @@ function addToCalendar() {
   const dateStr = state.selectedDate; // e.g. "2026-04-10"
   const time = state.selectedTime;    // e.g. "10:30"
   const [h, m] = time.split(':').map(Number);
-  const durationMins = state.serviceDuration.includes('50') ? 50 : state.serviceDuration.includes('30') ? 30 : 20;
+  const durationMins = parseInt(state.serviceDuration) || 30;
 
   // Build start/end in ICS format
   const pad = n => String(n).padStart(2,'0');
@@ -1990,8 +1992,18 @@ function renderAdminServices() {
 function updateService(i, field, val) {
   const services = getServices();
   services[i][field] = val;
-  saveServices(services);
+  // Save locally only — push to Sheets when user clicks "שמור שינויים"
+  localStorage.setItem('gm_services', JSON.stringify(services));
   if (field === 'location') renderAdminServices();
+}
+
+function saveServicesManual() {
+  const services = getServices();
+  saveServices(services); // saves to localStorage + pushes to Sheets
+  const msg = document.getElementById('saveServicesMsg');
+  const btn = document.getElementById('saveServicesBtn');
+  if (msg) { msg.style.display = 'block'; setTimeout(() => msg.style.display = 'none', 3000); }
+  if (btn) { btn.textContent = '✓ נשמר!'; btn.style.background = '#4caf50'; setTimeout(() => { btn.textContent = '✓ שמור שינויים'; btn.style.background = 'rgba(201,168,76,0.85)'; }, 2000); }
 }
 
 function deleteService(i) {
