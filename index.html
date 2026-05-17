@@ -2380,15 +2380,15 @@ function renderShortDays() {
     const d = parseDateLocal(s.date);
     const label = 'יום ' + dayNames[d.getDay()] + ', ' + d.getDate() + ' ב' + HEBREW_MONTHS[d.getMonth()];
     const breakLabel = s.breakFrom && s.breakTo ? ' | הפסקה: ' + s.breakFrom + '-' + s.breakTo : '';
-    return \`
-    <div style="background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);padding:14px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border-radius:10px">
-      <div>
-        <div style="font-weight:700;font-size:17px;color:var(--primary)">⏱️ \${label}</div>
-        <div style="font-size:15px;color:var(--grey);margin-top:3px">\${s.from} - \${s.to}\${breakLabel}</div>
-        \${s.note ? \`<div style="font-size:14px;color:var(--grey);margin-top:2px">\${s.note}</div>\` : ''}
-      </div>
-      <button onclick="deleteShortDay('\${s.date}')" style="background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.3);color:#e63946;padding:6px 12px;font-size:15px;cursor:pointer;font-family:'Heebo',sans-serif;border-radius:6px">הסר</button>
-    </div>\`;
+    const noteHtml = s.note ? '<div style="font-size:14px;color:var(--grey);margin-top:2px">' + s.note + '</div>' : '';
+    return '<div style="background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);padding:14px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border-radius:10px">' +
+      '<div>' +
+        '<div style="font-weight:700;font-size:17px;color:var(--primary)">⏱️ ' + label + '</div>' +
+        '<div style="font-size:15px;color:var(--grey);margin-top:3px">' + s.from + ' - ' + s.to + breakLabel + '</div>' +
+        noteHtml +
+      '</div>' +
+      '<button onclick="deleteShortDay(\'' + s.date + '\')" style="background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.3);color:#e63946;padding:6px 12px;font-size:15px;cursor:pointer;font-family:\'Heebo\',sans-serif;border-radius:6px">הסר</button>' +
+    '</div>';
   }).join('');
 }
 
