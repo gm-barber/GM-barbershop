@@ -1318,9 +1318,11 @@ function pushConfigToSheets() {
     homeVisits: getHomeVisits(),
     blockedDays: getBlockedDays()
   };
+  // mode: no-cors נדרש כדי לעקוף מגבלות CORS של Apps Script
   fetch(APPS_SCRIPT_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify(payload)
   }).catch(e => console.warn('Config save error:', e));
 }
