@@ -4942,7 +4942,7 @@ function renderDetailsScreen() {
 
 // Init — load settings from Sheets first, then render
 function shareApp() {
-  const url = 'https://gm-barbershop.pages.dev';
+  const url = 'https://co-projects-il.github.io/GM-barbershop';
   const text = 'קבע תור במספרה GM בקלות ובמהירות 💈\n' + url;
   if (navigator.share) {
     navigator.share({ title: 'GM המספרה', text: text, url: url });
@@ -4979,7 +4979,7 @@ function adminCancelBooking(confirmNum, date, time, phone, name) {
     const pad = n => String(n).padStart(2,'0');
     const d = new Date(date + 'T12:00:00');
     const dateFormatted = pad(d.getDate()) + '/' + pad(d.getMonth()+1) + '/' + d.getFullYear();
-    const appUrl = 'https://gm-barbershop.pages.dev';
+    const appUrl = 'https://co-projects-il.github.io/GM-barbershop';
     const msg = 'עקב אילוצים התור שהיה אמור להיות לך בתאריך ' + dateFormatted + ' בשעה ' + time + ' בוטל, אנו מתנצלים על אי הנוחות, נשמח לראותך שוב, לקביעת תור חדש: ' + appUrl + ' - GMbarbershop';
     const cleanPhone = phone.replace(/[^0-9]/g, '');
     const intlPhone = cleanPhone.startsWith('0') ? '972' + cleanPhone.slice(1) : cleanPhone;
@@ -5098,7 +5098,7 @@ function sendWhatsAppToWaitlist(phone, name, dateStr, time) {
   var parts = dateStr.split('-');
   var dateFormatted = parts[2] + '/' + parts[1] + '/' + parts[0];
   var timeText = time ? 'בשעה ' + time : '';
-  var deepLink = 'https://gm-barbershop.pages.dev' + (dateStr ? '?date=' + dateStr + (time ? '&time=' + encodeURIComponent(time) : '') : '');
+  var deepLink = 'https://co-projects-il.github.io/GM-barbershop' + (dateStr ? '?date=' + dateStr + (time ? '&time=' + encodeURIComponent(time) : '') : '');
   var msg = 'היי ' + name + ', התפנה תור במיוחד בשבילך בתאריך ' + dateFormatted + (time ? ' בשעה ' + time : '') + '. לקביעת התור כנס לקישור: ' + deepLink;
   var cleanPhone = phone.replace(/[^0-9]/g, '');
   var intlPhone = cleanPhone.startsWith('0') ? '972' + cleanPhone.slice(1) : cleanPhone;
