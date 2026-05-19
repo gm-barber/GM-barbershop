@@ -5,6 +5,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(function(regs) {
+    regs.forEach(function(r) {
+      if (!r.active || !r.active.scriptURL.includes('gm-sw.js')) {
+        r.unregister().then(function() { if ('caches' in self) caches.keys().then(function(k) { k.forEach(function(c) { caches.delete(c); }); }); });
+      }
+    });
+  });
+}
+</script>
 <meta name="theme-color" content="#0b0d11">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -805,11 +816,6 @@ link.rel = 'manifest';
 link.href = manifestURL;
 document.head.appendChild(link);
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(regs => {
-    regs.forEach(r => {
-      if (!r.active || !r.active.scriptURL.includes('gm-sw.js')) r.unregister();
-    });
-  });
   navigator.serviceWorker.register(basePath + 'gm-sw.js').catch(() => {});
 }
 </script>
