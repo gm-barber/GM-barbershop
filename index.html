@@ -36,6 +36,10 @@
     --status-paid: #2e7d4f;
     --status-unpaid: #c0392b;
     --break-color: orange;
+    --error-border: #e63946;
+    --success-msg: #4caf50;
+    --tab-active-bg: #e8d5b0;
+    --tab-active-text: #1a1a1a;
     --shadow: 0 2px 8px rgba(0,0,0,0.4);
     --shadow-lg: 0 12px 40px rgba(0,0,0,0.5);
     --disabled: #2a2d35;
@@ -921,7 +925,7 @@ document.head.appendChild(link);
     <div id="servicesAdminList"></div>
     <button onclick="addNewService()" style="width:100%;background:var(--primary-glow);border:1px dashed rgba(201,165,92,0.3);color:var(--primary);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px;border-radius:var(--radius-sm)">+ הוסף שירות חדש</button>
     <button onclick="saveServicesManual()" id="saveServicesBtn" style="width:100%;background:var(--primary);border:none;color:var(--bg);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:10px;border-radius:var(--radius-sm);letter-spacing:1px">✓ שמור שינויים</button>
-    <div id="saveServicesMsg" style="text-align:center;color:#4caf50;font-size:15px;margin-top:8px;display:none">✓ השירותים נשמרו בהצלחה!</div>
+    <div id="saveServicesMsg" style="text-align:center;color:var(--success-msg);font-size:15px;margin-top:8px;display:none">✓ השירותים נשמרו בהצלחה!</div>
   </div>
 
   <!-- TAB: HOURS -->
@@ -941,7 +945,7 @@ document.head.appendChild(link);
     <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;margin-bottom:4px">ימי חופש</div>
     <div style="font-size:14px;color:var(--text-soft);margin-bottom:16px">חופשות, מחלה, ואירועים — ניתן להגדיר מראש לכל עתיד</div>
     <div id="blockedDaysList"></div>
-    <div style="background:var(--card);border:1px solid rgba(239,68,68,0.15);padding:16px;margin-top:8px;border-radius:var(--radius-md)">
+    <form onsubmit="addBlockedDay(); return false;" style="background:var(--card);border:1px solid rgba(239,68,68,0.15);padding:16px;margin-top:8px;border-radius:var(--radius-md)">
       <div style="font-size:14px;color:var(--red);letter-spacing:2px;margin-bottom:12px;font-weight:700">הוסף יום חופש / תקופה</div>
       <label for="blockDateFrom" style="font-size:13px;color:var(--text-soft);margin-bottom:6px;display:block">מתאריך</label>
       <input type="date" id="blockDateFrom" aria-label="תאריך התחלה לחסימה" style="width:100%;background:var(--bg2);border:1px solid rgba(239,68,68,0.15);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;margin-bottom:8px;color-scheme:dark;border-radius:var(--radius-sm)">
@@ -950,8 +954,8 @@ document.head.appendChild(link);
       <label for="blockReason" style="font-size:13px;color:var(--text-soft);margin-bottom:6px;display:block">סיבה</label>
       <input type="text" id="blockReason" placeholder="סיבה (אופציונלי — חופשה, מחלה...)"
         style="width:100%;background:var(--bg2);border:1px solid rgba(239,68,68,0.1);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;margin-bottom:12px;border-radius:var(--radius-sm)">
-      <button onclick="addBlockedDay()" style="width:100%;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:var(--red);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:var(--radius-sm)">הוסף יום חופש</button>
-    </div>
+      <button type="submit" style="width:100%;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:var(--red);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:var(--radius-sm)">הוסף יום חופש</button>
+    </form>
   </div>
 
   <!-- TAB: SHORT DAYS -->
@@ -959,7 +963,7 @@ document.head.appendChild(link);
     <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;margin-bottom:4px">ימים מקוצרים</div>
     <div style="font-size:14px;color:var(--text-soft);margin-bottom:16px">הגדר ימים ספציפיים עם שעות עבודה שונות</div>
     <div id="shortDaysList"></div>
-    <div style="background:var(--card);border:1px solid var(--border);padding:16px;margin-top:8px;border-radius:var(--radius-md)">
+    <form onsubmit="addShortDay(); return false;" style="background:var(--card);border:1px solid var(--border);padding:16px;margin-top:8px;border-radius:var(--radius-md)">
       <div style="font-size:14px;color:var(--primary);letter-spacing:2px;margin-bottom:12px;font-weight:700">הוסף יום מקוצר</div>
       <label for="shortDayDate" style="font-size:13px;color:var(--text-soft);margin-bottom:6px;display:block">תאריך</label>
       <input type="date" id="shortDayDate" aria-label="תאריך יום מקוצר" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;margin-bottom:12px;color-scheme:dark;border-radius:var(--radius-sm)">
@@ -985,8 +989,8 @@ document.head.appendChild(link);
         </div>
       </div>
       <input type="text" id="shortDayNote" placeholder="הערה (אופציונלי — לדוגמה: לפני חג)" style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:14px;outline:none;margin-bottom:12px;border-radius:var(--radius-sm)">
-      <button onclick="addShortDay()" style="width:100%;background:var(--primary-glow);border:1px solid rgba(201,165,92,0.3);color:var(--primary);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:var(--radius-sm)">הוסף יום מקוצר</button>
-    </div>
+      <button type="submit" style="width:100%;background:var(--primary-glow);border:1px solid rgba(201,165,92,0.3);color:var(--primary);padding:14px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:var(--radius-sm)">הוסף יום מקוצר</button>
+    </form>
   </div>
 
   <!-- TAB: REPORTS -->
@@ -1249,7 +1253,7 @@ document.head.appendChild(link);
   <!-- TAB: SETTINGS -->
   <div id="admintab-settings" style="display:none;flex:1;overflow-y:auto;padding:16px 20px">
     <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;margin-bottom:20px">הגדרות</div>
-    <div style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:var(--radius-md)">
+    <form onsubmit="changeAdminPass(); return false;" style="background:var(--card);border:1px solid var(--border);padding:20px;border-radius:var(--radius-md)">
       <div style="font-size:14px;letter-spacing:3px;color:var(--primary);margin-bottom:14px;font-weight:700">שינוי סיסמה</div>
       <div style="position:relative;margin-bottom:10px">
         <label for="newPass1" class="sr-only">סיסמה חדשה</label>
@@ -1261,9 +1265,9 @@ document.head.appendChild(link);
         <input id="newPass2" type="password" placeholder="אימות סיסמה" class="form-input" style="padding-left:40px">
         <span onclick="togglePassView('newPass2','eye2')" id="eye2" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:18px;user-select:none">👁️</span>
       </div>
-      <button onclick="changeAdminPass()" style="background:var(--primary-glow);border:1px solid rgba(201,165,92,0.25);color:var(--primary);padding:12px 24px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:1px;width:100%;border-radius:var(--radius-sm)">עדכן סיסמה</button>
+      <button type="submit" style="background:var(--primary-glow);border:1px solid rgba(201,165,92,0.25);color:var(--primary);padding:12px 24px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:1px;width:100%;border-radius:var(--radius-sm)">עדכן סיסמה</button>
       <div id="passChangeMsg" style="font-size:18px;margin-top:8px;min-height:16px;text-align:center"></div>
-    </div>
+    </form>
   </div>
 </main>
 
@@ -1392,7 +1396,7 @@ document.head.appendChild(link);
       <div style="font-size:15px;font-weight:700;margin-bottom:10px">הסרה מרשימת התפוצה</div>
       <input type="email" id="inp-unsub-email" placeholder="הכנס את המייל שלך" dir="ltr"
         style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;font-family:'Heebo',sans-serif;font-size:15px;outline:none;border-radius:10px;margin-bottom:10px">
-      <button type="button" onclick="submitUnsubscribe()" style="width:100%;background:var(--red);border:none;color:white;padding:12px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border-radius:var(--radius-sm)">
+      <button type="button" onclick="submitUnsubscribe()" style="width:100%;background:var(--red);border:none;color:var(--white);padding:12px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border-radius:var(--radius-sm)">
         הסר מרשימת התפוצה
       </button>
       <div id="unsubMsg" style="text-align:center;font-size:13px;margin-top:8px;min-height:16px"></div>
@@ -1809,7 +1813,7 @@ function renderCalendar() {
         cell.classList.add('available');
         cell.style.background = 'rgba(230,57,70,0.15)';
         cell.style.borderColor = 'rgba(230,57,70,0.4)';
-        cell.style.color = '#e63946';
+        cell.style.color = 'var(--error-border)';
         cell.onclick = () => showFullDayModal(dateStr);
       } else {
         cell.classList.add('available');
@@ -1991,6 +1995,16 @@ function renderSlots(dateStr) {
     }
   }
 
+  const todayStr = new Date().toISOString().split('T')[0];
+  if (dateStr === todayStr) {
+    const now = new Date();
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+    allSlots = allSlots.filter(s => {
+      const [h, m] = s.time.split(':').map(Number);
+      return h * 60 + m > nowMinutes;
+    });
+  }
+
   grid.innerHTML = '';
   if (allSlots.length === 0) {
     grid.innerHTML = '<div style="color:var(--text-soft);font-size:17px;padding:16px">אין שעות זמינות ביום זה</div>';
@@ -2153,7 +2167,7 @@ async function confirmBooking() {
 function shake(id) {
   const el = document.getElementById(id);
   el.style.animation = 'none';
-  el.style.borderColor = '#e63946';
+  el.style.borderColor = 'var(--error-border)';
   setTimeout(() => { el.style.borderColor = ''; }, 1500);
 }
 
@@ -2252,9 +2266,9 @@ function switchAdminTab(tab) {
     if (el) el.style.display = t === tab ? 'block' : 'none';
     const btn = document.getElementById('tab-' + t);
     if (btn) {
-      btn.style.color = t === tab ? '#1a1a1a' : 'var(--grey)';
+      btn.style.color = t === tab ? 'var(--tab-active-text)' : 'var(--grey)';
       btn.style.borderBottom = t === tab ? '2px solid var(--gold)' : '2px solid transparent';
-      btn.style.background = t === tab ? '#e8d5b0' : 'none';
+      btn.style.background = t === tab ? 'var(--tab-active-bg)' : 'none';
       btn.style.borderRadius = t === tab ? '8px 8px 0 0' : '0';
       btn.style.fontWeight = t === tab ? '800' : '400';
     }
@@ -2469,7 +2483,7 @@ function updateHourValidated(i, field, value, el) {
     const to = field === 'to' ? value : h.to;
     if (from && to && toMinutes(from) >= toMinutes(to)) {
       if (errShop) errShop.textContent = 'שגיאה: שעת הסיום חייבת להיות אחרי שעת ההתחלה';
-      el.style.borderColor = '#e63946';
+      el.style.borderColor = 'var(--error-border)';
       return;
     }
     if (errShop) errShop.textContent = '';
@@ -2482,7 +2496,7 @@ function updateHourValidated(i, field, value, el) {
     if (from && to) {
       if (toMinutes(from) >= toMinutes(to)) {
         if (errHome) errHome.textContent = 'שגיאה: שעת הסיום חייבת להיות אחרי שעת ההתחלה';
-        el.style.borderColor = '#e63946';
+        el.style.borderColor = 'var(--error-border)';
         return;
       }
       if (h.from && h.to) {
@@ -2492,7 +2506,7 @@ function updateHourValidated(i, field, value, el) {
         const hTo = toMinutes(to);
         if (hFrom < shopTo && hTo > shopFrom) {
           if (errHome) errHome.textContent = 'שגיאה: שעות מבית לבית חופפות עם שעות המספרה (' + h.from + '-' + h.to + ')';
-          el.style.borderColor = '#e63946';
+          el.style.borderColor = 'var(--error-border)';
           return;
         }
       }
@@ -2516,7 +2530,7 @@ function updateBreakValidated(i, bi, field, value, el) {
   if (from && to) {
     if (toMinutes(from) >= toMinutes(to)) {
       if (errEl) errEl.textContent = 'שגיאה: שעת סיום ההפסקה חייבת להיות אחרי שעת ההתחלה';
-      el.style.borderColor = '#e63946';
+      el.style.borderColor = 'var(--error-border)';
       return;
     }
     const h = hours[i];
@@ -2525,7 +2539,7 @@ function updateBreakValidated(i, bi, field, value, el) {
       const brTo = toMinutes(to);
       if (brFrom < toMinutes(h.from) || brTo > toMinutes(h.to)) {
         if (errEl) errEl.textContent = 'שגיאה: ההפסקה חייבת להיות בתוך שעות המספרה (' + h.from + '-' + h.to + ')';
-        el.style.borderColor = '#e63946';
+        el.style.borderColor = 'var(--error-border)';
         return;
       }
     }
@@ -2766,12 +2780,12 @@ function changeAdminPass() {
   const p1 = document.getElementById('newPass1').value.trim();
   const p2 = document.getElementById('newPass2').value.trim();
   const msg = document.getElementById('passChangeMsg');
-  if (!p1) { msg.style.color='#e63946'; msg.textContent='הכנס סיסמה חדשה'; return; }
-  if (p1 !== p2) { msg.style.color='#e63946'; msg.textContent='הסיסמאות לא תואמות'; return; }
+  if (!p1) { msg.style.color='var(--error-border)'; msg.textContent='הכנס סיסמה חדשה'; return; }
+  if (p1 !== p2) { msg.style.color='var(--error-border)'; msg.textContent='הסיסמאות לא תואמות'; return; }
   localStorage.setItem(ADMIN_PASS_KEY, p1);
   document.getElementById('newPass1').value = '';
   document.getElementById('newPass2').value = '';
-  msg.style.color = '#2ecc71';
+  msg.style.color = 'var(--success-msg)';
   msg.textContent = '✓ הסיסמה עודכנה בהצלחה';
   setTimeout(() => { msg.textContent = ''; }, 3000);
 }
@@ -2935,7 +2949,7 @@ async function filterAdminByDate() {
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;min-width:100px">
             <div style="font-size:22px;font-weight:900;color:var(--primary)">₪${b.price||''}</div>
             <button onclick="toggleAppointmentDone('${b.date||dateStr}','${b.time||b.Time||''}',${b.price||0},this)"
-              style="padding:10px 18px;border-radius:10px;border:none;background:${isDone ? 'var(--status-paid)' : 'var(--status-unpaid)'};color:white;font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;min-width:90px">
+              style="padding:10px 18px;border-radius:10px;border:none;background:${isDone ? 'var(--status-paid)' : 'var(--status-unpaid)'};color:var(--white);font-family:'Heebo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;min-width:90px">
               ${isDone ? '✓ שולם' : '✗ לא שולם'}
             </button>
             <button onclick="adminCancelBooking('${b.confirmNum||b.ConfirmNum||''}','${b.date||dateStr}','${b.time||b.Time||''}','${b.phone||b.clientPhone||b.ClientPhone||''}','${b.name||b.clientName||b.ClientName||''}')"
@@ -2966,7 +2980,7 @@ function saveBookingHistory(booking) {
 function lookupMyBookings() {
   const phoneInput = document.getElementById('mybookings-phone');
   const phone = phoneInput ? phoneInput.value.trim() : '';
-  if (!phone) { phoneInput.style.borderColor = '#e63946'; setTimeout(() => phoneInput.style.borderColor = '', 1500); return; }
+  if (!phone) { phoneInput.style.borderColor = 'var(--error-border)'; setTimeout(() => phoneInput.style.borderColor = '', 1500); return; }
   localStorage.setItem('gm_last_customer', JSON.stringify({ ...JSON.parse(localStorage.getItem('gm_last_customer') || '{}'), phone }));
   renderMyBookings(phone);
 }
@@ -3830,7 +3844,7 @@ function loadImagesTab() {
     galleryEl.innerHTML = gallery.map((url, i) => `
       <div style="position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:var(--bg)">
         <img src="${url}" style="width:100%;height:100%;object-fit:cover">
-        <button onclick="removeGalleryImage(${i})" style="position:absolute;top:4px;left:4px;background:rgba(0,0,0,0.6);border:none;color:white;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center">✕</button>
+        <button onclick="removeGalleryImage(${i})" style="position:absolute;top:4px;left:4px;background:rgba(0,0,0,0.6);border:none;color:var(--white);width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center">✕</button>
       </div>
     `).join('');
   }
@@ -4940,7 +4954,7 @@ function handleDeepLink() {
     if (slotTaken) {
       // Show on splash screen
       const msg = document.createElement('div');
-      msg.style.cssText = 'position:fixed;bottom:120px;left:50%;transform:translateX(-50%);background:var(--red);color:white;padding:12px 24px;border-radius:50px;font-family:Heebo,sans-serif;font-size:14px;font-weight:700;z-index:9999;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.3)';
+      msg.style.cssText = 'position:fixed;bottom:120px;left:50%;transform:translateX(-50%);background:var(--red);color:var(--white);padding:12px 24px;border-radius:50px;font-family:Heebo,sans-serif;font-size:14px;font-weight:700;z-index:9999;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.3)';
       msg.textContent = 'מצטערים, התור כבר נתפס';
       document.body.appendChild(msg);
       setTimeout(() => msg.remove(), 4000);
